@@ -18,3 +18,13 @@ spring:
   jpa:
     hibernate:
       ddl-auto: update
+
+jwt:
+  secret-key: ${JWT_SECRET_KEY}
+  access-token-expiration: 3600000
+  refresh-token-expiration: 86400000
+
+oauth2:
+  github:
+    client-id: ${GITHUB_CLIENT_ID}
+    client-secret: ${GITHUB_CLIENT_SECRET}
