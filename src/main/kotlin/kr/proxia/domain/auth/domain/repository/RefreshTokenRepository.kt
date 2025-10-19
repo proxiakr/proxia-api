@@ -8,19 +8,19 @@ import java.time.Duration
 class RefreshTokenRepository(
     private val redisTemplate: StringRedisTemplate
 ) {
-    companion object {
-        private const val REFRESH_TOKEN_KEY = "refresh_token"
-    }
-
     fun save(userId: Long, refreshToken: String) {
-        redisTemplate.opsForValue().set("$REFRESH_TOKEN_KEY:$userId", refreshToken, Duration.ofDays(7))
+        redisTemplate.opsForValue().set(REFRESH_TOKEN_KEY + userId, refreshToken, Duration.ofDays(7))
     }
 
     fun findByUserId(userId: Long): String? {
-        return redisTemplate.opsForValue().get("$REFRESH_TOKEN_KEY:$userId")
+        return redisTemplate.opsForValue().get(REFRESH_TOKEN_KEY + userId)
     }
 
     fun deleteByUserId(userId: Long) {
-        redisTemplate.delete("$REFRESH_TOKEN_KEY:$userId")
+        redisTemplate.delete(REFRESH_TOKEN_KEY + userId)
+    }
+
+    companion object {
+        private const val REFRESH_TOKEN_KEY = "refresh_token:"
     }
 }
