@@ -5,6 +5,7 @@ import jakarta.persistence.Entity
 import jakarta.persistence.EnumType
 import jakarta.persistence.Enumerated
 import jakarta.persistence.Table
+import kr.proxia.domain.project.domain.enums.ProjectFramework
 import kr.proxia.global.jpa.common.BaseEntity
 
 @Entity
@@ -19,7 +20,7 @@ class ProjectEntity(
     var branch: String,
     @Enumerated(EnumType.STRING)
     @Column(columnDefinition = "VARCHAR")
-    var framework: String,
+    var framework: ProjectFramework,
     var buildCommand: String,
     var startCommand: String,
 ) : BaseEntity()
