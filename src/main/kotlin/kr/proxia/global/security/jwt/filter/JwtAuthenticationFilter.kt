@@ -5,6 +5,7 @@ import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
 import kr.proxia.global.security.jwt.provider.JwtProvider
 import kr.proxia.global.security.jwt.validator.JwtValidator
+import org.springframework.http.HttpHeaders
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.security.core.context.SecurityContextHolder
@@ -21,7 +22,7 @@ class JwtAuthenticationFilter(
         response: HttpServletResponse,
         filterChain: FilterChain
     ) {
-        val token = request.getHeader("Authorization")?.removePrefix("Bearer ")
+        val token = request.getHeader(HttpHeaders.AUTHORIZATION)?.removePrefix("Bearer ")
 
         if (token != null && jwtValidator.validateToken(token)) {
             val userId = jwtProvider.getSubject(token)
