@@ -68,12 +68,14 @@ class AuthService(
         if (userRepository.existsByEmail(request.email))
             throw IllegalArgumentException("Email already exists")
 
-        val user = userRepository.save(UserEntity(
-            email = request.email,
-            name = request.name,
-            password = passwordEncoder.encode(request.password),
-            provider = OAuthProvider.LOCAL
-        ))
+        val user = userRepository.save(
+            UserEntity(
+                email = request.email,
+                name = request.name,
+                password = passwordEncoder.encode(request.password),
+                provider = OAuthProvider.LOCAL
+            )
+        )
 
         return LoginResponse.of(user)
     }
@@ -123,7 +125,7 @@ class AuthService(
         refreshTokenRepository.deleteByUserId(userId)
     }
 
-    fun LoginResponse.Companion.of(user: UserEntity) = LoginResponse(
+    private fun LoginResponse.Companion.of(user: UserEntity) = LoginResponse(
         accessToken = jwtProvider.createAccessToken(user),
         refreshToken = jwtProvider.createRefreshToken(user),
         user = LoginResponse.User(
