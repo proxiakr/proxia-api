@@ -17,6 +17,7 @@ import kr.proxia.global.security.jwt.provider.JwtProvider
 import kr.proxia.global.security.jwt.validator.JwtValidator
 import kr.proxia.global.security.oauth2.github.client.GithubOAuthClient
 import kr.proxia.global.security.oauth2.google.client.GoogleOAuthClient
+import org.springframework.data.repository.findByIdOrNull
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
 
@@ -43,13 +44,12 @@ class AuthService(
                     providerId = userInfo.sub
                 )
             )
-        val userId = user.id!!
 
         return LoginResponse(
-            accessToken = jwtProvider.createAccessToken(userId),
-            refreshToken = jwtProvider.createRefreshToken(userId),
+            accessToken = jwtProvider.createAccessToken(user),
+            refreshToken = jwtProvider.createRefreshToken(user),
             user = LoginResponse.User(
-                id = userId,
+                id = user.id,
                 email = user.email,
                 name = user.name,
                 avatarUrl = user.avatarUrl
@@ -69,13 +69,12 @@ class AuthService(
                     providerId = userInfo.id.toString()
                 )
             )
-        val userId = user.id!!
 
         return LoginResponse(
-            accessToken = jwtProvider.createAccessToken(userId),
-            refreshToken = jwtProvider.createRefreshToken(userId),
+            accessToken = jwtProvider.createAccessToken(user),
+            refreshToken = jwtProvider.createRefreshToken(user),
             user = LoginResponse.User(
-                id = userId,
+                id = user.id,
                 email = user.email,
                 name = user.name,
                 avatarUrl = user.avatarUrl
@@ -93,13 +92,12 @@ class AuthService(
             password = passwordEncoder.encode(request.password),
             provider = OAuthProvider.LOCAL
         ))
-        val userId = user.id!!
 
         return LoginResponse(
-            accessToken = jwtProvider.createAccessToken(userId),
-            refreshToken = jwtProvider.createRefreshToken(userId),
+            accessToken = jwtProvider.createAccessToken(user),
+            refreshToken = jwtProvider.createRefreshToken(user),
             user = LoginResponse.User(
-                id = userId,
+                id = user.id,
                 email = user.email,
                 name = user.name,
                 avatarUrl = user.avatarUrl
@@ -117,13 +115,12 @@ class AuthService(
         if (!passwordEncoder.matches(request.password, user.password))
             throw IllegalArgumentException("Invalid password")
 
-        val userId = user.id!!
 
         return LoginResponse(
-            accessToken = jwtProvider.createAccessToken(userId),
-            refreshToken = jwtProvider.createRefreshToken(userId),
+            accessToken = jwtProvider.createAccessToken(user),
+            refreshToken = jwtProvider.createRefreshToken(user),
             user = LoginResponse.User(
-                id = userId,
+                id = user.id,
                 email = user.email,
                 name = user.name,
                 avatarUrl = user.avatarUrl
@@ -141,22 +138,24 @@ class AuthService(
             throw IllegalArgumentException("Invalid token type")
 
         val userId = jwtProvider.getSubject(refreshToken)
-
-        if (!userRepository.existsById(userId))
-            throw IllegalArgumentException("User not found")
+        val user = userRepository.findByIdOrNull(userId)
+            ?: throw IllegalArgumentException("User not found")
 
         if (refreshTokenRepository.findByUserId(userId) != refreshToken)
             throw IllegalArgumentException("Refresh token not found")
 
         return ReissueResponse(
-            accessToken = jwtProvider.createAccessToken(userId),
-            refreshToken = jwtProvider.createRefreshToken(userId)
+            accessToken = jwtProvider.createAccessToken(user),
+            refreshToken = jwtProvider.createRefreshToken(user)
         )
     }
 
     fun logout() {
-        val user = securityHolder.getUser()
+        val userId = securityHolder.getUserId()
 
-        refreshTokenRepository.deleteByUserId(user.id!!)
+        if (!userRepository.existsById(userId))
+            throw IllegalArgumentException("User not found")
+
+        refreshTokenRepository.deleteByUserId(userId)
     }
 }
