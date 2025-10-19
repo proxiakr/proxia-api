@@ -6,25 +6,23 @@ import jakarta.persistence.GeneratedValue
 import jakarta.persistence.GenerationType
 import jakarta.persistence.Id
 import jakarta.persistence.MappedSuperclass
-import org.springframework.data.annotation.CreatedDate
-import org.springframework.data.annotation.LastModifiedDate
+import org.hibernate.annotations.CreationTimestamp
+import org.hibernate.annotations.UpdateTimestamp
 import org.springframework.data.jpa.domain.support.AuditingEntityListener
 import java.time.LocalDateTime
 
 @MappedSuperclass
 @EntityListeners(AuditingEntityListener::class)
-class BaseEntity {
+class BaseEntity(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    val id: Long? = null
+    val id: Long = 0,
 
-    @CreatedDate
+    @CreationTimestamp
     @Column(nullable = false, updatable = false)
-    var createdAt: LocalDateTime? = null
-        protected set
+    val createdAt: LocalDateTime = LocalDateTime.MIN,
 
-    @LastModifiedDate
+    @UpdateTimestamp
     @Column(nullable = false)
-    var updatedAt: LocalDateTime? = null
-        protected set
-}
+    val updatedAt: LocalDateTime = LocalDateTime.MIN,
+)
