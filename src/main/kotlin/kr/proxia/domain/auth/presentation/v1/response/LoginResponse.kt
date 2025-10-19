@@ -1,4 +1,4 @@
-package kr.proxia.domain.auth.presentation.dto.response
+package kr.proxia.domain.auth.presentation.v1.response
 
 data class LoginResponse(
     val accessToken: String,

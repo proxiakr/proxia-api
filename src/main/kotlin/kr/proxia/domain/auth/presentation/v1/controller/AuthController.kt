@@ -1,19 +1,19 @@
-package kr.proxia.domain.auth.presentation.controller
+package kr.proxia.domain.auth.presentation.v1.controller
 
 import kr.proxia.domain.auth.application.service.AuthService
-import kr.proxia.domain.auth.presentation.docs.AuthDocs
-import kr.proxia.domain.auth.presentation.dto.request.GithubLoginRequest
-import kr.proxia.domain.auth.presentation.dto.request.GoogleLoginRequest
-import kr.proxia.domain.auth.presentation.dto.request.LoginRequest
-import kr.proxia.domain.auth.presentation.dto.request.RegisterRequest
-import kr.proxia.domain.auth.presentation.dto.request.ReissueRequest
+import kr.proxia.domain.auth.presentation.v1.docs.AuthDocs
+import kr.proxia.domain.auth.presentation.v1.request.GithubLoginRequest
+import kr.proxia.domain.auth.presentation.v1.request.GoogleLoginRequest
+import kr.proxia.domain.auth.presentation.v1.request.LoginRequest
+import kr.proxia.domain.auth.presentation.v1.request.RegisterRequest
+import kr.proxia.domain.auth.presentation.v1.request.ReissueRequest
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 
 @RestController
-@RequestMapping("/auth")
+@RequestMapping("/api/v1/auth")
 class AuthController(private val authService: AuthService) : AuthDocs {
     @PostMapping("/login/google")
     override fun googleLogin(@RequestBody request: GoogleLoginRequest) = authService.googleLogin(request)

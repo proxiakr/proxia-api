@@ -1,14 +1,14 @@
-package kr.proxia.domain.auth.presentation.docs
+package kr.proxia.domain.auth.presentation.v1.docs
 
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.tags.Tag
-import kr.proxia.domain.auth.presentation.dto.request.GithubLoginRequest
-import kr.proxia.domain.auth.presentation.dto.request.GoogleLoginRequest
-import kr.proxia.domain.auth.presentation.dto.request.LoginRequest
-import kr.proxia.domain.auth.presentation.dto.request.RegisterRequest
-import kr.proxia.domain.auth.presentation.dto.request.ReissueRequest
-import kr.proxia.domain.auth.presentation.dto.response.LoginResponse
-import kr.proxia.domain.auth.presentation.dto.response.ReissueResponse
+import kr.proxia.domain.auth.presentation.v1.request.GithubLoginRequest
+import kr.proxia.domain.auth.presentation.v1.request.GoogleLoginRequest
+import kr.proxia.domain.auth.presentation.v1.request.LoginRequest
+import kr.proxia.domain.auth.presentation.v1.request.RegisterRequest
+import kr.proxia.domain.auth.presentation.v1.request.ReissueRequest
+import kr.proxia.domain.auth.presentation.v1.response.LoginResponse
+import kr.proxia.domain.auth.presentation.v1.response.ReissueResponse
 
 @Tag(name = "Auth")
 interface AuthDocs {
