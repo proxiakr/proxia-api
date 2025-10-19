@@ -45,16 +45,7 @@ class AuthService(
                 )
             )
 
-        return LoginResponse(
-            accessToken = jwtProvider.createAccessToken(user),
-            refreshToken = jwtProvider.createRefreshToken(user),
-            user = LoginResponse.User(
-                id = user.id,
-                email = user.email,
-                name = user.name,
-                avatarUrl = user.avatarUrl
-            )
-        )
+        return LoginResponse.of(user)
     }
 
     fun githubLogin(request: GithubLoginRequest): LoginResponse {
@@ -70,16 +61,7 @@ class AuthService(
                 )
             )
 
-        return LoginResponse(
-            accessToken = jwtProvider.createAccessToken(user),
-            refreshToken = jwtProvider.createRefreshToken(user),
-            user = LoginResponse.User(
-                id = user.id,
-                email = user.email,
-                name = user.name,
-                avatarUrl = user.avatarUrl
-            )
-        )
+        return LoginResponse.of(user)
     }
 
     fun register(request: RegisterRequest): LoginResponse {
@@ -93,16 +75,7 @@ class AuthService(
             provider = OAuthProvider.LOCAL
         ))
 
-        return LoginResponse(
-            accessToken = jwtProvider.createAccessToken(user),
-            refreshToken = jwtProvider.createRefreshToken(user),
-            user = LoginResponse.User(
-                id = user.id,
-                email = user.email,
-                name = user.name,
-                avatarUrl = user.avatarUrl
-            )
-        )
+        return LoginResponse.of(user)
     }
 
     fun login(request: LoginRequest): LoginResponse {
@@ -116,16 +89,7 @@ class AuthService(
             throw IllegalArgumentException("Invalid password")
 
 
-        return LoginResponse(
-            accessToken = jwtProvider.createAccessToken(user),
-            refreshToken = jwtProvider.createRefreshToken(user),
-            user = LoginResponse.User(
-                id = user.id,
-                email = user.email,
-                name = user.name,
-                avatarUrl = user.avatarUrl
-            )
-        )
+        return LoginResponse.of(user)
     }
 
     fun reissue(request: ReissueRequest): ReissueResponse {
@@ -158,4 +122,15 @@ class AuthService(
 
         refreshTokenRepository.deleteByUserId(userId)
     }
+
+    fun LoginResponse.Companion.of(user: UserEntity) = LoginResponse(
+        accessToken = jwtProvider.createAccessToken(user),
+        refreshToken = jwtProvider.createRefreshToken(user),
+        user = LoginResponse.User(
+            id = user.id,
+            email = user.email,
+            name = user.name,
+            avatarUrl = user.avatarUrl
+        )
+    )
 }

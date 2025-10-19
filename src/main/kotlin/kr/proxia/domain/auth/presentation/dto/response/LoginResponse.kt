@@ -11,4 +11,6 @@ data class LoginResponse(
         val name: String,
         val avatarUrl: String?
     )
+
+    companion object
 }
