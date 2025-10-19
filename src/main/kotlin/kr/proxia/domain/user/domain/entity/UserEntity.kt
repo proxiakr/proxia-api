@@ -18,9 +18,8 @@ class UserEntity(
     @Column(nullable = false, unique = true)
     val email: String,
 
-    val password: String? = null,
-
-    val avatarUrl: String? = null,
+    password: String? = null,
+    avatarUrl: String? = null,
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
@@ -30,4 +29,18 @@ class UserEntity(
     @Column(nullable = false)
     val provider: OAuthProvider,
     val providerId: String? = null
-): BaseEntity()
+) : BaseEntity() {
+    var password: String? = password
+        protected set
+
+    var avatarUrl: String? = avatarUrl
+        protected set
+
+    fun update(
+        password: String? = this.password,
+        avatarUrl: String? = this.avatarUrl,
+    ) {
+        this.password = password
+        this.avatarUrl = avatarUrl
+    }
+}
