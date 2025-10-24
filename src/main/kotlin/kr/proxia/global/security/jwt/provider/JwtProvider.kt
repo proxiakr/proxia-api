@@ -1,5 +1,6 @@
 package kr.proxia.global.security.jwt.provider
 
+import io.jsonwebtoken.Claims
 import io.jsonwebtoken.JwtBuilder
 import io.jsonwebtoken.Jwts
 import kr.proxia.domain.user.domain.enums.UserRole
@@ -13,15 +14,15 @@ class JwtProvider(
 ) {
     fun getSubject(token: String): Long = getPayload(token).subject.toLong()
 
-    fun getRole(token: String): UserRole = UserRole.valueOf(getPayload(token).get("role", String::class.java))
+    fun getRole(token: String): UserRole = UserRole.valueOf(getPayload(token).getUpper(ROLE_KEY))
 
-    fun getType(token: String): JwtType = JwtType.valueOf(getPayload(token).get("type", String::class.java))
+    fun getType(token: String): JwtType = JwtType.valueOf(getPayload(token).getUpper(TYPE_KEY))
 
     fun createAccessToken(userId: Long, role: UserRole): String {
         return Jwts.builder()
             .subject(userId.toString())
-            .lowerClaim("role", role.name)
-            .lowerClaim("type", JwtType.ACCESS.name)
+            .lowerClaim(ROLE_KEY, role.name)
+            .lowerClaim(TYPE_KEY, JwtType.ACCESS.name)
             .signWith(jwtProperties.secretKeySpec)
             .compact()
     }
@@ -29,7 +30,7 @@ class JwtProvider(
     fun createRefreshToken(userId: Long): String {
         return Jwts.builder()
             .subject(userId.toString())
-            .lowerClaim("type", JwtType.REFRESH.name)
+            .lowerClaim(TYPE_KEY, JwtType.REFRESH.name)
             .signWith(jwtProperties.secretKeySpec)
             .compact()
     }
@@ -41,4 +42,11 @@ class JwtProvider(
         .payload
 
     private fun JwtBuilder.lowerClaim(name: String, value: String) = this.claim(name, value.lowercase())
+
+    private fun Claims.getUpper(name: String) = this.get(name, String::class.java).uppercase()
+
+    companion object {
+        private const val ROLE_KEY = "role"
+        private const val TYPE_KEY = "type"
+    }
 }
