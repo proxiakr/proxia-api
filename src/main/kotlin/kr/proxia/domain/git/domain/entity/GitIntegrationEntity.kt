@@ -16,8 +16,7 @@ class GitIntegrationEntity(
     @Enumerated(EnumType.STRING)
     @Column(columnDefinition = "VARCHAR")
     val provider: GitIntegrationProvider,
-    val providerId: String,
     val accessToken: String,
-    val refreshToken: String?,
+    val refreshToken: String? = null,
     val expiresAt: LocalDateTime?
 ): BaseEntity()

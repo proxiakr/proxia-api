@@ -2,6 +2,7 @@ package kr.proxia.domain.auth.presentation.v1.controller
 
 import kr.proxia.domain.auth.application.service.AuthService
 import kr.proxia.domain.auth.presentation.v1.docs.AuthDocs
+import kr.proxia.domain.auth.presentation.v1.request.CheckEmailRequest
 import kr.proxia.domain.auth.presentation.v1.request.GithubLoginRequest
 import kr.proxia.domain.auth.presentation.v1.request.GoogleLoginRequest
 import kr.proxia.domain.auth.presentation.v1.request.LoginRequest
@@ -26,6 +27,9 @@ class AuthController(private val authService: AuthService) : AuthDocs {
 
     @PostMapping("/login")
     override fun login(@RequestBody request: LoginRequest) = authService.login(request)
+
+    @PostMapping("/check-email")
+    override fun checkEmail(@RequestBody request: CheckEmailRequest) = authService.checkEmail(request)
 
     @PostMapping("/reissue")
     override fun reissue(@RequestBody request: ReissueRequest) = authService.reissue(request)

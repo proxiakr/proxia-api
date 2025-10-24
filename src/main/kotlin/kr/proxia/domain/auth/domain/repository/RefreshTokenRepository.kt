@@ -1,26 +1,12 @@
 package kr.proxia.domain.auth.domain.repository
 
-import org.springframework.data.redis.core.StringRedisTemplate
+import kr.proxia.domain.auth.domain.entity.RefreshTokenEntity
+import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.stereotype.Repository
-import java.time.Duration
 
 @Repository
-class RefreshTokenRepository(
-    private val redisTemplate: StringRedisTemplate
-) {
-    fun save(userId: Long, refreshToken: String) {
-        redisTemplate.opsForValue().set(REFRESH_TOKEN_KEY + userId, refreshToken, Duration.ofDays(7))
-    }
+interface RefreshTokenRepository: JpaRepository<RefreshTokenEntity, Long> {
+    fun findByUserIdAndRefreshToken(userId: Long, refreshToken: String): RefreshTokenEntity?
 
-    fun findByUserId(userId: Long): String? {
-        return redisTemplate.opsForValue().get(REFRESH_TOKEN_KEY + userId)
-    }
-
-    fun deleteByUserId(userId: Long) {
-        redisTemplate.delete(REFRESH_TOKEN_KEY + userId)
-    }
-
-    companion object {
-        private const val REFRESH_TOKEN_KEY = "refresh_token:"
-    }
+    fun deleteByUserId(userId: Long)
 }

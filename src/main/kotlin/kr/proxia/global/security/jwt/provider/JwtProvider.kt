@@ -1,6 +1,7 @@
 package kr.proxia.global.security.jwt.provider
 
 import io.jsonwebtoken.Jwts
+import kr.proxia.domain.auth.domain.entity.RefreshTokenEntity
 import kr.proxia.domain.auth.domain.repository.RefreshTokenRepository
 import kr.proxia.domain.user.domain.entity.UserEntity
 import kr.proxia.domain.user.domain.enums.UserRole
@@ -12,8 +13,6 @@ import org.springframework.stereotype.Component
 @Component
 class JwtProvider(
     private val jwtProperties: JwtProperties,
-    private val refreshTokenRepository: RefreshTokenRepository,
-    private val userRepository: UserRepository
 ) {
     private fun getClaims(token: String) = Jwts.parser()
         .verifyWith(jwtProperties.secretKeySpec)
@@ -34,27 +33,24 @@ class JwtProvider(
             .type
     )
 
-    fun createAccessToken(user: UserEntity): String {
+    fun createAccessToken(userId: Long, role: UserRole): String {
         return Jwts.builder()
             .header()
             .type(JwtType.ACCESS.name)
             .and()
-            .subject(user.id.toString())
-            .claim("role", user.role.name)
+            .subject(userId.toString())
+            .claim("role", role.name)
             .signWith(jwtProperties.secretKeySpec)
             .compact()
     }
 
-    fun createRefreshToken(user: UserEntity): String {
+    fun createRefreshToken(userId: Long): String {
         return Jwts.builder()
             .header()
             .type(JwtType.REFRESH.name)
             .and()
-            .subject(user.id.toString())
+            .subject(userId.toString())
             .signWith(jwtProperties.secretKeySpec)
             .compact()
-            .also {
-                refreshTokenRepository.save(user.id, it)
-            }
     }
 }

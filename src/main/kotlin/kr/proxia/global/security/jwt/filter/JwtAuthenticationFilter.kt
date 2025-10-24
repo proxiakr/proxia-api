@@ -24,7 +24,9 @@ class JwtAuthenticationFilter(
     ) {
         val token = request.getHeader(HttpHeaders.AUTHORIZATION)?.removePrefix("Bearer ")
 
-        if (token != null && jwtValidator.validateToken(token)) {
+        if (token != null) {
+            jwtValidator.validateToken(token)
+
             val userId = jwtProvider.getSubject(token)
             val role = jwtProvider.getRole(token)
 

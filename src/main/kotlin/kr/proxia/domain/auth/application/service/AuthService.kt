@@ -1,18 +1,21 @@
 package kr.proxia.domain.auth.application.service
 
+import kr.proxia.domain.auth.domain.entity.RefreshTokenEntity
 import kr.proxia.domain.auth.domain.repository.RefreshTokenRepository
+import kr.proxia.domain.auth.presentation.v1.request.CheckEmailRequest
 import kr.proxia.domain.auth.presentation.v1.request.GithubLoginRequest
 import kr.proxia.domain.auth.presentation.v1.request.GoogleLoginRequest
 import kr.proxia.domain.auth.presentation.v1.request.LoginRequest
 import kr.proxia.domain.auth.presentation.v1.request.RegisterRequest
 import kr.proxia.domain.auth.presentation.v1.request.ReissueRequest
+import kr.proxia.domain.auth.presentation.v1.response.CheckEmailResponse
 import kr.proxia.domain.auth.presentation.v1.response.LoginResponse
 import kr.proxia.domain.auth.presentation.v1.response.ReissueResponse
 import kr.proxia.domain.user.domain.entity.UserEntity
 import kr.proxia.domain.user.domain.enums.OAuthProvider
 import kr.proxia.domain.user.domain.repository.UserRepository
 import kr.proxia.global.security.holder.SecurityHolder
-import kr.proxia.global.security.jwt.enums.JwtType
+import kr.proxia.global.security.jwt.properties.JwtProperties
 import kr.proxia.global.security.jwt.provider.JwtProvider
 import kr.proxia.global.security.jwt.validator.JwtValidator
 import kr.proxia.global.security.oauth2.github.client.GithubOAuthClient
@@ -20,6 +23,8 @@ import kr.proxia.global.security.oauth2.google.client.GoogleOAuthClient
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
+import java.time.LocalDateTime
+import java.time.temporal.ChronoUnit
 
 @Service
 class AuthService(
@@ -30,7 +35,8 @@ class AuthService(
     private val securityHolder: SecurityHolder,
     private val refreshTokenRepository: RefreshTokenRepository,
     private val jwtValidator: JwtValidator,
-    private val passwordEncoder: PasswordEncoder
+    private val passwordEncoder: PasswordEncoder,
+    private val jwtProperties: JwtProperties
 ) {
     fun googleLogin(request: GoogleLoginRequest): LoginResponse {
         val userInfo = googleOAuthClient.getUserInfo(request.idToken)
@@ -45,7 +51,7 @@ class AuthService(
                 )
             )
 
-        return LoginResponse.of(user)
+        return generateLoginResponse(user)
     }
 
     fun githubLogin(request: GithubLoginRequest): LoginResponse {
@@ -61,14 +67,18 @@ class AuthService(
                 )
             )
 
-        return LoginResponse.of(user)
+        return generateLoginResponse(user)
     }
 
-    fun register(request: RegisterRequest): LoginResponse {
+    fun register(request: RegisterRequest) {
         if (userRepository.existsByEmail(request.email))
             throw IllegalArgumentException("Email already exists")
 
-        val user = userRepository.save(
+        /**
+         * TODO: Validates
+         */
+
+        userRepository.save(
             UserEntity(
                 email = request.email,
                 name = request.name,
@@ -76,8 +86,6 @@ class AuthService(
                 provider = OAuthProvider.LOCAL
             )
         )
-
-        return LoginResponse.of(user)
     }
 
     fun login(request: LoginRequest): LoginResponse {
@@ -90,29 +98,30 @@ class AuthService(
         if (!passwordEncoder.matches(request.password, user.password))
             throw IllegalArgumentException("Invalid password")
 
+        return generateLoginResponse(user)
+    }
 
-        return LoginResponse.of(user)
+    fun checkEmail(request: CheckEmailRequest): CheckEmailResponse {
+        val exists = userRepository.existsByEmail(request.email)
+
+        return CheckEmailResponse(exists = exists)
     }
 
     fun reissue(request: ReissueRequest): ReissueResponse {
-        val refreshToken = request.refreshToken
+        jwtValidator.validateRefreshToken(request.refreshToken)
 
-        if (!jwtValidator.validateToken(refreshToken))
-            throw IllegalArgumentException("Invalid token")
-
-        if (jwtProvider.getType(refreshToken) != JwtType.REFRESH)
-            throw IllegalArgumentException("Invalid token type")
-
-        val userId = jwtProvider.getSubject(refreshToken)
+        val userId = jwtProvider.getSubject(request.refreshToken)
         val user = userRepository.findByIdOrNull(userId)
             ?: throw IllegalArgumentException("User not found")
 
-        if (refreshTokenRepository.findByUserId(userId) != refreshToken)
-            throw IllegalArgumentException("Refresh token not found")
+        val refreshToken = refreshTokenRepository.findByUserIdAndRefreshToken(user.id, request.refreshToken) ?: throw IllegalArgumentException("Refresh token not found")
+
+        val newRefreshToken = jwtProvider.createRefreshToken(user.id)
+        refreshToken.update(refreshToken = newRefreshToken)
 
         return ReissueResponse(
-            accessToken = jwtProvider.createAccessToken(user),
-            refreshToken = jwtProvider.createRefreshToken(user)
+            accessToken = jwtProvider.createAccessToken(user.id, user.role),
+            refreshToken = newRefreshToken
         )
     }
 
@@ -125,14 +134,28 @@ class AuthService(
         refreshTokenRepository.deleteByUserId(userId)
     }
 
-    private fun LoginResponse.Companion.of(user: UserEntity) = LoginResponse(
-        accessToken = jwtProvider.createAccessToken(user),
-        refreshToken = jwtProvider.createRefreshToken(user),
-        user = LoginResponse.User(
-            id = user.id,
-            email = user.email,
-            name = user.name,
-            avatarUrl = user.avatarUrl
+    private fun generateToken(user: UserEntity): Pair<String, String> {
+        val accessToken = jwtProvider.createAccessToken(user.id, user.role)
+        val refreshToken = jwtProvider.createRefreshToken(user.id)
+
+        refreshTokenRepository.save(RefreshTokenEntity(user.id, refreshToken, expiresAt = LocalDateTime.now().plus(jwtProperties.refreshTokenExpiration,
+            ChronoUnit.MILLIS)))
+
+        return accessToken to refreshToken
+    }
+
+    private fun generateLoginResponse(user: UserEntity): LoginResponse {
+        val (accessToken, refreshToken) = generateToken(user)
+
+        return LoginResponse(
+            accessToken = accessToken,
+            refreshToken = refreshToken,
+            user = LoginResponse.User(
+                id = user.id,
+                email = user.email,
+                name = user.name,
+                avatarUrl = user.avatarUrl
+            )
         )
-    )
+    }
 }
