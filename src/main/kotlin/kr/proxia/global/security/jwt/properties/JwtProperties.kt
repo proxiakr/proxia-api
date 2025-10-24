@@ -8,7 +8,7 @@ import javax.crypto.spec.SecretKeySpec
 data class JwtProperties(
     val secretKey: String,
     val accessTokenExpiration: Long,
-    val refreshTokenExpiration: Long
+    val refreshTokenExpiration: Long,
 ) {
     val secretKeySpec = SecretKeySpec(
         secretKey.toByteArray(),

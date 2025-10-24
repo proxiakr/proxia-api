@@ -28,15 +28,15 @@ import java.time.temporal.ChronoUnit
 
 @Service
 class AuthService(
-    private val jwtProvider: JwtProvider,
-    private val userRepository: UserRepository,
     private val googleOAuthClient: GoogleOAuthClient,
     private val githubOAuthClient: GithubOAuthClient,
-    private val securityHolder: SecurityHolder,
+    private val userRepository: UserRepository,
     private val refreshTokenRepository: RefreshTokenRepository,
     private val jwtValidator: JwtValidator,
+    private val jwtProvider: JwtProvider,
+    private val jwtProperties: JwtProperties,
+    private val securityHolder: SecurityHolder,
     private val passwordEncoder: PasswordEncoder,
-    private val jwtProperties: JwtProperties
 ) {
     fun googleLogin(request: GoogleLoginRequest): LoginResponse {
         val userInfo = googleOAuthClient.getUserInfo(request.idToken)
@@ -47,7 +47,7 @@ class AuthService(
                     name = userInfo.name,
                     avatarUrl = userInfo.picture,
                     provider = OAuthProvider.GOOGLE,
-                    providerId = userInfo.sub
+                    providerId = userInfo.sub,
                 )
             )
 
@@ -63,7 +63,7 @@ class AuthService(
                     name = userInfo.name ?: userInfo.login,
                     avatarUrl = userInfo.avatarUrl,
                     provider = OAuthProvider.GITHUB,
-                    providerId = userInfo.id.toString()
+                    providerId = userInfo.id.toString(),
                 )
             )
 
@@ -83,7 +83,7 @@ class AuthService(
                 email = request.email,
                 name = request.name,
                 password = passwordEncoder.encode(request.password),
-                provider = OAuthProvider.LOCAL
+                provider = OAuthProvider.LOCAL,
             )
         )
     }
@@ -143,7 +143,7 @@ class AuthService(
             RefreshTokenEntity(
                 userId = user.id,
                 refreshToken = refreshToken,
-                expiresAt = LocalDateTime.now().plus(jwtProperties.refreshTokenExpiration, ChronoUnit.MILLIS)
+                expiresAt = LocalDateTime.now().plus(jwtProperties.refreshTokenExpiration, ChronoUnit.MILLIS),
             )
         )
 
@@ -160,8 +160,8 @@ class AuthService(
                 id = user.id,
                 email = user.email,
                 name = user.name,
-                avatarUrl = user.avatarUrl
-            )
+                avatarUrl = user.avatarUrl,
+            ),
         )
     }
 }

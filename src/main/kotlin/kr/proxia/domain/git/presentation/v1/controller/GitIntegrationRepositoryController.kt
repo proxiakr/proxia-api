@@ -8,7 +8,10 @@ import org.springframework.web.bind.annotation.RestController
 
 @RestController
 @RequestMapping("/api/v1/git/integration/{gitIntegrationId}/repositories")
-class GitIntegrationRepositoryController(private val gitIntegrationRepositoryService: GitIntegrationRepositoryService) {
+class GitIntegrationRepositoryController(
+    private val gitIntegrationRepositoryService: GitIntegrationRepositoryService,
+) {
     @GetMapping
-    fun getRepositories(@PathVariable gitIntegrationId: Long) = gitIntegrationRepositoryService.getRepositories(gitIntegrationId)
+    fun getRepositories(@PathVariable gitIntegrationId: Long) =
+        gitIntegrationRepositoryService.getRepositories(gitIntegrationId)
 }

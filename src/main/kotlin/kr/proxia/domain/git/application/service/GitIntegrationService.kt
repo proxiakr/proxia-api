@@ -13,8 +13,8 @@ import java.time.LocalDateTime
 @Service
 class GitIntegrationService(
     private val gitIntegrationClient: GitIntegrationClient,
+    private val gitIntegrationRepository: GitIntegrationRepository,
     private val securityHolder: SecurityHolder,
-    private val gitIntegrationRepository: GitIntegrationRepository
 ) {
     fun createGitIntegration(request: CreateGitIntegrationRequest) {
         val userId = securityHolder.getUserId()
@@ -26,7 +26,7 @@ class GitIntegrationService(
                     userId = userId,
                     provider = GitIntegrationProvider.GITHUB,
                     accessToken = token.accessToken,
-                    expiresAt = LocalDateTime.now().plusSeconds(token.expiresIn)
+                    expiresAt = LocalDateTime.now().plusSeconds(token.expiresIn),
                 )
             }
 

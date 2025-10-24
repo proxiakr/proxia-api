@@ -11,5 +11,5 @@ data class ExchangeGithubCodeResponse(
     val scope: String,
 
     @field:JsonProperty("token_type")
-    val tokenType: String
+    val tokenType: String,
 )

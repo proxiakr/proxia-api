@@ -8,7 +8,7 @@ data class ProjectDetailResponse(
     val name: String,
     val slug: String,
     val createdAt: LocalDateTime,
-    val updatedAt: LocalDateTime
+    val updatedAt: LocalDateTime,
 ) {
     data class User(
         val id: Long,

@@ -18,5 +18,5 @@ class GitIntegrationEntity(
     val provider: GitIntegrationProvider,
     val accessToken: String,
     val refreshToken: String? = null,
-    val expiresAt: LocalDateTime?
-): BaseEntity()
+    val expiresAt: LocalDateTime?,
+) : BaseEntity()

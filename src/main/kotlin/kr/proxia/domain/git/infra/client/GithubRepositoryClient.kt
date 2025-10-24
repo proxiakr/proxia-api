@@ -6,7 +6,9 @@ import org.springframework.web.reactive.function.client.WebClient
 import org.springframework.web.reactive.function.client.bodyToFlux
 
 @Component
-class GithubRepositoryClient(private val webClient: WebClient) {
+class GithubRepositoryClient(
+    private val webClient: WebClient,
+) {
     fun getGithubRepositories(accessToken: String): List<GithubRepository> {
         val repositories = webClient.get()
             .uri("https://api.github.com/user/repos")
