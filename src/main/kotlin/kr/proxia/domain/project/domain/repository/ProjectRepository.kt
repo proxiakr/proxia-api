@@ -6,4 +6,7 @@ import org.springframework.stereotype.Repository
 
 @Repository
 interface ProjectRepository : JpaRepository<ProjectEntity, Long> {
+    fun existsBySlug(slug: String): Boolean
+
+    fun findAllByUserId(userId: Long): List<ProjectEntity>
 }
