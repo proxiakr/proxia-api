@@ -31,7 +31,6 @@ class JwtAuthenticationFilter(
             val role = jwtProvider.getRole(token)
 
             SecurityContextHolder.getContext().authentication = UsernamePasswordAuthenticationToken(userId, null, listOf(SimpleGrantedAuthority("ROLE_$role")))
-
         }
 
         filterChain.doFilter(request, response)

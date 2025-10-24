@@ -20,11 +20,11 @@ class SwaggerConfig {
     @Bean
     fun openAPI(): OpenAPI = OpenAPI()
         .components(Components())
-        .info(info())
+        .info(
+            Info()
+                .title("Proxia API")
+                .description("Proxia API")
+                .version("v1.0.0")
+        )
         .addSecurityItem(SecurityRequirement().addList("Bearer Authentication"))
-
-    private fun info(): Info = Info()
-        .title("Proxia API")
-        .description("Proxia API")
-        .version("1.0.0")
 }

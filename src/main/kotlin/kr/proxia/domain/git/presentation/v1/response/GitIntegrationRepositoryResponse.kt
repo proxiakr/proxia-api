@@ -10,7 +10,6 @@ data class GitIntegrationRepositoryResponse(
             name = repository.name,
         )
 
-        fun of(repositories: List<GithubRepository>) =
-            repositories.map { of(it) }
+        fun of(repositories: List<GithubRepository>) = repositories.map { of(it) }
     }
 }
