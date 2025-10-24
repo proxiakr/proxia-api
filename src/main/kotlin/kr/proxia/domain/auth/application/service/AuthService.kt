@@ -114,14 +114,15 @@ class AuthService(
         val user = userRepository.findByIdOrNull(userId)
             ?: throw IllegalArgumentException("User not found")
 
-        val refreshToken = refreshTokenRepository.findByUserIdAndRefreshToken(user.id, request.refreshToken) ?: throw IllegalArgumentException("Refresh token not found")
+        val refreshToken = refreshTokenRepository.findByUserIdAndRefreshToken(user.id, request.refreshToken)
+            ?: throw IllegalArgumentException("Refresh token not found")
 
         val newRefreshToken = jwtProvider.createRefreshToken(user.id)
         refreshToken.update(refreshToken = newRefreshToken)
 
         return ReissueResponse(
             accessToken = jwtProvider.createAccessToken(user.id, user.role),
-            refreshToken = newRefreshToken
+            refreshToken = newRefreshToken,
         )
     }
 
@@ -138,8 +139,14 @@ class AuthService(
         val accessToken = jwtProvider.createAccessToken(user.id, user.role)
         val refreshToken = jwtProvider.createRefreshToken(user.id)
 
-        refreshTokenRepository.save(RefreshTokenEntity(user.id, refreshToken, expiresAt = LocalDateTime.now().plus(jwtProperties.refreshTokenExpiration,
-            ChronoUnit.MILLIS)))
+        refreshTokenRepository.save(
+            RefreshTokenEntity(
+                user.id, refreshToken, expiresAt = LocalDateTime.now().plus(
+                    jwtProperties.refreshTokenExpiration,
+                    ChronoUnit.MILLIS
+                )
+            )
+        )
 
         return accessToken to refreshToken
     }
