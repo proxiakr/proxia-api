@@ -1,11 +1,8 @@
 package kr.proxia.global.security.jwt.provider
 
+import io.jsonwebtoken.JwtBuilder
 import io.jsonwebtoken.Jwts
-import kr.proxia.domain.auth.domain.entity.RefreshTokenEntity
-import kr.proxia.domain.auth.domain.repository.RefreshTokenRepository
-import kr.proxia.domain.user.domain.entity.UserEntity
 import kr.proxia.domain.user.domain.enums.UserRole
-import kr.proxia.domain.user.domain.repository.UserRepository
 import kr.proxia.global.security.jwt.enums.JwtType
 import kr.proxia.global.security.jwt.properties.JwtProperties
 import org.springframework.stereotype.Component
@@ -14,43 +11,34 @@ import org.springframework.stereotype.Component
 class JwtProvider(
     private val jwtProperties: JwtProperties,
 ) {
-    private fun getClaims(token: String) = Jwts.parser()
-        .verifyWith(jwtProperties.secretKeySpec)
-        .build()
-        .parseSignedClaims(token)
+    fun getSubject(token: String): Long = getPayload(token).subject.toLong()
 
-    fun getSubject(token: String): Long = getClaims(token).payload.subject.toLong()
+    fun getRole(token: String): UserRole = UserRole.valueOf(getPayload(token).get("role", String::class.java))
 
-    fun getRole(token: String): UserRole = UserRole.valueOf(
-            getClaims(token)
-                .payload
-            .get("role", String::class.java)
-    )
-
-    fun getType(token: String): JwtType = JwtType.valueOf(
-        getClaims(token)
-            .header
-            .type
-    )
+    fun getType(token: String): JwtType = JwtType.valueOf(getPayload(token).get("type", String::class.java))
 
     fun createAccessToken(userId: Long, role: UserRole): String {
         return Jwts.builder()
-            .header()
-            .type(JwtType.ACCESS.name)
-            .and()
             .subject(userId.toString())
-            .claim("role", role.name)
+            .lowerClaim("role", role.name)
+            .lowerClaim("type", JwtType.ACCESS.name)
             .signWith(jwtProperties.secretKeySpec)
             .compact()
     }
 
     fun createRefreshToken(userId: Long): String {
         return Jwts.builder()
-            .header()
-            .type(JwtType.REFRESH.name)
-            .and()
             .subject(userId.toString())
+            .lowerClaim("type", JwtType.REFRESH.name)
             .signWith(jwtProperties.secretKeySpec)
             .compact()
     }
+
+    private fun getPayload(token: String) = Jwts.parser()
+        .verifyWith(jwtProperties.secretKeySpec)
+        .build()
+        .parseSignedClaims(token)
+        .payload
+
+    private fun JwtBuilder.lowerClaim(name: String, value: String) = this.claim(name, value.lowercase())
 }

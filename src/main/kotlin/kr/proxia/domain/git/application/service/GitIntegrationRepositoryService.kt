@@ -20,9 +20,8 @@ class GitIntegrationRepositoryService(
         val gitIntegration = gitIntegrationRepository.findByIdOrNull(gitIntegrationId)
             ?: throw IllegalArgumentException("Git integration not found")
 
-        if (gitIntegration.userId != userId) {
+        if (gitIntegration.userId != userId)
             throw IllegalAccessException("You do not have access to this git integration")
-        }
 
         val repositories = when (gitIntegration.provider) {
             GitIntegrationProvider.GITHUB -> {
