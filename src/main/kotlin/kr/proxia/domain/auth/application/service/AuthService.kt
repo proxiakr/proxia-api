@@ -141,10 +141,9 @@ class AuthService(
 
         refreshTokenRepository.save(
             RefreshTokenEntity(
-                user.id, refreshToken, expiresAt = LocalDateTime.now().plus(
-                    jwtProperties.refreshTokenExpiration,
-                    ChronoUnit.MILLIS
-                )
+                userId = user.id,
+                refreshToken = refreshToken,
+                expiresAt = LocalDateTime.now().plus(jwtProperties.refreshTokenExpiration, ChronoUnit.MILLIS)
             )
         )
 
