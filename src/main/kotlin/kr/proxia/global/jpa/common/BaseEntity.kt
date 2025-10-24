@@ -39,10 +39,6 @@ abstract class BaseEntity(
         deletedAt = null
     }
 
-    fun delete() {
-        deletedAt = LocalDateTime.now()
-    }
-
     val isDeleted: Boolean
         get() = deletedAt != null
 }
