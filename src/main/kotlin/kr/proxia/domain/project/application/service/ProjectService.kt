@@ -6,6 +6,9 @@ import kr.proxia.domain.project.presentation.v1.request.CreateProjectRequest
 import kr.proxia.domain.project.presentation.v1.response.ProjectDetailResponse
 import kr.proxia.domain.project.presentation.v1.response.ProjectResponse
 import kr.proxia.domain.user.domain.repository.UserRepository
+import kr.proxia.global.response.OffsetLimit
+import kr.proxia.global.response.PageResponse
+import kr.proxia.global.response.toResponse
 import kr.proxia.global.security.holder.SecurityHolder
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
@@ -17,6 +20,7 @@ class ProjectService(
     private val securityHolder: SecurityHolder,
 ) {
     fun createProject(request: CreateProjectRequest) {
+        val userId = getUserId()
         val slug = request.slug
 
         if (projectRepository.existsBySlug(slug))
@@ -24,16 +28,16 @@ class ProjectService(
 
         projectRepository.save(
             ProjectEntity(
-                userId = getUserId(),
+                userId = userId,
                 name = request.name,
                 slug = slug,
             )
         )
     }
 
-    fun getProjects(): List<ProjectResponse> {
+    fun getProjects(offsetLimit: OffsetLimit): PageResponse<ProjectResponse> {
         val userId = getUserId()
-        val projects = projectRepository.findAllByUserId(userId)
+        val projects = projectRepository.findAllByUserId(userId, offsetLimit.toPageable())
 
         return projects.map { project ->
             ProjectResponse(
@@ -43,7 +47,7 @@ class ProjectService(
                 createdAt = project.createdAt,
                 updatedAt = project.updatedAt,
             )
-        }
+        }.toResponse()
     }
 
     fun getProject(projectId: Long): ProjectDetailResponse {
@@ -66,20 +70,21 @@ class ProjectService(
             name = project.name,
             slug = project.slug,
             createdAt = project.createdAt,
-            updatedAt = project.updatedAt
+            updatedAt = project.updatedAt,
         )
     }
 
     fun deleteProject(projectId: Long) {
+        val userId = getUserId()
         val project = projectRepository.findByIdOrNull(projectId) ?: throw IllegalArgumentException("Project not found")
 
-        if (project.userId != getUserId())
+        if (project.userId != userId)
             throw IllegalArgumentException("No permissions for project")
 
         if (project.deletedAt != null)
             throw IllegalArgumentException("Project already deleted")
 
-        project.delete()
+        projectRepository.deleteById(projectId)
     }
 
     private fun getUserId() = securityHolder.getUserId()
