@@ -14,8 +14,6 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener
 import java.time.LocalDateTime
 
 @MappedSuperclass
-@EntityListeners(AuditingEntityListener::class)
-@SQLDelete(sql = "UPDATE #{#entityName} SET deleted_at = NOW() WHERE id = ?")
 @SQLRestriction("deleted_at IS NULL")
 abstract class BaseEntity(
     @Id
@@ -37,6 +35,10 @@ abstract class BaseEntity(
 
     fun activate() {
         deletedAt = null
+    }
+
+    fun delete() {
+        deletedAt = LocalDateTime.now()
     }
 
     val isDeleted: Boolean
