@@ -80,6 +80,7 @@ class ProjectServiceTest {
     @Test
     fun `프로젝트 삭제 시 deletedAt 필드가 null이 되지 않아야 한다`() {
         every { projectRepository.save(any()) } returnsArgument 0
+        every { projectRepository.deleteById(any()) } returnsArgument 0
 
         val project = projectRepository.save(
             ProjectEntity(
@@ -89,7 +90,7 @@ class ProjectServiceTest {
             )
         )
 
-        project.delete()
+        projectRepository.deleteById(project.id)
 
         assertThat(project.deletedAt).isNotNull
     }
