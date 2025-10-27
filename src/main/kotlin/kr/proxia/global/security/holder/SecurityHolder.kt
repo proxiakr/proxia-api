@@ -9,15 +9,8 @@ class SecurityHolder {
         val principal = SecurityContextHolder.getContext().authentication.principal
             ?: throw IllegalStateException("Authentication principal is null")
 
-        return principal as Long
+        return principal as? Long ?: throw IllegalStateException("Authentication principal is null")
     }
 
     fun isAuthenticated() = SecurityContextHolder.getContext().authentication.isAuthenticated
-//
-//    val userId: Long
-//        get() = SecurityContextHolder.getContext().authentication.principal?.let { it as? Long }
-//            ?: throw IllegalStateException("Authentication principal is null")
-//
-//    val isAuthenticated: Boolean
-//        get() = SecurityContextHolder.getContext().authentication.isAuthenticated
 }
