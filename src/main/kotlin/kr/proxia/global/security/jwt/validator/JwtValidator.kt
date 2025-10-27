@@ -16,6 +16,8 @@ class JwtValidator(
             .verifyWith(jwtProperties.secretKeySpec)
             .build()
             .parseSignedClaims(token)
+
+        Unit
     } catch (_: Exception) {
         throw IllegalArgumentException("Invalid token")
     }
