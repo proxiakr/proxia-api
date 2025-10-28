@@ -20,7 +20,7 @@ class ProjectService(
     private val securityHolder: SecurityHolder,
 ) {
     fun createProject(request: CreateProjectRequest) {
-        val userId = getUserId()
+        val userId = securityHolder.getUserId()
         val slug = request.slug
 
         if (projectRepository.existsBySlug(slug))
@@ -36,7 +36,7 @@ class ProjectService(
     }
 
     fun getProjects(offsetLimit: OffsetLimit): PageResponse<ProjectResponse> {
-        val userId = getUserId()
+        val userId = securityHolder.getUserId()
         val projects = projectRepository.findAllByUserId(userId, offsetLimit.toPageable())
 
         return projects.map { project ->
@@ -51,7 +51,7 @@ class ProjectService(
     }
 
     fun getProject(projectId: Long): ProjectDetailResponse {
-        val userId = getUserId()
+        val userId = securityHolder.getUserId()
         val user = userRepository.findByIdOrNull(userId) ?: throw IllegalArgumentException("User not found")
 
         val project = projectRepository.findByIdOrNull(projectId)
@@ -75,17 +75,15 @@ class ProjectService(
     }
 
     fun deleteProject(projectId: Long) {
-        val userId = getUserId()
+        val userId = securityHolder.getUserId()
         val project = projectRepository.findByIdOrNull(projectId) ?: throw IllegalArgumentException("Project not found")
 
         if (project.userId != userId)
             throw IllegalArgumentException("No permissions for project")
 
-        if (project.deletedAt != null)
+        if (project.isDeleted)
             throw IllegalArgumentException("Project already deleted")
 
-        projectRepository.deleteById(projectId)
+        project.delete()
     }
-
-    private fun getUserId() = securityHolder.getUserId()
 }
