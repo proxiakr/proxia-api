@@ -19,7 +19,7 @@ abstract class BaseEntity() {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
-    private val _id: Long? = null
+    private var _id: Long? = null
 
     val id get() = _id!!
 
