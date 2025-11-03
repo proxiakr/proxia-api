@@ -3,6 +3,7 @@ package kr.proxia.global.security.jwt.filter
 import jakarta.servlet.FilterChain
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
+import kr.proxia.global.security.jwt.extractor.JwtExtractor
 import kr.proxia.global.security.jwt.provider.JwtProvider
 import kr.proxia.global.security.jwt.validator.JwtValidator
 import org.springframework.http.HttpHeaders
@@ -14,7 +15,7 @@ import org.springframework.web.filter.OncePerRequestFilter
 
 @Component
 class JwtAuthenticationFilter(
-    private val jwtProvider: JwtProvider,
+    private val jwtExtractor: JwtExtractor,
     private val jwtValidator: JwtValidator,
 ) : OncePerRequestFilter() {
     override fun doFilterInternal(
@@ -27,8 +28,8 @@ class JwtAuthenticationFilter(
         if (token != null) {
             jwtValidator.validateToken(token)
 
-            val userId = jwtProvider.getSubject(token)
-            val role = jwtProvider.getRole(token)
+            val userId = jwtExtractor.getSubject(token)
+            val role = jwtExtractor.getRole(token)
 
             SecurityContextHolder.getContext().authentication = UsernamePasswordAuthenticationToken(userId, null, listOf(SimpleGrantedAuthority("ROLE_$role")))
         }
