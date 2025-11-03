@@ -1,6 +1,5 @@
 package kr.proxia.global.security.jwt.provider
 
-import io.jsonwebtoken.Claims
 import io.jsonwebtoken.JwtBuilder
 import io.jsonwebtoken.Jwts
 import kr.proxia.domain.user.domain.enums.UserRole
@@ -12,12 +11,6 @@ import org.springframework.stereotype.Component
 class JwtProvider(
     private val jwtProperties: JwtProperties,
 ) {
-    fun getSubject(token: String): Long = getPayload(token).subject.toLong()
-
-    fun getRole(token: String): UserRole = UserRole.valueOf(getPayload(token).getUpper(ROLE_KEY))
-
-    fun getType(token: String): JwtType = JwtType.valueOf(getPayload(token).getUpper(TYPE_KEY))
-
     fun createAccessToken(userId: Long, role: UserRole): String {
         return Jwts.builder()
             .subject(userId.toString())
@@ -35,15 +28,7 @@ class JwtProvider(
             .compact()
     }
 
-    private fun getPayload(token: String) = Jwts.parser()
-        .verifyWith(jwtProperties.secretKeySpec)
-        .build()
-        .parseSignedClaims(token)
-        .payload
-
     private fun JwtBuilder.lowerClaim(name: String, value: String) = this.claim(name, value.lowercase())
-
-    private fun Claims.getUpper(name: String) = this.get(name, String::class.java).uppercase()
 
     companion object {
         private const val ROLE_KEY = "role"
