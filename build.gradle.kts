@@ -25,9 +25,9 @@ dependencies {
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
 
-    testImplementation("io.kotest:kotest-runner-junit5:6.0.4")
-    testImplementation("io.kotest:kotest-assertions-core:6.0.4")
-    testImplementation("io.kotest:kotest-framework-engine:6.0.4")
+    testImplementation("io.kotest:kotest-runner-junit5:5.9.1")
+    testImplementation("io.kotest:kotest-assertions-core:5.9.1")
+    testImplementation("io.kotest:kotest-framework-engine:5.9.1")
 
     implementation("io.jsonwebtoken:jjwt-api:0.12.6")
     runtimeOnly("io.jsonwebtoken:jjwt-impl:0.12.6")
