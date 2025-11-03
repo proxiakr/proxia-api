@@ -15,6 +15,7 @@ import kr.proxia.domain.user.domain.entity.UserEntity
 import kr.proxia.domain.user.domain.enums.OAuthProvider
 import kr.proxia.domain.user.domain.repository.UserRepository
 import kr.proxia.global.security.holder.SecurityHolder
+import kr.proxia.global.security.jwt.extractor.JwtExtractor
 import kr.proxia.global.security.jwt.properties.JwtProperties
 import kr.proxia.global.security.jwt.provider.JwtProvider
 import kr.proxia.global.security.jwt.validator.JwtValidator
@@ -34,6 +35,7 @@ class AuthService(
     private val refreshTokenRepository: RefreshTokenRepository,
     private val jwtValidator: JwtValidator,
     private val jwtProvider: JwtProvider,
+    private val jwtExtractor: JwtExtractor,
     private val jwtProperties: JwtProperties,
     private val securityHolder: SecurityHolder,
     private val passwordEncoder: PasswordEncoder,
@@ -110,7 +112,7 @@ class AuthService(
     fun reissue(request: ReissueRequest): ReissueResponse {
         jwtValidator.validateRefreshToken(request.refreshToken)
 
-        val userId = jwtProvider.getSubject(request.refreshToken)
+        val userId = jwtExtractor.getSubject(request.refreshToken)
         val user = userRepository.findByIdOrNull(userId)
             ?: throw IllegalArgumentException("User not found")
 
