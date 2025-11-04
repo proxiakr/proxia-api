@@ -8,6 +8,20 @@ import kr.proxia.global.jpa.common.BaseEntity
 @Table(name = "projects")
 class ProjectEntity(
     val userId: Long,
-    val name: String,
-    val slug: String,
-) : BaseEntity()
+    name: String,
+    slug: String,
+) : BaseEntity() {
+    var slug: String = slug
+        protected set
+
+    var name: String = name
+        protected set
+
+    fun update(
+        name: String = this.name,
+        slug: String = this.slug,
+    ) {
+        this.name = name
+        this.slug = slug
+    }
+}
