@@ -8,7 +8,10 @@ import org.springframework.web.reactive.function.client.WebClient
 import org.springframework.web.reactive.function.client.bodyToMono
 
 @Component
-class GithubOAuthClient(private val webClient: WebClient, private val githubOAuthProperties: GithubOAuthProperties) {
+class GithubOAuthClient(
+    private val webClient: WebClient,
+    private val githubOAuthProperties: GithubOAuthProperties,
+) {
     fun getUserInfo(code: String): GithubUserInfo {
         val accessToken = webClient.post()
             .uri("https://github.com/login/oauth/access_token")

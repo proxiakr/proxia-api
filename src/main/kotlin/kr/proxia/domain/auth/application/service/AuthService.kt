@@ -15,6 +15,7 @@ import kr.proxia.domain.user.domain.entity.UserEntity
 import kr.proxia.domain.user.domain.enums.OAuthProvider
 import kr.proxia.domain.user.domain.repository.UserRepository
 import kr.proxia.global.security.holder.SecurityHolder
+import kr.proxia.global.security.jwt.extractor.JwtExtractor
 import kr.proxia.global.security.jwt.properties.JwtProperties
 import kr.proxia.global.security.jwt.provider.JwtProvider
 import kr.proxia.global.security.jwt.validator.JwtValidator
@@ -28,15 +29,16 @@ import java.time.temporal.ChronoUnit
 
 @Service
 class AuthService(
-    private val jwtProvider: JwtProvider,
-    private val userRepository: UserRepository,
     private val googleOAuthClient: GoogleOAuthClient,
     private val githubOAuthClient: GithubOAuthClient,
-    private val securityHolder: SecurityHolder,
+    private val userRepository: UserRepository,
     private val refreshTokenRepository: RefreshTokenRepository,
     private val jwtValidator: JwtValidator,
+    private val jwtProvider: JwtProvider,
+    private val jwtExtractor: JwtExtractor,
+    private val jwtProperties: JwtProperties,
+    private val securityHolder: SecurityHolder,
     private val passwordEncoder: PasswordEncoder,
-    private val jwtProperties: JwtProperties
 ) {
     fun googleLogin(request: GoogleLoginRequest): LoginResponse {
         val userInfo = googleOAuthClient.getUserInfo(request.idToken)
@@ -47,7 +49,7 @@ class AuthService(
                     name = userInfo.name,
                     avatarUrl = userInfo.picture,
                     provider = OAuthProvider.GOOGLE,
-                    providerId = userInfo.sub
+                    providerId = userInfo.sub,
                 )
             )
 
@@ -63,7 +65,7 @@ class AuthService(
                     name = userInfo.name ?: userInfo.login,
                     avatarUrl = userInfo.avatarUrl,
                     provider = OAuthProvider.GITHUB,
-                    providerId = userInfo.id.toString()
+                    providerId = userInfo.id.toString(),
                 )
             )
 
@@ -83,7 +85,7 @@ class AuthService(
                 email = request.email,
                 name = request.name,
                 password = passwordEncoder.encode(request.password),
-                provider = OAuthProvider.LOCAL
+                provider = OAuthProvider.LOCAL,
             )
         )
     }
@@ -110,18 +112,19 @@ class AuthService(
     fun reissue(request: ReissueRequest): ReissueResponse {
         jwtValidator.validateRefreshToken(request.refreshToken)
 
-        val userId = jwtProvider.getSubject(request.refreshToken)
+        val userId = jwtExtractor.getSubject(request.refreshToken)
         val user = userRepository.findByIdOrNull(userId)
             ?: throw IllegalArgumentException("User not found")
 
-        val refreshToken = refreshTokenRepository.findByUserIdAndRefreshToken(user.id, request.refreshToken) ?: throw IllegalArgumentException("Refresh token not found")
+        val refreshToken = refreshTokenRepository.findByUserIdAndRefreshToken(user.id, request.refreshToken)
+            ?: throw IllegalArgumentException("Refresh token not found")
 
         val newRefreshToken = jwtProvider.createRefreshToken(user.id)
         refreshToken.update(refreshToken = newRefreshToken)
 
         return ReissueResponse(
             accessToken = jwtProvider.createAccessToken(user.id, user.role),
-            refreshToken = newRefreshToken
+            refreshToken = newRefreshToken,
         )
     }
 
@@ -138,8 +141,13 @@ class AuthService(
         val accessToken = jwtProvider.createAccessToken(user.id, user.role)
         val refreshToken = jwtProvider.createRefreshToken(user.id)
 
-        refreshTokenRepository.save(RefreshTokenEntity(user.id, refreshToken, expiresAt = LocalDateTime.now().plus(jwtProperties.refreshTokenExpiration,
-            ChronoUnit.MILLIS)))
+        refreshTokenRepository.save(
+            RefreshTokenEntity(
+                userId = user.id,
+                refreshToken = refreshToken,
+                expiresAt = LocalDateTime.now().plus(jwtProperties.refreshTokenExpiration, ChronoUnit.MILLIS),
+            )
+        )
 
         return accessToken to refreshToken
     }
@@ -154,8 +162,8 @@ class AuthService(
                 id = user.id,
                 email = user.email,
                 name = user.name,
-                avatarUrl = user.avatarUrl
-            )
+                avatarUrl = user.avatarUrl,
+            ),
         )
     }
 }

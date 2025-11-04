@@ -8,5 +8,5 @@ data class GithubUserInfo(
     val name: String?,
     val email: String,
     @field:JsonProperty("avatar_url")
-    val avatarUrl: String?
+    val avatarUrl: String?,
 )

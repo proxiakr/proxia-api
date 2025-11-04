@@ -10,7 +10,10 @@ import org.springframework.web.bind.annotation.RestController
 
 @RestController
 @RequestMapping("/api/v1/git/integrations")
-class GitIntegrationController(private val gitIntegrationService: GitIntegrationService) : GitIntegrationDocs {
+class GitIntegrationController(
+    private val gitIntegrationService: GitIntegrationService,
+) : GitIntegrationDocs {
     @PostMapping
-    override fun createGitIntegration(@RequestBody request: CreateGitIntegrationRequest) = gitIntegrationService.createGitIntegration(request)
+    override fun createGitIntegration(@RequestBody request: CreateGitIntegrationRequest) =
+        gitIntegrationService.createGitIntegration(request)
 }

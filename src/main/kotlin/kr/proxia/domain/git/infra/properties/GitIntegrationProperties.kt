@@ -4,7 +4,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties
 
 @ConfigurationProperties(prefix = "git.integration")
 data class GitIntegrationProperties(
-    val github: Github
+    val github: Github,
 ) {
     data class Github(
         val clientId: String,

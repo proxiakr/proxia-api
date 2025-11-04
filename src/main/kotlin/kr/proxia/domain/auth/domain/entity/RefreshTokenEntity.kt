@@ -10,8 +10,8 @@ import java.time.LocalDateTime
 class RefreshTokenEntity(
     val userId: Long,
     refreshToken: String,
-    val expiresAt: LocalDateTime
-): BaseEntity() {
+    val expiresAt: LocalDateTime,
+) : BaseEntity() {
     var refreshToken = refreshToken
         protected set
 

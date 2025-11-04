@@ -28,7 +28,7 @@ class UserEntity(
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     val provider: OAuthProvider,
-    val providerId: String? = null
+    val providerId: String? = null,
 ) : BaseEntity() {
     var password: String? = password
         protected set

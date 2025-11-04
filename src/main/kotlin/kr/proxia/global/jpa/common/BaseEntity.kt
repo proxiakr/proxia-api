@@ -6,33 +6,34 @@ import jakarta.persistence.GeneratedValue
 import jakarta.persistence.GenerationType
 import jakarta.persistence.Id
 import jakarta.persistence.MappedSuperclass
-import org.hibernate.annotations.CreationTimestamp
-import org.hibernate.annotations.SQLDelete
 import org.hibernate.annotations.SQLRestriction
-import org.hibernate.annotations.UpdateTimestamp
+import org.springframework.data.annotation.CreatedDate
+import org.springframework.data.annotation.LastModifiedDate
 import org.springframework.data.jpa.domain.support.AuditingEntityListener
 import java.time.LocalDateTime
 
 @MappedSuperclass
-@EntityListeners(AuditingEntityListener::class)
-@SQLDelete(sql = "UPDATE #{#entityName} SET deleted_at = NOW() WHERE id = ?")
 @SQLRestriction("deleted_at IS NULL")
-abstract class BaseEntity(
+@EntityListeners(AuditingEntityListener::class)
+abstract class BaseEntity() {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    val id: Long = 0,
+    @Column(name = "id", nullable = false)
+    private var _id: Long? = null
 
-    @CreationTimestamp
-    @Column(nullable = false, updatable = false)
-    val createdAt: LocalDateTime = LocalDateTime.MIN,
+    val id get() = _id!!
 
-    @UpdateTimestamp
-    @Column(nullable = false)
-    val updatedAt: LocalDateTime = LocalDateTime.MIN,
+    @CreatedDate
+    @Column(name = "created_at", nullable = false, updatable = false)
+    lateinit var createdAt: LocalDateTime
+        protected set
 
-    deletedAt: LocalDateTime? = null,
-) {
-    var deletedAt: LocalDateTime? = deletedAt
+    @LastModifiedDate
+    @Column(name = "updated_at", nullable = false)
+    lateinit var updatedAt: LocalDateTime
+        protected set
+
+    var deletedAt: LocalDateTime? = null
         protected set
 
     fun activate() {

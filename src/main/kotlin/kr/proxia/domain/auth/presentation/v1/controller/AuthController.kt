@@ -15,7 +15,9 @@ import org.springframework.web.bind.annotation.RestController
 
 @RestController
 @RequestMapping("/api/v1/auth")
-class AuthController(private val authService: AuthService) : AuthDocs {
+class AuthController(
+    private val authService: AuthService,
+) : AuthDocs {
     @PostMapping("/login/google")
     override fun googleLogin(@RequestBody request: GoogleLoginRequest) = authService.googleLogin(request)
 
