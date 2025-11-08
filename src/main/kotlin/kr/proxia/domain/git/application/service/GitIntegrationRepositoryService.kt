@@ -3,7 +3,7 @@ package kr.proxia.domain.git.application.service
 import kr.proxia.domain.git.domain.enums.GitIntegrationProvider
 import kr.proxia.domain.git.domain.repository.GitIntegrationRepository
 import kr.proxia.domain.git.infra.client.GithubRepositoryClient
-import kr.proxia.domain.git.presentation.v1.response.GitIntegrationRepositoryResponse
+import kr.proxia.domain.git.presentation.response.GitIntegrationRepositoryResponse
 import kr.proxia.global.security.holder.SecurityHolder
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
