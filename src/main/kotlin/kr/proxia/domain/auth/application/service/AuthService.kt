@@ -2,15 +2,15 @@ package kr.proxia.domain.auth.application.service
 
 import kr.proxia.domain.auth.domain.entity.RefreshTokenEntity
 import kr.proxia.domain.auth.domain.repository.RefreshTokenRepository
-import kr.proxia.domain.auth.presentation.v1.request.CheckEmailRequest
-import kr.proxia.domain.auth.presentation.v1.request.GithubLoginRequest
-import kr.proxia.domain.auth.presentation.v1.request.GoogleLoginRequest
-import kr.proxia.domain.auth.presentation.v1.request.LoginRequest
-import kr.proxia.domain.auth.presentation.v1.request.RegisterRequest
-import kr.proxia.domain.auth.presentation.v1.request.ReissueRequest
-import kr.proxia.domain.auth.presentation.v1.response.CheckEmailResponse
-import kr.proxia.domain.auth.presentation.v1.response.LoginResponse
-import kr.proxia.domain.auth.presentation.v1.response.ReissueResponse
+import kr.proxia.domain.auth.presentation.request.CheckEmailRequest
+import kr.proxia.domain.auth.presentation.request.GithubLoginRequest
+import kr.proxia.domain.auth.presentation.request.GoogleLoginRequest
+import kr.proxia.domain.auth.presentation.request.LoginRequest
+import kr.proxia.domain.auth.presentation.request.RegisterRequest
+import kr.proxia.domain.auth.presentation.request.ReissueRequest
+import kr.proxia.domain.auth.presentation.response.CheckEmailResponse
+import kr.proxia.domain.auth.presentation.response.LoginResponse
+import kr.proxia.domain.auth.presentation.response.ReissueResponse
 import kr.proxia.domain.user.domain.entity.UserEntity
 import kr.proxia.domain.user.domain.enums.OAuthProvider
 import kr.proxia.domain.user.domain.repository.UserRepository

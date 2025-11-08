@@ -2,9 +2,9 @@ package kr.proxia.domain.project.application.service
 
 import kr.proxia.domain.project.domain.entity.ProjectEntity
 import kr.proxia.domain.project.domain.repository.ProjectRepository
-import kr.proxia.domain.project.presentation.v1.request.CreateProjectRequest
-import kr.proxia.domain.project.presentation.v1.response.ProjectDetailResponse
-import kr.proxia.domain.project.presentation.v1.response.ProjectResponse
+import kr.proxia.domain.project.presentation.request.CreateProjectRequest
+import kr.proxia.domain.project.presentation.response.ProjectDetailResponse
+import kr.proxia.domain.project.presentation.response.ProjectResponse
 import kr.proxia.domain.user.domain.repository.UserRepository
 import kr.proxia.global.response.OffsetLimit
 import kr.proxia.global.response.PageResponse
