@@ -1,9 +1,11 @@
 package kr.proxia.domain.git.application.service
 
 import kr.proxia.domain.git.domain.enums.GitIntegrationProvider
+import kr.proxia.domain.git.domain.error.GitError
 import kr.proxia.domain.git.domain.repository.GitIntegrationRepository
 import kr.proxia.domain.git.infra.client.GithubRepositoryClient
 import kr.proxia.domain.git.presentation.response.GitIntegrationRepositoryResponse
+import kr.proxia.global.error.BusinessException
 import kr.proxia.global.security.holder.SecurityHolder
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
@@ -17,10 +19,10 @@ class GitIntegrationRepositoryService(
     fun getRepositories(gitIntegrationId: Long): List<GitIntegrationRepositoryResponse> {
         val userId = securityHolder.getUserId()
         val gitIntegration = gitIntegrationRepository.findByIdOrNull(gitIntegrationId)
-            ?: throw IllegalArgumentException("Git integration not found")
+            ?: throw BusinessException(GitError.GIT_INTEGRATION_NOT_FOUND)
 
         if (gitIntegration.userId != userId)
-            throw IllegalAccessException("You do not have access to this git integration")
+            throw BusinessException(GitError.GIT_INTEGRATION_ACCESS_DENIED)
 
         val repositories = when (gitIntegration.provider) {
             GitIntegrationProvider.GITHUB -> {
@@ -29,7 +31,7 @@ class GitIntegrationRepositoryService(
                 GitIntegrationRepositoryResponse.of(repositories)
             }
 
-            else -> throw IllegalArgumentException("Unsupported provider")
+            else -> throw BusinessException(GitError.UNSUPPORTED_GIT_PROVIDER)
         }
 
         return repositories

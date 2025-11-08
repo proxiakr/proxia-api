@@ -2,9 +2,11 @@ package kr.proxia.domain.git.application.service
 
 import kr.proxia.domain.git.domain.entity.GitIntegrationEntity
 import kr.proxia.domain.git.domain.enums.GitIntegrationProvider
+import kr.proxia.domain.git.domain.error.GitError
 import kr.proxia.domain.git.domain.repository.GitIntegrationRepository
 import kr.proxia.domain.git.infra.client.GitIntegrationClient
 import kr.proxia.domain.git.presentation.request.CreateGitIntegrationRequest
+import kr.proxia.global.error.BusinessException
 import kr.proxia.global.security.holder.SecurityHolder
 import org.springframework.stereotype.Service
 import org.springframework.web.reactive.function.client.WebClient
@@ -30,7 +32,7 @@ class GitIntegrationService(
                 )
             }
 
-            else -> throw IllegalArgumentException("Unsupported provider")
+            else -> throw BusinessException(GitError.UNSUPPORTED_GIT_PROVIDER)
         }
 
         gitIntegrationRepository.save(gitIntegration)

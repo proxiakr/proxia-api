@@ -1,6 +1,8 @@
 package kr.proxia.global.security.jwt.validator
 
 import io.jsonwebtoken.Jwts
+import kr.proxia.domain.auth.domain.error.AuthError
+import kr.proxia.global.error.BusinessException
 import kr.proxia.global.security.jwt.enums.JwtType
 import kr.proxia.global.security.jwt.extractor.JwtExtractor
 import kr.proxia.global.security.jwt.properties.JwtProperties
@@ -19,13 +21,13 @@ class JwtValidator(
 
         Unit
     } catch (_: Exception) {
-        throw IllegalArgumentException("Invalid token")
+        throw BusinessException(AuthError.INVALID_TOKEN)
     }
 
     fun validateRefreshToken(refreshToken: String) {
         validateToken(refreshToken)
 
         if (jwtExtractor.getType(refreshToken) != JwtType.REFRESH)
-            throw IllegalArgumentException("Invalid token type")
+            throw BusinessException(AuthError.INVALID_TOKEN)
     }
 }

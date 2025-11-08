@@ -1,5 +1,7 @@
 package kr.proxia.global.security.oauth2.github.client
 
+import kr.proxia.domain.auth.domain.error.AuthError
+import kr.proxia.global.error.BusinessException
 import kr.proxia.global.security.oauth2.github.data.GithubTokenResponse
 import kr.proxia.global.security.oauth2.github.data.GithubUserInfo
 import kr.proxia.global.security.oauth2.github.properties.GithubOAuthProperties
@@ -25,14 +27,14 @@ class GithubOAuthClient(
             )
             .retrieve()
             .bodyToMono<GithubTokenResponse>()
-            .block()?.accessToken ?: throw IllegalArgumentException("Access token is invalid")
+            .block()?.accessToken ?: throw BusinessException(AuthError.INVALID_TOKEN)
 
         val userInfo = webClient.get()
             .uri("https://api.github.com/user")
             .header("Authorization", "Bearer $accessToken")
             .retrieve()
             .bodyToMono<GithubUserInfo>()
-            .block() ?: throw IllegalArgumentException("Failed to fetch user info")
+            .block() ?: throw BusinessException(AuthError.INVALID_CREDENTIALS)
 
         return userInfo
     }
