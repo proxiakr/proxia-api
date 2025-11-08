@@ -1,6 +1,7 @@
 package kr.proxia.domain.auth.application.service
 
 import kr.proxia.domain.auth.domain.entity.RefreshTokenEntity
+import kr.proxia.domain.auth.domain.error.AuthError
 import kr.proxia.domain.auth.domain.repository.RefreshTokenRepository
 import kr.proxia.domain.auth.presentation.request.CheckEmailRequest
 import kr.proxia.domain.auth.presentation.request.GithubLoginRequest
@@ -13,7 +14,9 @@ import kr.proxia.domain.auth.presentation.response.LoginResponse
 import kr.proxia.domain.auth.presentation.response.ReissueResponse
 import kr.proxia.domain.user.domain.entity.UserEntity
 import kr.proxia.domain.user.domain.enums.OAuthProvider
+import kr.proxia.domain.user.domain.error.UserError
 import kr.proxia.domain.user.domain.repository.UserRepository
+import kr.proxia.global.error.BusinessException
 import kr.proxia.global.security.holder.SecurityHolder
 import kr.proxia.global.security.jwt.extractor.JwtExtractor
 import kr.proxia.global.security.jwt.properties.JwtProperties
@@ -74,7 +77,7 @@ class AuthService(
 
     fun register(request: RegisterRequest) {
         if (userRepository.existsByEmail(request.email))
-            throw IllegalArgumentException("Email already exists")
+            throw BusinessException(UserError.EMAIL_ALREADY_EXISTS)
 
         /**
          * TODO: Validates
@@ -92,13 +95,13 @@ class AuthService(
 
     fun login(request: LoginRequest): LoginResponse {
         val user = userRepository.findByEmail(request.email)
-            ?: throw IllegalArgumentException("User not found")
+            ?: throw BusinessException(UserError.USER_NOT_FOUND)
 
         if (user.provider != OAuthProvider.LOCAL)
-            throw IllegalArgumentException("User is registered with ${user.provider} provider")
+            throw BusinessException(UserError.INVALID_OAUTH_PROVIDER, user.provider)
 
         if (!passwordEncoder.matches(request.password, user.password))
-            throw IllegalArgumentException("Invalid password")
+            throw BusinessException(AuthError.INVALID_PASSWORD)
 
         return generateLoginResponse(user)
     }
@@ -114,10 +117,10 @@ class AuthService(
 
         val userId = jwtExtractor.getSubject(request.refreshToken)
         val user = userRepository.findByIdOrNull(userId)
-            ?: throw IllegalArgumentException("User not found")
+            ?: throw BusinessException(UserError.USER_NOT_FOUND)
 
         val refreshToken = refreshTokenRepository.findByUserIdAndRefreshToken(user.id, request.refreshToken)
-            ?: throw IllegalArgumentException("Refresh token not found")
+            ?: throw BusinessException(AuthError.REFRESH_TOKEN_NOT_FOUND)
 
         val newRefreshToken = jwtProvider.createRefreshToken(user.id)
         refreshToken.update(refreshToken = newRefreshToken)
@@ -132,7 +135,7 @@ class AuthService(
         val userId = securityHolder.getUserId()
 
         if (!userRepository.existsById(userId))
-            throw IllegalArgumentException("User not found")
+            throw BusinessException(UserError.USER_NOT_FOUND)
 
         refreshTokenRepository.deleteByUserId(userId)
     }

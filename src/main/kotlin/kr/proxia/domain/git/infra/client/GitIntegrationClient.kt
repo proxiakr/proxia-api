@@ -1,7 +1,9 @@
 package kr.proxia.domain.git.infra.client
 
+import kr.proxia.domain.auth.domain.error.AuthError
 import kr.proxia.domain.git.infra.data.ExchangeGithubCodeResponse
 import kr.proxia.domain.git.infra.properties.GitIntegrationProperties
+import kr.proxia.global.error.BusinessException
 import org.springframework.stereotype.Component
 import org.springframework.web.reactive.function.client.WebClient
 import org.springframework.web.reactive.function.client.bodyToMono
@@ -22,7 +24,7 @@ class GitIntegrationClient(
             .header("Accept", "application/json")
             .retrieve()
             .bodyToMono<ExchangeGithubCodeResponse>()
-            .block() ?: throw IllegalArgumentException("Failed to exchange code for access token")
+            .block() ?: throw BusinessException(AuthError.INVALID_TOKEN)
 
         return response
     }

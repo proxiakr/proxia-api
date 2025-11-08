@@ -1,11 +1,14 @@
 package kr.proxia.domain.project.application.service
 
 import kr.proxia.domain.project.domain.entity.ProjectEntity
+import kr.proxia.domain.project.domain.error.ProjectError
 import kr.proxia.domain.project.domain.repository.ProjectRepository
 import kr.proxia.domain.project.presentation.request.CreateProjectRequest
 import kr.proxia.domain.project.presentation.response.ProjectDetailResponse
 import kr.proxia.domain.project.presentation.response.ProjectResponse
+import kr.proxia.domain.user.domain.error.UserError
 import kr.proxia.domain.user.domain.repository.UserRepository
+import kr.proxia.global.error.BusinessException
 import kr.proxia.global.response.OffsetLimit
 import kr.proxia.global.response.PageResponse
 import kr.proxia.global.response.toResponse
@@ -24,7 +27,7 @@ class ProjectService(
         val slug = request.slug
 
         if (projectRepository.existsBySlug(slug))
-            throw IllegalArgumentException("Slug already exists")
+            throw BusinessException(ProjectError.SLUG_ALREADY_EXISTS)
 
         projectRepository.save(
             ProjectEntity(
@@ -52,13 +55,13 @@ class ProjectService(
 
     fun getProject(projectId: Long): ProjectDetailResponse {
         val userId = securityHolder.getUserId()
-        val user = userRepository.findByIdOrNull(userId) ?: throw IllegalArgumentException("User not found")
+        val user = userRepository.findByIdOrNull(userId) ?: throw BusinessException(UserError.USER_NOT_FOUND)
 
         val project = projectRepository.findByIdOrNull(projectId)
-            ?: throw IllegalArgumentException("Project does not exist")
+            ?: throw BusinessException(ProjectError.PROJECT_NOT_FOUND)
 
         if (project.userId != userId)
-            throw IllegalArgumentException("Project does not belong to user")
+            throw BusinessException(ProjectError.PROJECT_ACCESS_DENIED)
 
         return ProjectDetailResponse(
             id = project.id,
@@ -76,13 +79,13 @@ class ProjectService(
 
     fun deleteProject(projectId: Long) {
         val userId = securityHolder.getUserId()
-        val project = projectRepository.findByIdOrNull(projectId) ?: throw IllegalArgumentException("Project not found")
+        val project = projectRepository.findByIdOrNull(projectId) ?: throw BusinessException(ProjectError.PROJECT_NOT_FOUND)
 
         if (project.userId != userId)
-            throw IllegalArgumentException("No permissions for project")
+            throw BusinessException(ProjectError.PROJECT_ACCESS_DENIED)
 
         if (project.isDeleted)
-            throw IllegalArgumentException("Project already deleted")
+            throw BusinessException(ProjectError.PROJECT_ALREADY_DELETED)
 
         project.delete()
     }
