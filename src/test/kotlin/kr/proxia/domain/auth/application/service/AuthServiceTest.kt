@@ -11,16 +11,19 @@ import io.mockk.slot
 import io.mockk.verify
 import kr.proxia.domain.auth.domain.entity.RefreshTokenEntity
 import kr.proxia.domain.auth.domain.repository.RefreshTokenRepository
-import kr.proxia.domain.auth.presentation.v1.request.CheckEmailRequest
-import kr.proxia.domain.auth.presentation.v1.request.GithubLoginRequest
-import kr.proxia.domain.auth.presentation.v1.request.GoogleLoginRequest
-import kr.proxia.domain.auth.presentation.v1.request.LoginRequest
-import kr.proxia.domain.auth.presentation.v1.request.RegisterRequest
-import kr.proxia.domain.auth.presentation.v1.request.ReissueRequest
+import kr.proxia.domain.auth.domain.error.AuthError
+import kr.proxia.domain.auth.presentation.request.CheckEmailRequest
+import kr.proxia.domain.auth.presentation.request.GithubLoginRequest
+import kr.proxia.domain.auth.presentation.request.GoogleLoginRequest
+import kr.proxia.domain.auth.presentation.request.LoginRequest
+import kr.proxia.domain.auth.presentation.request.RegisterRequest
+import kr.proxia.domain.auth.presentation.request.ReissueRequest
 import kr.proxia.domain.user.domain.entity.UserEntity
 import kr.proxia.domain.user.domain.enums.OAuthProvider
 import kr.proxia.domain.user.domain.enums.UserRole
 import kr.proxia.domain.user.domain.repository.UserRepository
+import kr.proxia.domain.user.domain.error.UserError
+import kr.proxia.global.error.BusinessException
 import kr.proxia.global.security.holder.SecurityHolder
 import kr.proxia.global.security.jwt.extractor.JwtExtractor
 import kr.proxia.global.security.jwt.properties.JwtProperties
@@ -256,9 +259,10 @@ class AuthServiceTest :
                 every { userRepository.existsByEmail(request.email) } returns true
 
                 Then("예외 발생") {
-                    shouldThrow<IllegalArgumentException> {
+                    val exception = shouldThrow<BusinessException> {
                         authService.register(request)
-                    }.message shouldBe "Email already exists"
+                    }
+                    exception.error shouldBe UserError.EMAIL_ALREADY_EXISTS
                 }
             }
         }
@@ -302,9 +306,10 @@ class AuthServiceTest :
                 every { userRepository.findByEmail(request.email) } returns null
 
                 Then("예외 발생") {
-                    shouldThrow<IllegalArgumentException> {
+                    val exception = shouldThrow<BusinessException> {
                         authService.login(request)
-                    }.message shouldBe "User not found"
+                    }
+                    exception.error shouldBe UserError.USER_NOT_FOUND
                 }
             }
 
@@ -318,9 +323,10 @@ class AuthServiceTest :
                 every { userRepository.findByEmail(request.email) } returns user
 
                 Then("예외 발생") {
-                    shouldThrow<IllegalArgumentException> {
+                    val exception = shouldThrow<BusinessException> {
                         authService.login(request)
-                    }.message shouldBe "User is registered with GOOGLE provider"
+                    }
+                    exception.error shouldBe UserError.INVALID_OAUTH_PROVIDER
                 }
             }
 
@@ -336,9 +342,10 @@ class AuthServiceTest :
                 every { passwordEncoder.matches(request.password, "encoded-password") } returns false
 
                 Then("예외 발생") {
-                    shouldThrow<IllegalArgumentException> {
+                    val exception = shouldThrow<BusinessException> {
                         authService.login(request)
-                    }.message shouldBe "Invalid password"
+                    }
+                    exception.error shouldBe AuthError.INVALID_PASSWORD
                 }
             }
         }
@@ -407,9 +414,10 @@ class AuthServiceTest :
                 every { userRepository.findByIdOrNull(userId) } returns null
 
                 Then("예외 발생") {
-                    shouldThrow<IllegalArgumentException> {
+                    val exception = shouldThrow<BusinessException> {
                         authService.reissue(request)
-                    }.message shouldBe "User not found"
+                    }
+                    exception.error shouldBe UserError.USER_NOT_FOUND
                 }
             }
 
@@ -425,9 +433,10 @@ class AuthServiceTest :
                 every { refreshTokenRepository.findByUserIdAndRefreshToken(userId, request.refreshToken) } returns null
 
                 Then("예외 발생") {
-                    shouldThrow<IllegalArgumentException> {
+                    val exception = shouldThrow<BusinessException> {
                         authService.reissue(request)
-                    }.message shouldBe "Refresh token not found"
+                    }
+                    exception.error shouldBe AuthError.REFRESH_TOKEN_NOT_FOUND
                 }
             }
         }
@@ -452,9 +461,10 @@ class AuthServiceTest :
                 every { userRepository.existsById(userId) } returns false
 
                 Then("예외 발생") {
-                    shouldThrow<IllegalArgumentException> {
+                    val exception = shouldThrow<BusinessException> {
                         authService.logout()
-                    }.message shouldBe "User not found"
+                    }
+                    exception.error shouldBe UserError.USER_NOT_FOUND
                 }
             }
         }
