@@ -1,101 +1,255 @@
 package kr.proxia.domain.project.application.service
 
+import io.kotest.assertions.throwables.shouldThrow
+import io.kotest.core.spec.style.BehaviorSpec
+import io.kotest.matchers.shouldBe
+import io.mockk.Runs
 import io.mockk.every
+import io.mockk.just
 import io.mockk.mockk
+import io.mockk.slot
+import io.mockk.verify
 import kr.proxia.domain.project.domain.entity.ProjectEntity
+import kr.proxia.domain.project.domain.error.ProjectError
 import kr.proxia.domain.project.domain.repository.ProjectRepository
+import kr.proxia.domain.project.presentation.request.CreateProjectRequest
+import kr.proxia.domain.user.domain.entity.UserEntity
+import kr.proxia.domain.user.domain.error.UserError
 import kr.proxia.domain.user.domain.repository.UserRepository
+import kr.proxia.global.error.BusinessException
+import kr.proxia.global.response.OffsetLimit
 import kr.proxia.global.security.holder.SecurityHolder
-import org.assertj.core.api.Assertions.assertThat
-import org.junit.jupiter.api.BeforeEach
-import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.assertThrows
+import org.springframework.data.domain.PageImpl
+import org.springframework.data.domain.PageRequest
 import org.springframework.data.repository.findByIdOrNull
+import java.time.LocalDateTime
 
-class ProjectServiceTest {
-    private lateinit var projectService: ProjectService
-    private lateinit var userRepository: UserRepository
-    private lateinit var projectRepository: ProjectRepository
-    private lateinit var securityHolder: SecurityHolder
-    private val userId = 1L
+class ProjectServiceTest :
+    BehaviorSpec({
+        val userRepository = mockk<UserRepository>()
+        val projectRepository = mockk<ProjectRepository>()
+        val securityHolder = mockk<SecurityHolder>()
 
-    @BeforeEach
-    fun setUp() {
-        userRepository = mockk<UserRepository>()
-        projectRepository = mockk<ProjectRepository>()
-        securityHolder = mockk<SecurityHolder>()
-        projectService = ProjectService(userRepository, projectRepository, securityHolder)
-    }
+        val projectService = ProjectService(userRepository, projectRepository, securityHolder)
 
-    @Test
-    fun `프로젝트 생성 시 ID가 생성되어야 한다`() {
-        every { projectRepository.save(any()) } returnsArgument 0
+        Given("createProject") {
+            val userId = 1L
+            val request =
+                CreateProjectRequest(
+                    name = "Test Project",
+                    slug = "test-project",
+                )
 
-        val project =
-            projectRepository.save(
-                ProjectEntity(
-                    userId = userId,
-                    name = "name",
-                    slug = "slug",
-                ),
-            )
+            When("유효한 요청") {
+                val projectSlot = slot<ProjectEntity>()
+                every { securityHolder.getUserId() } returns userId
+                every { projectRepository.existsBySlug(request.slug) } returns false
+                every { projectRepository.save(capture(projectSlot)) } returns mockk(relaxed = true)
 
-        assertThat(project.id).isNotNull
-    }
+                projectService.createProject(request)
 
-    @Test
-    fun `프로젝트 조회 시 생성자가 아니면 조회할 수 없다`() {
-        every { projectRepository.save(any()) } returnsArgument 0
-        every { projectRepository.findByIdOrNull(any()) } returnsArgument 0
-        every { userRepository.findByIdOrNull(any()) } returnsArgument 0
-        every { securityHolder.getUserId() } returns userId
+                Then("프로젝트 생성") {
+                    projectSlot.captured.userId shouldBe userId
+                    projectSlot.captured.name shouldBe request.name
+                    projectSlot.captured.slug shouldBe request.slug
+                }
+            }
 
-        val project =
-            projectRepository.save(
-                ProjectEntity(
-                    userId = 2L,
-                    name = "name",
-                    slug = "slug",
-                ),
-            )
+            When("이미 존재하는 slug") {
+                every { securityHolder.getUserId() } returns userId
+                every { projectRepository.existsBySlug(request.slug) } returns true
 
-        assertThrows<IllegalArgumentException> { projectService.getProject(project.id) }
-    }
+                Then("예외 발생") {
+                    val exception =
+                        shouldThrow<BusinessException> {
+                            projectService.createProject(request)
+                        }
+                    exception.error shouldBe ProjectError.SLUG_ALREADY_EXISTS
+                }
+            }
+        }
 
-    @Test
-    fun `프로젝트 생성자가 아니라면 프로젝트를 삭제할 수 없다`() {
-        every { securityHolder.getUserId() } returns userId
-        every { projectRepository.findByIdOrNull(any()) } returnsArgument 0
-        every { projectRepository.save(any()) } returnsArgument 0
+        Given("getProjects") {
+            val userId = 1L
+            val offsetLimit = OffsetLimit(offset = 0, limit = 10)
 
-        val project =
-            projectRepository.save(
-                ProjectEntity(
-                    userId = 2L,
-                    name = "name",
-                    slug = "slug",
-                ),
-            )
+            When("프로젝트 목록 조회") {
+                val now = LocalDateTime.now()
+                val project1 = mockk<ProjectEntity>(relaxed = true)
+                every { project1.id } returns 1L
+                every { project1.name } returns "Project 1"
+                every { project1.slug } returns "project-1"
+                every { project1.createdAt } returns now
+                every { project1.updatedAt } returns now
 
-        assertThrows<IllegalArgumentException> { projectService.deleteProject(project.id) }
-    }
+                val project2 = mockk<ProjectEntity>(relaxed = true)
+                every { project2.id } returns 2L
+                every { project2.name } returns "Project 2"
+                every { project2.slug } returns "project-2"
+                every { project2.createdAt } returns now
+                every { project2.updatedAt } returns now
 
-    @Test
-    fun `프로젝트 삭제 시 deletedAt 필드가 null이 되지 않아야 한다`() {
-        every { projectRepository.save(any()) } returnsArgument 0
-        every { projectRepository.deleteById(any()) } returnsArgument 0
+                val projects = listOf(project1, project2)
+                val page = PageImpl(projects, PageRequest.of(0, 10), 2)
 
-        val project =
-            projectRepository.save(
-                ProjectEntity(
-                    userId = userId,
-                    name = "name",
-                    slug = "slug",
-                ),
-            )
+                every { securityHolder.getUserId() } returns userId
+                every { projectRepository.findAllByUserId(userId, offsetLimit.toPageable()) } returns page
 
-        projectRepository.deleteById(project.id)
+                val result = projectService.getProjects(offsetLimit)
 
-        assertThat(project.deletedAt).isNotNull
-    }
-}
+                Then("프로젝트 목록 반환") {
+                    result.content.size shouldBe 2
+                    result.content[0].id shouldBe 1L
+                    result.content[1].id shouldBe 2L
+                    result.hasNext shouldBe false
+                }
+            }
+        }
+
+        Given("getProject") {
+            val userId = 1L
+            val projectId = 1L
+            val now = LocalDateTime.now()
+
+            When("프로젝트 조회 성공") {
+                val user = mockk<UserEntity>(relaxed = true)
+                every { user.id } returns userId
+                every { user.name } returns "Test User"
+                every { user.avatarUrl } returns "https://example.com/avatar.jpg"
+
+                val project = mockk<ProjectEntity>(relaxed = true)
+                every { project.id } returns projectId
+                every { project.userId } returns userId
+                every { project.name } returns "Test Project"
+                every { project.slug } returns "test-project"
+                every { project.createdAt } returns now
+                every { project.updatedAt } returns now
+
+                every { securityHolder.getUserId() } returns userId
+                every { userRepository.findByIdOrNull(userId) } returns user
+                every { projectRepository.findByIdOrNull(projectId) } returns project
+
+                val result = projectService.getProject(projectId)
+
+                Then("프로젝트 상세 정보 반환") {
+                    result.id shouldBe projectId
+                    result.name shouldBe "Test Project"
+                    result.slug shouldBe "test-project"
+                    result.user.id shouldBe userId
+                }
+            }
+
+            When("사용자를 찾을 수 없음") {
+                every { securityHolder.getUserId() } returns userId
+                every { userRepository.findByIdOrNull(userId) } returns null
+
+                Then("예외 발생") {
+                    val exception =
+                        shouldThrow<BusinessException> {
+                            projectService.getProject(projectId)
+                        }
+                    exception.error shouldBe UserError.USER_NOT_FOUND
+                }
+            }
+
+            When("프로젝트를 찾을 수 없음") {
+                val user = mockk<UserEntity>(relaxed = true)
+                every { securityHolder.getUserId() } returns userId
+                every { userRepository.findByIdOrNull(userId) } returns user
+                every { projectRepository.findByIdOrNull(projectId) } returns null
+
+                Then("예외 발생") {
+                    val exception =
+                        shouldThrow<BusinessException> {
+                            projectService.getProject(projectId)
+                        }
+                    exception.error shouldBe ProjectError.PROJECT_NOT_FOUND
+                }
+            }
+
+            When("프로젝트 소유자가 아님") {
+                val user = mockk<UserEntity>(relaxed = true)
+                val project = mockk<ProjectEntity>(relaxed = true)
+                every { project.userId } returns 2L
+
+                every { securityHolder.getUserId() } returns userId
+                every { userRepository.findByIdOrNull(userId) } returns user
+                every { projectRepository.findByIdOrNull(projectId) } returns project
+
+                Then("예외 발생") {
+                    val exception =
+                        shouldThrow<BusinessException> {
+                            projectService.getProject(projectId)
+                        }
+                    exception.error shouldBe ProjectError.PROJECT_ACCESS_DENIED
+                }
+            }
+        }
+
+        Given("deleteProject") {
+            val userId = 1L
+            val projectId = 1L
+
+            When("프로젝트 삭제 성공") {
+                val project = mockk<ProjectEntity>(relaxed = true)
+                every { project.userId } returns userId
+                every { project.isDeleted } returns false
+                every { project.delete() } just Runs
+
+                every { securityHolder.getUserId() } returns userId
+                every { projectRepository.findByIdOrNull(projectId) } returns project
+
+                projectService.deleteProject(projectId)
+
+                Then("프로젝트 삭제") {
+                    verify { project.delete() }
+                }
+            }
+
+            When("프로젝트를 찾을 수 없음") {
+                every { securityHolder.getUserId() } returns userId
+                every { projectRepository.findByIdOrNull(projectId) } returns null
+
+                Then("예외 발생") {
+                    val exception =
+                        shouldThrow<BusinessException> {
+                            projectService.deleteProject(projectId)
+                        }
+                    exception.error shouldBe ProjectError.PROJECT_NOT_FOUND
+                }
+            }
+
+            When("프로젝트 소유자가 아님") {
+                val project = mockk<ProjectEntity>(relaxed = true)
+                every { project.userId } returns 2L
+
+                every { securityHolder.getUserId() } returns userId
+                every { projectRepository.findByIdOrNull(projectId) } returns project
+
+                Then("예외 발생") {
+                    val exception =
+                        shouldThrow<BusinessException> {
+                            projectService.deleteProject(projectId)
+                        }
+                    exception.error shouldBe ProjectError.PROJECT_ACCESS_DENIED
+                }
+            }
+
+            When("이미 삭제된 프로젝트") {
+                val project = mockk<ProjectEntity>(relaxed = true)
+                every { project.userId } returns userId
+                every { project.isDeleted } returns true
+
+                every { securityHolder.getUserId() } returns userId
+                every { projectRepository.findByIdOrNull(projectId) } returns project
+
+                Then("예외 발생") {
+                    val exception =
+                        shouldThrow<BusinessException> {
+                            projectService.deleteProject(projectId)
+                        }
+                    exception.error shouldBe ProjectError.PROJECT_ALREADY_DELETED
+                }
+            }
+        }
+    })
