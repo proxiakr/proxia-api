@@ -26,17 +26,17 @@ class GitIntegrationRepositoryService(
             throw BusinessException(GitError.GIT_INTEGRATION_ACCESS_DENIED)
         }
 
-        val repositories =
-            when (gitIntegration.provider) {
-                GitIntegrationProvider.GITHUB -> {
-                    val repositories = githubRepositoryClient.getGithubRepositories(gitIntegration.accessToken)
+        if (gitIntegration.isDeleted) {
+            throw BusinessException(GitError.GIT_INTEGRATION_NOT_FOUND)
+        }
 
-                    GitIntegrationRepositoryResponse.of(repositories)
-                }
-
-                else -> throw BusinessException(GitError.UNSUPPORTED_GIT_PROVIDER)
+        return when (gitIntegration.provider) {
+            GitIntegrationProvider.GITHUB -> {
+                val repositories = githubRepositoryClient.getGithubRepositories(gitIntegration.accessToken)
+                GitIntegrationRepositoryResponse.of(repositories)
             }
 
-        return repositories
+            else -> throw BusinessException(GitError.UNSUPPORTED_GIT_PROVIDER)
+        }
     }
 }

@@ -8,4 +8,7 @@ import kr.proxia.domain.git.presentation.request.CreateGitIntegrationRequest
 interface GitIntegrationDocs {
     @Operation(summary = "Create Git Integration")
     fun createGitIntegration(request: CreateGitIntegrationRequest)
+
+    @Operation(summary = "Delete Git Integration")
+    fun deleteGitIntegration(integrationId: Long)
 }
