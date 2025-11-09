@@ -9,19 +9,11 @@ import kr.proxia.global.jpa.common.BaseEntity
 class ProjectEntity(
     val userId: Long,
     name: String,
-    slug: String,
 ) : BaseEntity() {
-    var slug: String = slug
-        protected set
-
     var name: String = name
         protected set
 
-    fun update(
-        name: String = this.name,
-        slug: String = this.slug,
-    ) {
+    fun update(name: String = this.name) {
         this.name = name
-        this.slug = slug
     }
 }

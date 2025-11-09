@@ -12,6 +12,4 @@ interface ProjectRepository : JpaRepository<ProjectEntity, Long> {
         userId: Long,
         pageable: Pageable,
     ): Page<ProjectEntity>
-
-    fun existsBySlug(slug: String): Boolean
 }

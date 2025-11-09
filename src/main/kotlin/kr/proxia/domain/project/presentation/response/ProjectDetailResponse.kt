@@ -6,7 +6,6 @@ data class ProjectDetailResponse(
     val id: Long,
     val user: User,
     val name: String,
-    val slug: String,
     val createdAt: LocalDateTime,
     val updatedAt: LocalDateTime,
 ) {
