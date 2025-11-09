@@ -10,8 +10,8 @@ import io.mockk.mockk
 import io.mockk.slot
 import io.mockk.verify
 import kr.proxia.domain.auth.domain.entity.RefreshTokenEntity
-import kr.proxia.domain.auth.domain.repository.RefreshTokenRepository
 import kr.proxia.domain.auth.domain.error.AuthError
+import kr.proxia.domain.auth.domain.repository.RefreshTokenRepository
 import kr.proxia.domain.auth.presentation.request.CheckEmailRequest
 import kr.proxia.domain.auth.presentation.request.GithubLoginRequest
 import kr.proxia.domain.auth.presentation.request.GoogleLoginRequest
@@ -21,8 +21,8 @@ import kr.proxia.domain.auth.presentation.request.ReissueRequest
 import kr.proxia.domain.user.domain.entity.UserEntity
 import kr.proxia.domain.user.domain.enums.OAuthProvider
 import kr.proxia.domain.user.domain.enums.UserRole
-import kr.proxia.domain.user.domain.repository.UserRepository
 import kr.proxia.domain.user.domain.error.UserError
+import kr.proxia.domain.user.domain.repository.UserRepository
 import kr.proxia.global.error.BusinessException
 import kr.proxia.global.security.holder.SecurityHolder
 import kr.proxia.global.security.jwt.extractor.JwtExtractor
@@ -259,9 +259,10 @@ class AuthServiceTest :
                 every { userRepository.existsByEmail(request.email) } returns true
 
                 Then("예외 발생") {
-                    val exception = shouldThrow<BusinessException> {
-                        authService.register(request)
-                    }
+                    val exception =
+                        shouldThrow<BusinessException> {
+                            authService.register(request)
+                        }
                     exception.error shouldBe UserError.EMAIL_ALREADY_EXISTS
                 }
             }
@@ -306,9 +307,10 @@ class AuthServiceTest :
                 every { userRepository.findByEmail(request.email) } returns null
 
                 Then("예외 발생") {
-                    val exception = shouldThrow<BusinessException> {
-                        authService.login(request)
-                    }
+                    val exception =
+                        shouldThrow<BusinessException> {
+                            authService.login(request)
+                        }
                     exception.error shouldBe UserError.USER_NOT_FOUND
                 }
             }
@@ -323,9 +325,10 @@ class AuthServiceTest :
                 every { userRepository.findByEmail(request.email) } returns user
 
                 Then("예외 발생") {
-                    val exception = shouldThrow<BusinessException> {
-                        authService.login(request)
-                    }
+                    val exception =
+                        shouldThrow<BusinessException> {
+                            authService.login(request)
+                        }
                     exception.error shouldBe UserError.INVALID_OAUTH_PROVIDER
                 }
             }
@@ -342,9 +345,10 @@ class AuthServiceTest :
                 every { passwordEncoder.matches(request.password, "encoded-password") } returns false
 
                 Then("예외 발생") {
-                    val exception = shouldThrow<BusinessException> {
-                        authService.login(request)
-                    }
+                    val exception =
+                        shouldThrow<BusinessException> {
+                            authService.login(request)
+                        }
                     exception.error shouldBe AuthError.INVALID_PASSWORD
                 }
             }
@@ -414,9 +418,10 @@ class AuthServiceTest :
                 every { userRepository.findByIdOrNull(userId) } returns null
 
                 Then("예외 발생") {
-                    val exception = shouldThrow<BusinessException> {
-                        authService.reissue(request)
-                    }
+                    val exception =
+                        shouldThrow<BusinessException> {
+                            authService.reissue(request)
+                        }
                     exception.error shouldBe UserError.USER_NOT_FOUND
                 }
             }
@@ -433,9 +438,10 @@ class AuthServiceTest :
                 every { refreshTokenRepository.findByUserIdAndRefreshToken(userId, request.refreshToken) } returns null
 
                 Then("예외 발생") {
-                    val exception = shouldThrow<BusinessException> {
-                        authService.reissue(request)
-                    }
+                    val exception =
+                        shouldThrow<BusinessException> {
+                            authService.reissue(request)
+                        }
                     exception.error shouldBe AuthError.REFRESH_TOKEN_NOT_FOUND
                 }
             }
@@ -461,9 +467,10 @@ class AuthServiceTest :
                 every { userRepository.existsById(userId) } returns false
 
                 Then("예외 발생") {
-                    val exception = shouldThrow<BusinessException> {
-                        authService.logout()
-                    }
+                    val exception =
+                        shouldThrow<BusinessException> {
+                            authService.logout()
+                        }
                     exception.error shouldBe UserError.USER_NOT_FOUND
                 }
             }
