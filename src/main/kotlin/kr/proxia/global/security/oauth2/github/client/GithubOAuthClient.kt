@@ -15,26 +15,30 @@ class GithubOAuthClient(
     private val githubOAuthProperties: GithubOAuthProperties,
 ) {
     fun getUserInfo(code: String): GithubUserInfo {
-        val accessToken = webClient.post()
-            .uri("https://github.com/login/oauth/access_token")
-            .header("Accept", "application/json")
-            .bodyValue(
-                mapOf(
-                    "client_id" to githubOAuthProperties.clientId,
-                    "client_secret" to githubOAuthProperties.clientSecret,
-                    "code" to code
-                )
-            )
-            .retrieve()
-            .bodyToMono<GithubTokenResponse>()
-            .block()?.accessToken ?: throw BusinessException(AuthError.INVALID_TOKEN)
+        val accessToken =
+            webClient
+                .post()
+                .uri("https://github.com/login/oauth/access_token")
+                .header("Accept", "application/json")
+                .bodyValue(
+                    mapOf(
+                        "client_id" to githubOAuthProperties.clientId,
+                        "client_secret" to githubOAuthProperties.clientSecret,
+                        "code" to code,
+                    ),
+                ).retrieve()
+                .bodyToMono<GithubTokenResponse>()
+                .block()
+                ?.accessToken ?: throw BusinessException(AuthError.INVALID_TOKEN)
 
-        val userInfo = webClient.get()
-            .uri("https://api.github.com/user")
-            .header("Authorization", "Bearer $accessToken")
-            .retrieve()
-            .bodyToMono<GithubUserInfo>()
-            .block() ?: throw BusinessException(AuthError.INVALID_CREDENTIALS)
+        val userInfo =
+            webClient
+                .get()
+                .uri("https://api.github.com/user")
+                .header("Authorization", "Bearer $accessToken")
+                .retrieve()
+                .bodyToMono<GithubUserInfo>()
+                .block() ?: throw BusinessException(AuthError.INVALID_CREDENTIALS)
 
         return userInfo
     }

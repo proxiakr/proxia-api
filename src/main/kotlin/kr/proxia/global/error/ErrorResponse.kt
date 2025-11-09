@@ -9,12 +9,16 @@ data class ErrorResponse(
     val timestamp: LocalDateTime = LocalDateTime.now(),
 ) {
     companion object {
-        fun of(error: BaseError, vararg args: Any): ErrorResponse {
-            val formattedMessage = if (args.isNotEmpty()) {
-                String.format(error.message, *args)
-            } else {
-                error.message
-            }
+        fun of(
+            error: BaseError,
+            vararg args: Any,
+        ): ErrorResponse {
+            val formattedMessage =
+                if (args.isNotEmpty()) {
+                    String.format(error.message, *args)
+                } else {
+                    error.message
+                }
 
             return ErrorResponse(
                 code = (error as Enum<*>).name,

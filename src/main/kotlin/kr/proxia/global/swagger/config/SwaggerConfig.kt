@@ -18,13 +18,13 @@ import org.springframework.context.annotation.Configuration
 )
 class SwaggerConfig {
     @Bean
-    fun openAPI(): OpenAPI = OpenAPI()
-        .components(Components())
-        .info(
-            Info()
-                .title("Proxia API")
-                .description("Proxia API")
-                .version("v1.0.0")
-        )
-        .addSecurityItem(SecurityRequirement().addList("Bearer Authentication"))
+    fun openAPI(): OpenAPI =
+        OpenAPI()
+            .components(Components())
+            .info(
+                Info()
+                    .title("Proxia API")
+                    .description("Proxia API")
+                    .version("v1.0.0"),
+            ).addSecurityItem(SecurityRequirement().addList("Bearer Authentication"))
 }

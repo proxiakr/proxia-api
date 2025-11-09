@@ -19,15 +19,23 @@ class ProjectController(
     private val projectService: ProjectService,
 ) : ProjectDocs {
     @PostMapping
-    override fun createProject(@RequestBody request: CreateProjectRequest) = projectService.createProject(request)
+    override fun createProject(
+        @RequestBody request: CreateProjectRequest,
+    ) = projectService.createProject(request)
 
     @GetMapping
-    override fun getProjects(@RequestParam offset: Long, @RequestParam limit: Int) =
-        projectService.getProjects(OffsetLimit(offset, limit))
+    override fun getProjects(
+        @RequestParam offset: Long,
+        @RequestParam limit: Int,
+    ) = projectService.getProjects(OffsetLimit(offset, limit))
 
     @GetMapping("/{projectId}")
-    override fun getProject(@PathVariable projectId: Long) = projectService.getProject(projectId)
+    override fun getProject(
+        @PathVariable projectId: Long,
+    ) = projectService.getProject(projectId)
 
     @DeleteMapping("/{projectId}")
-    override fun deleteProject(@PathVariable projectId: Long) = projectService.deleteProject(projectId)
+    override fun deleteProject(
+        @PathVariable projectId: Long,
+    ) = projectService.deleteProject(projectId)
 }

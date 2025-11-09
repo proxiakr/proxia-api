@@ -19,22 +19,34 @@ class AuthController(
     private val authService: AuthService,
 ) : AuthDocs {
     @PostMapping("/login/google")
-    override fun googleLogin(@RequestBody request: GoogleLoginRequest) = authService.googleLogin(request)
+    override fun googleLogin(
+        @RequestBody request: GoogleLoginRequest,
+    ) = authService.googleLogin(request)
 
     @PostMapping("/login/github")
-    override fun githubLogin(@RequestBody request: GithubLoginRequest) = authService.githubLogin(request)
+    override fun githubLogin(
+        @RequestBody request: GithubLoginRequest,
+    ) = authService.githubLogin(request)
 
     @PostMapping("/register")
-    override fun register(@RequestBody request: RegisterRequest) = authService.register(request)
+    override fun register(
+        @RequestBody request: RegisterRequest,
+    ) = authService.register(request)
 
     @PostMapping("/login")
-    override fun login(@RequestBody request: LoginRequest) = authService.login(request)
+    override fun login(
+        @RequestBody request: LoginRequest,
+    ) = authService.login(request)
 
     @PostMapping("/check-email")
-    override fun checkEmail(@RequestBody request: CheckEmailRequest) = authService.checkEmail(request)
+    override fun checkEmail(
+        @RequestBody request: CheckEmailRequest,
+    ) = authService.checkEmail(request)
 
     @PostMapping("/reissue")
-    override fun reissue(@RequestBody request: ReissueRequest) = authService.reissue(request)
+    override fun reissue(
+        @RequestBody request: ReissueRequest,
+    ) = authService.reissue(request)
 
     @PostMapping("/logout")
     override fun logout() = authService.logout()

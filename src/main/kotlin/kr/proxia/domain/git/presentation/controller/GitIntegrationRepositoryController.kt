@@ -12,6 +12,7 @@ class GitIntegrationRepositoryController(
     private val gitIntegrationRepositoryService: GitIntegrationRepositoryService,
 ) {
     @GetMapping
-    fun getRepositories(@PathVariable gitIntegrationId: Long) =
-        gitIntegrationRepositoryService.getRepositories(gitIntegrationId)
+    fun getRepositories(
+        @PathVariable gitIntegrationId: Long,
+    ) = gitIntegrationRepositoryService.getRepositories(gitIntegrationId)
 }

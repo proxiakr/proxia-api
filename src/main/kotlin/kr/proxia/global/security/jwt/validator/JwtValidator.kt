@@ -13,21 +13,24 @@ class JwtValidator(
     private val jwtProperties: JwtProperties,
     private val jwtExtractor: JwtExtractor,
 ) {
-    fun validateToken(token: String) = try {
-        Jwts.parser()
-            .verifyWith(jwtProperties.secretKeySpec)
-            .build()
-            .parseSignedClaims(token)
+    fun validateToken(token: String) =
+        try {
+            Jwts
+                .parser()
+                .verifyWith(jwtProperties.secretKeySpec)
+                .build()
+                .parseSignedClaims(token)
 
-        Unit
-    } catch (_: Exception) {
-        throw BusinessException(AuthError.INVALID_TOKEN)
-    }
+            Unit
+        } catch (_: Exception) {
+            throw BusinessException(AuthError.INVALID_TOKEN)
+        }
 
     fun validateRefreshToken(refreshToken: String) {
         validateToken(refreshToken)
 
-        if (jwtExtractor.getType(refreshToken) != JwtType.REFRESH)
+        if (jwtExtractor.getType(refreshToken) != JwtType.REFRESH) {
             throw BusinessException(AuthError.INVALID_TOKEN)
+        }
     }
 }

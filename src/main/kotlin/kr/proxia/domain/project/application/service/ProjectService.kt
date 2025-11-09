@@ -26,15 +26,16 @@ class ProjectService(
         val userId = securityHolder.getUserId()
         val slug = request.slug
 
-        if (projectRepository.existsBySlug(slug))
+        if (projectRepository.existsBySlug(slug)) {
             throw BusinessException(ProjectError.SLUG_ALREADY_EXISTS)
+        }
 
         projectRepository.save(
             ProjectEntity(
                 userId = userId,
                 name = request.name,
                 slug = slug,
-            )
+            ),
         )
     }
 
@@ -42,34 +43,38 @@ class ProjectService(
         val userId = securityHolder.getUserId()
         val projects = projectRepository.findAllByUserId(userId, offsetLimit.toPageable())
 
-        return projects.map { project ->
-            ProjectResponse(
-                id = project.id,
-                name = project.name,
-                slug = project.slug,
-                createdAt = project.createdAt,
-                updatedAt = project.updatedAt,
-            )
-        }.toResponse()
+        return projects
+            .map { project ->
+                ProjectResponse(
+                    id = project.id,
+                    name = project.name,
+                    slug = project.slug,
+                    createdAt = project.createdAt,
+                    updatedAt = project.updatedAt,
+                )
+            }.toResponse()
     }
 
     fun getProject(projectId: Long): ProjectDetailResponse {
         val userId = securityHolder.getUserId()
         val user = userRepository.findByIdOrNull(userId) ?: throw BusinessException(UserError.USER_NOT_FOUND)
 
-        val project = projectRepository.findByIdOrNull(projectId)
-            ?: throw BusinessException(ProjectError.PROJECT_NOT_FOUND)
+        val project =
+            projectRepository.findByIdOrNull(projectId)
+                ?: throw BusinessException(ProjectError.PROJECT_NOT_FOUND)
 
-        if (project.userId != userId)
+        if (project.userId != userId) {
             throw BusinessException(ProjectError.PROJECT_ACCESS_DENIED)
+        }
 
         return ProjectDetailResponse(
             id = project.id,
-            user = ProjectDetailResponse.User(
-                id = user.id,
-                name = user.name,
-                avatarUrl = user.avatarUrl,
-            ),
+            user =
+                ProjectDetailResponse.User(
+                    id = user.id,
+                    name = user.name,
+                    avatarUrl = user.avatarUrl,
+                ),
             name = project.name,
             slug = project.slug,
             createdAt = project.createdAt,
@@ -81,11 +86,13 @@ class ProjectService(
         val userId = securityHolder.getUserId()
         val project = projectRepository.findByIdOrNull(projectId) ?: throw BusinessException(ProjectError.PROJECT_NOT_FOUND)
 
-        if (project.userId != userId)
+        if (project.userId != userId) {
             throw BusinessException(ProjectError.PROJECT_ACCESS_DENIED)
+        }
 
-        if (project.isDeleted)
+        if (project.isDeleted) {
             throw BusinessException(ProjectError.PROJECT_ALREADY_DELETED)
+        }
 
         project.delete()
     }

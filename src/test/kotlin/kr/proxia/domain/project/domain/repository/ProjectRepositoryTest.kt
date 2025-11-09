@@ -18,13 +18,14 @@ class ProjectRepositoryTest {
 
     @Test
     fun `프로젝트 저장`() {
-        val project = projectRepository.save(
-            ProjectEntity(
-                userId = userId,
-                name = "name",
-                slug = "slug",
+        val project =
+            projectRepository.save(
+                ProjectEntity(
+                    userId = userId,
+                    name = "name",
+                    slug = "slug",
+                ),
             )
-        )
 
         assertThat(project.id).isNotNull()
     }
@@ -37,7 +38,7 @@ class ProjectRepositoryTest {
                     userId = userId,
                     name = "name$i",
                     slug = "slug$i",
-                )
+                ),
             )
         }
 
@@ -53,13 +54,14 @@ class ProjectRepositoryTest {
 
     @Test
     fun `프로젝트 수정`() {
-        val before = projectRepository.save(
-            ProjectEntity(
-                userId = userId,
-                name = "name",
-                slug = "slug",
+        val before =
+            projectRepository.save(
+                ProjectEntity(
+                    userId = userId,
+                    name = "name",
+                    slug = "slug",
+                ),
             )
-        )
 
         before.update(
             name = "updated name",
@@ -74,13 +76,14 @@ class ProjectRepositoryTest {
 
     @Test
     fun `프로젝트 삭제`() {
-        val project = projectRepository.save(
-            ProjectEntity(
-                userId = userId,
-                name = "name",
-                slug = "slug",
+        val project =
+            projectRepository.save(
+                ProjectEntity(
+                    userId = userId,
+                    name = "name",
+                    slug = "slug",
+                ),
             )
-        )
 
         val projectId = project.id
 
@@ -91,11 +94,12 @@ class ProjectRepositoryTest {
 
     @Test
     fun `slug로 프로젝트 존재 여부 확인`() {
-        val project = ProjectEntity(
-            userId = userId,
-            name = "name",
-            slug = "slug",
-        )
+        val project =
+            ProjectEntity(
+                userId = userId,
+                name = "name",
+                slug = "slug",
+            )
 
         projectRepository.save(project)
 

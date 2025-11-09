@@ -4,7 +4,6 @@ import jakarta.servlet.FilterChain
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
 import kr.proxia.global.security.jwt.extractor.JwtExtractor
-import kr.proxia.global.security.jwt.provider.JwtProvider
 import kr.proxia.global.security.jwt.validator.JwtValidator
 import org.springframework.http.HttpHeaders
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
@@ -21,7 +20,7 @@ class JwtAuthenticationFilter(
     override fun doFilterInternal(
         request: HttpServletRequest,
         response: HttpServletResponse,
-        filterChain: FilterChain
+        filterChain: FilterChain,
     ) {
         val token = request.getHeader(HttpHeaders.AUTHORIZATION)?.removePrefix("Bearer ")
 
@@ -31,7 +30,8 @@ class JwtAuthenticationFilter(
             val userId = jwtExtractor.getSubject(token)
             val role = jwtExtractor.getRole(token)
 
-            SecurityContextHolder.getContext().authentication = UsernamePasswordAuthenticationToken(userId, null, listOf(SimpleGrantedAuthority("ROLE_$role")))
+            SecurityContextHolder.getContext().authentication =
+                UsernamePasswordAuthenticationToken(userId, null, listOf(SimpleGrantedAuthority("ROLE_$role")))
         }
 
         filterChain.doFilter(request, response)

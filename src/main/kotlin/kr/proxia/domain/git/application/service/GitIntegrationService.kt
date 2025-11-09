@@ -9,7 +9,6 @@ import kr.proxia.domain.git.presentation.request.CreateGitIntegrationRequest
 import kr.proxia.global.error.BusinessException
 import kr.proxia.global.security.holder.SecurityHolder
 import org.springframework.stereotype.Service
-import org.springframework.web.reactive.function.client.WebClient
 import java.time.LocalDateTime
 
 @Service
@@ -20,20 +19,21 @@ class GitIntegrationService(
 ) {
     fun createGitIntegration(request: CreateGitIntegrationRequest) {
         val userId = securityHolder.getUserId()
-        val gitIntegration = when (request.provider) {
-            GitIntegrationProvider.GITHUB -> {
-                val token = gitIntegrationClient.exchangeGithubCode(request.code)
+        val gitIntegration =
+            when (request.provider) {
+                GitIntegrationProvider.GITHUB -> {
+                    val token = gitIntegrationClient.exchangeGithubCode(request.code)
 
-                GitIntegrationEntity(
-                    userId = userId,
-                    provider = GitIntegrationProvider.GITHUB,
-                    accessToken = token.accessToken,
-                    expiresAt = LocalDateTime.now().plusSeconds(token.expiresIn),
-                )
+                    GitIntegrationEntity(
+                        userId = userId,
+                        provider = GitIntegrationProvider.GITHUB,
+                        accessToken = token.accessToken,
+                        expiresAt = LocalDateTime.now().plusSeconds(token.expiresIn),
+                    )
+                }
+
+                else -> throw BusinessException(GitError.UNSUPPORTED_GIT_PROVIDER)
             }
-
-            else -> throw BusinessException(GitError.UNSUPPORTED_GIT_PROVIDER)
-        }
 
         gitIntegrationRepository.save(gitIntegration)
     }

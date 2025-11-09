@@ -14,17 +14,13 @@ import kr.proxia.global.jpa.common.BaseEntity
 class UserEntity(
     @Column(nullable = false)
     val name: String,
-
     @Column(nullable = false, unique = true)
     val email: String,
-
     password: String? = null,
     avatarUrl: String? = null,
-
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     val role: UserRole = UserRole.USER,
-
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     val provider: OAuthProvider,
