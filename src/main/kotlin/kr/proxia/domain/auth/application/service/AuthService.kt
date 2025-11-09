@@ -45,39 +45,42 @@ class AuthService(
 ) {
     fun googleLogin(request: GoogleLoginRequest): LoginResponse {
         val userInfo = googleOAuthClient.getUserInfo(request.idToken)
-        val user = userRepository.findByEmail(userInfo.email)
-            ?: userRepository.save(
-                UserEntity(
-                    email = userInfo.email,
-                    name = userInfo.name,
-                    avatarUrl = userInfo.picture,
-                    provider = OAuthProvider.GOOGLE,
-                    providerId = userInfo.sub,
+        val user =
+            userRepository.findByEmail(userInfo.email)
+                ?: userRepository.save(
+                    UserEntity(
+                        email = userInfo.email,
+                        name = userInfo.name,
+                        avatarUrl = userInfo.picture,
+                        provider = OAuthProvider.GOOGLE,
+                        providerId = userInfo.sub,
+                    ),
                 )
-            )
 
         return generateLoginResponse(user)
     }
 
     fun githubLogin(request: GithubLoginRequest): LoginResponse {
         val userInfo = githubOAuthClient.getUserInfo(request.code)
-        val user = userRepository.findByEmail(userInfo.email)
-            ?: userRepository.save(
-                UserEntity(
-                    email = userInfo.email,
-                    name = userInfo.name ?: userInfo.login,
-                    avatarUrl = userInfo.avatarUrl,
-                    provider = OAuthProvider.GITHUB,
-                    providerId = userInfo.id.toString(),
+        val user =
+            userRepository.findByEmail(userInfo.email)
+                ?: userRepository.save(
+                    UserEntity(
+                        email = userInfo.email,
+                        name = userInfo.name ?: userInfo.login,
+                        avatarUrl = userInfo.avatarUrl,
+                        provider = OAuthProvider.GITHUB,
+                        providerId = userInfo.id.toString(),
+                    ),
                 )
-            )
 
         return generateLoginResponse(user)
     }
 
     fun register(request: RegisterRequest) {
-        if (userRepository.existsByEmail(request.email))
+        if (userRepository.existsByEmail(request.email)) {
             throw BusinessException(UserError.EMAIL_ALREADY_EXISTS)
+        }
 
         /**
          * TODO: Validates
@@ -89,19 +92,22 @@ class AuthService(
                 name = request.name,
                 password = passwordEncoder.encode(request.password),
                 provider = OAuthProvider.LOCAL,
-            )
+            ),
         )
     }
 
     fun login(request: LoginRequest): LoginResponse {
-        val user = userRepository.findByEmail(request.email)
-            ?: throw BusinessException(UserError.USER_NOT_FOUND)
+        val user =
+            userRepository.findByEmail(request.email)
+                ?: throw BusinessException(UserError.USER_NOT_FOUND)
 
-        if (user.provider != OAuthProvider.LOCAL)
+        if (user.provider != OAuthProvider.LOCAL) {
             throw BusinessException(UserError.INVALID_OAUTH_PROVIDER, user.provider)
+        }
 
-        if (!passwordEncoder.matches(request.password, user.password))
+        if (!passwordEncoder.matches(request.password, user.password)) {
             throw BusinessException(AuthError.INVALID_PASSWORD)
+        }
 
         return generateLoginResponse(user)
     }
@@ -116,11 +122,13 @@ class AuthService(
         jwtValidator.validateRefreshToken(request.refreshToken)
 
         val userId = jwtExtractor.getSubject(request.refreshToken)
-        val user = userRepository.findByIdOrNull(userId)
-            ?: throw BusinessException(UserError.USER_NOT_FOUND)
+        val user =
+            userRepository.findByIdOrNull(userId)
+                ?: throw BusinessException(UserError.USER_NOT_FOUND)
 
-        val refreshToken = refreshTokenRepository.findByUserIdAndRefreshToken(user.id, request.refreshToken)
-            ?: throw BusinessException(AuthError.REFRESH_TOKEN_NOT_FOUND)
+        val refreshToken =
+            refreshTokenRepository.findByUserIdAndRefreshToken(user.id, request.refreshToken)
+                ?: throw BusinessException(AuthError.REFRESH_TOKEN_NOT_FOUND)
 
         val newRefreshToken = jwtProvider.createRefreshToken(user.id)
         refreshToken.update(refreshToken = newRefreshToken)
@@ -134,8 +142,9 @@ class AuthService(
     fun logout() {
         val userId = securityHolder.getUserId()
 
-        if (!userRepository.existsById(userId))
+        if (!userRepository.existsById(userId)) {
             throw BusinessException(UserError.USER_NOT_FOUND)
+        }
 
         refreshTokenRepository.deleteByUserId(userId)
     }
@@ -149,7 +158,7 @@ class AuthService(
                 userId = user.id,
                 refreshToken = refreshToken,
                 expiresAt = LocalDateTime.now().plus(jwtProperties.refreshTokenExpiration, ChronoUnit.MILLIS),
-            )
+            ),
         )
 
         return accessToken to refreshToken
@@ -161,12 +170,13 @@ class AuthService(
         return LoginResponse(
             accessToken = accessToken,
             refreshToken = refreshToken,
-            user = LoginResponse.User(
-                id = user.id,
-                email = user.email,
-                name = user.name,
-                avatarUrl = user.avatarUrl,
-            ),
+            user =
+                LoginResponse.User(
+                    id = user.id,
+                    email = user.email,
+                    name = user.name,
+                    avatarUrl = user.avatarUrl,
+                ),
         )
     }
 }

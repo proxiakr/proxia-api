@@ -18,21 +18,24 @@ class GitIntegrationRepositoryService(
 ) {
     fun getRepositories(gitIntegrationId: Long): List<GitIntegrationRepositoryResponse> {
         val userId = securityHolder.getUserId()
-        val gitIntegration = gitIntegrationRepository.findByIdOrNull(gitIntegrationId)
-            ?: throw BusinessException(GitError.GIT_INTEGRATION_NOT_FOUND)
+        val gitIntegration =
+            gitIntegrationRepository.findByIdOrNull(gitIntegrationId)
+                ?: throw BusinessException(GitError.GIT_INTEGRATION_NOT_FOUND)
 
-        if (gitIntegration.userId != userId)
+        if (gitIntegration.userId != userId) {
             throw BusinessException(GitError.GIT_INTEGRATION_ACCESS_DENIED)
-
-        val repositories = when (gitIntegration.provider) {
-            GitIntegrationProvider.GITHUB -> {
-                val repositories = githubRepositoryClient.getGithubRepositories(gitIntegration.accessToken)
-
-                GitIntegrationRepositoryResponse.of(repositories)
-            }
-
-            else -> throw BusinessException(GitError.UNSUPPORTED_GIT_PROVIDER)
         }
+
+        val repositories =
+            when (gitIntegration.provider) {
+                GitIntegrationProvider.GITHUB -> {
+                    val repositories = githubRepositoryClient.getGithubRepositories(gitIntegration.accessToken)
+
+                    GitIntegrationRepositoryResponse.of(repositories)
+                }
+
+                else -> throw BusinessException(GitError.UNSUPPORTED_GIT_PROVIDER)
+            }
 
         return repositories
     }

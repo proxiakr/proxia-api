@@ -10,16 +10,17 @@ class GithubRepositoryClient(
     private val webClient: WebClient,
 ) {
     fun getGithubRepositories(accessToken: String): List<GithubRepository> {
-        val repositories = webClient.get()
-            .uri("https://api.github.com/user/repos")
-            .headers { headers ->
-                headers.setBearerAuth(accessToken)
-                headers.set("Accept", "application/vnd.github.v3+json")
-            }
-            .retrieve()
-            .bodyToFlux<GithubRepository>()
-            .collectList()
-            .block() ?: throw IllegalStateException("Failed to fetch repositories from GitHub")
+        val repositories =
+            webClient
+                .get()
+                .uri("https://api.github.com/user/repos")
+                .headers { headers ->
+                    headers.setBearerAuth(accessToken)
+                    headers.set("Accept", "application/vnd.github.v3+json")
+                }.retrieve()
+                .bodyToFlux<GithubRepository>()
+                .collectList()
+                .block() ?: throw IllegalStateException("Failed to fetch repositories from GitHub")
 
         return repositories
     }

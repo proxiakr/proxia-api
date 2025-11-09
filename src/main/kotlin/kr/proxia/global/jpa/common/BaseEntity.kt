@@ -15,7 +15,7 @@ import java.time.LocalDateTime
 @MappedSuperclass
 @SQLRestriction("deleted_at IS NULL")
 @EntityListeners(AuditingEntityListener::class)
-abstract class BaseEntity() {
+abstract class BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)

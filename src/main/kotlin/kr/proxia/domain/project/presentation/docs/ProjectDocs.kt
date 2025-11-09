@@ -13,7 +13,10 @@ interface ProjectDocs {
     fun createProject(request: CreateProjectRequest)
 
     @Operation(summary = "Get Projects")
-    fun getProjects(offset: Long, limit: Int): PageResponse<ProjectResponse>
+    fun getProjects(
+        offset: Long,
+        limit: Int,
+    ): PageResponse<ProjectResponse>
 
     @Operation(summary = "Get Project")
     fun getProject(projectId: Long): ProjectDetailResponse

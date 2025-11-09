@@ -12,11 +12,13 @@ class GoogleOAuthClient(
     private val webClient: WebClient,
 ) {
     fun getUserInfo(idToken: String): GoogleUserInfo {
-        val userInfo = webClient.get()
-            .uri("https://oauth2.googleapis.com/tokeninfo?id_token=$idToken")
-            .retrieve()
-            .bodyToMono<GoogleUserInfo>()
-            .block() ?: throw BusinessException(AuthError.INVALID_TOKEN)
+        val userInfo =
+            webClient
+                .get()
+                .uri("https://oauth2.googleapis.com/tokeninfo?id_token=$idToken")
+                .retrieve()
+                .bodyToMono<GoogleUserInfo>()
+                .block() ?: throw BusinessException(AuthError.INVALID_TOKEN)
 
         return userInfo
     }

@@ -31,13 +31,14 @@ class ProjectServiceTest {
     fun `프로젝트 생성 시 ID가 생성되어야 한다`() {
         every { projectRepository.save(any()) } returnsArgument 0
 
-        val project = projectRepository.save(
-            ProjectEntity(
-                userId = userId,
-                name = "name",
-                slug = "slug",
+        val project =
+            projectRepository.save(
+                ProjectEntity(
+                    userId = userId,
+                    name = "name",
+                    slug = "slug",
+                ),
             )
-        )
 
         assertThat(project.id).isNotNull
     }
@@ -49,13 +50,14 @@ class ProjectServiceTest {
         every { userRepository.findByIdOrNull(any()) } returnsArgument 0
         every { securityHolder.getUserId() } returns userId
 
-        val project = projectRepository.save(
-            ProjectEntity(
-                userId = 2L,
-                name = "name",
-                slug = "slug",
+        val project =
+            projectRepository.save(
+                ProjectEntity(
+                    userId = 2L,
+                    name = "name",
+                    slug = "slug",
+                ),
             )
-        )
 
         assertThrows<IllegalArgumentException> { projectService.getProject(project.id) }
     }
@@ -66,13 +68,14 @@ class ProjectServiceTest {
         every { projectRepository.findByIdOrNull(any()) } returnsArgument 0
         every { projectRepository.save(any()) } returnsArgument 0
 
-        val project = projectRepository.save(
-            ProjectEntity(
-                userId = 2L,
-                name = "name",
-                slug = "slug",
+        val project =
+            projectRepository.save(
+                ProjectEntity(
+                    userId = 2L,
+                    name = "name",
+                    slug = "slug",
+                ),
             )
-        )
 
         assertThrows<IllegalArgumentException> { projectService.deleteProject(project.id) }
     }
@@ -82,13 +85,14 @@ class ProjectServiceTest {
         every { projectRepository.save(any()) } returnsArgument 0
         every { projectRepository.deleteById(any()) } returnsArgument 0
 
-        val project = projectRepository.save(
-            ProjectEntity(
-                userId = userId,
-                name = "name",
-                slug = "slug",
+        val project =
+            projectRepository.save(
+                ProjectEntity(
+                    userId = userId,
+                    name = "name",
+                    slug = "slug",
+                ),
             )
-        )
 
         projectRepository.deleteById(project.id)
 

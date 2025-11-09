@@ -15,23 +15,27 @@ class SecurityConfig {
     fun passwordEncoder(): PasswordEncoder = BCryptPasswordEncoder()
 
     @Bean
-    fun filterChain(http: HttpSecurity): SecurityFilterChain = http
-        .csrf { it.disable() }
-        .cors { it.configurationSource(corsConfigurationSource()) }
+    fun filterChain(http: HttpSecurity): SecurityFilterChain =
+        http
+            .csrf { it.disable() }
+            .cors { it.configurationSource(corsConfigurationSource()) }
+            .authorizeHttpRequests {
+                it
+                    .anyRequest()
+                    .permitAll()
+            }.build()
 
-        .authorizeHttpRequests { it
-            .anyRequest().permitAll()
+    private fun corsConfigurationSource() =
+        UrlBasedCorsConfigurationSource().apply {
+            registerCorsConfiguration(
+                "/**",
+                CorsConfiguration().apply {
+                    allowedOriginPatterns = listOf("*")
+                    allowedMethods = listOf("*")
+                    allowedHeaders = listOf("*")
+                    allowCredentials = true
+                    maxAge = 3600L
+                },
+            )
         }
-
-        .build()
-
-    private fun corsConfigurationSource() = UrlBasedCorsConfigurationSource().apply {
-        registerCorsConfiguration("/**", CorsConfiguration().apply {
-            allowedOriginPatterns = listOf("*")
-            allowedMethods = listOf("*")
-            allowedHeaders = listOf("*")
-            allowCredentials = true
-            maxAge = 3600L
-        })
-    }
 }

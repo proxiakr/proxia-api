@@ -8,7 +8,10 @@ import org.springframework.stereotype.Repository
 
 @Repository
 interface ProjectRepository : JpaRepository<ProjectEntity, Long> {
-    fun findAllByUserId(userId: Long, pageable: Pageable): Page<ProjectEntity>
+    fun findAllByUserId(
+        userId: Long,
+        pageable: Pageable,
+    ): Page<ProjectEntity>
 
     fun existsBySlug(slug: String): Boolean
 }

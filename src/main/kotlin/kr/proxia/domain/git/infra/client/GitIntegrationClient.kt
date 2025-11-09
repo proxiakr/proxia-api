@@ -14,17 +14,18 @@ class GitIntegrationClient(
     private val gitIntegrationProperties: GitIntegrationProperties,
 ) {
     fun exchangeGithubCode(code: String): ExchangeGithubCodeResponse {
-        val response = webClient.post()
-            .uri(
-                "https://github.com/login/oauth/access_token?client_id={clientId}&client_secret={clientSecret}&code={code}",
-                gitIntegrationProperties.github.clientId,
-                gitIntegrationProperties.github.clientSecret,
-                code
-            )
-            .header("Accept", "application/json")
-            .retrieve()
-            .bodyToMono<ExchangeGithubCodeResponse>()
-            .block() ?: throw BusinessException(AuthError.INVALID_TOKEN)
+        val response =
+            webClient
+                .post()
+                .uri(
+                    "https://github.com/login/oauth/access_token?client_id={clientId}&client_secret={clientSecret}&code={code}",
+                    gitIntegrationProperties.github.clientId,
+                    gitIntegrationProperties.github.clientSecret,
+                    code,
+                ).header("Accept", "application/json")
+                .retrieve()
+                .bodyToMono<ExchangeGithubCodeResponse>()
+                .block() ?: throw BusinessException(AuthError.INVALID_TOKEN)
 
         return response
     }

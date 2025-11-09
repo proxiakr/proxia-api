@@ -4,5 +4,5 @@ open class BusinessException(
     val error: BaseError,
     vararg val args: Any,
 ) : RuntimeException(
-    if (args.isNotEmpty()) String.format(error.message, *args) else error.message
-)
+        if (args.isNotEmpty()) String.format(error.message, *args) else error.message,
+    )

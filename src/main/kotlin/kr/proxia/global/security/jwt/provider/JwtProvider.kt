@@ -11,24 +11,30 @@ import org.springframework.stereotype.Component
 class JwtProvider(
     private val jwtProperties: JwtProperties,
 ) {
-    fun createAccessToken(userId: Long, role: UserRole): String {
-        return Jwts.builder()
+    fun createAccessToken(
+        userId: Long,
+        role: UserRole,
+    ): String =
+        Jwts
+            .builder()
             .subject(userId.toString())
             .lowerClaim(ROLE_KEY, role.name)
             .lowerClaim(TYPE_KEY, JwtType.ACCESS.name)
             .signWith(jwtProperties.secretKeySpec)
             .compact()
-    }
 
-    fun createRefreshToken(userId: Long): String {
-        return Jwts.builder()
+    fun createRefreshToken(userId: Long): String =
+        Jwts
+            .builder()
             .subject(userId.toString())
             .lowerClaim(TYPE_KEY, JwtType.REFRESH.name)
             .signWith(jwtProperties.secretKeySpec)
             .compact()
-    }
 
-    private fun JwtBuilder.lowerClaim(name: String, value: String) = this.claim(name, value.lowercase())
+    private fun JwtBuilder.lowerClaim(
+        name: String,
+        value: String,
+    ) = this.claim(name, value.lowercase())
 
     companion object {
         private const val ROLE_KEY = "role"

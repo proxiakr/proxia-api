@@ -10,5 +10,12 @@ data class JwtProperties(
     val accessTokenExpiration: Long,
     val refreshTokenExpiration: Long,
 ) {
-    val secretKeySpec = SecretKeySpec(secretKey.toByteArray(), Jwts.SIG.HS256.key().build().algorithm)
+    val secretKeySpec =
+        SecretKeySpec(
+            secretKey.toByteArray(),
+            Jwts.SIG.HS256
+                .key()
+                .build()
+                .algorithm,
+        )
 }

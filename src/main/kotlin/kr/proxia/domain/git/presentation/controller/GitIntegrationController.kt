@@ -14,6 +14,7 @@ class GitIntegrationController(
     private val gitIntegrationService: GitIntegrationService,
 ) : GitIntegrationDocs {
     @PostMapping
-    override fun createGitIntegration(@RequestBody request: CreateGitIntegrationRequest) =
-        gitIntegrationService.createGitIntegration(request)
+    override fun createGitIntegration(
+        @RequestBody request: CreateGitIntegrationRequest,
+    ) = gitIntegrationService.createGitIntegration(request)
 }

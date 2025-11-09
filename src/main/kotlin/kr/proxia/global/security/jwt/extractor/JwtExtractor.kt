@@ -18,11 +18,13 @@ class JwtExtractor(
 
     fun getType(token: String): JwtType = JwtType.valueOf(getPayload(token).getUpper(TYPE_KEY))
 
-    private fun getPayload(token: String) = Jwts.parser()
-        .verifyWith(jwtProperties.secretKeySpec)
-        .build()
-        .parseSignedClaims(token)
-        .payload
+    private fun getPayload(token: String) =
+        Jwts
+            .parser()
+            .verifyWith(jwtProperties.secretKeySpec)
+            .build()
+            .parseSignedClaims(token)
+            .payload
 
     private fun Claims.getUpper(name: String) = this.get(name, String::class.java).uppercase()
 
