@@ -1,0 +1,26 @@
+package kr.proxia.domain.service.domain.enums
+
+enum class AppFramework {
+    SPRING_BOOT,
+    EXPRESS,
+    NEST_JS,
+    DJANGO,
+    FLASK,
+    FASTAPI,
+    LARAVEL,
+    RAILS,
+    GO_GIN,
+    REACT,
+    VUE,
+    ANGULAR,
+    SVELTE,
+    NEXT_JS,
+    NUXT,
+    REMIX,
+    GATSBY,
+    HUGO,
+    REACT_NATIVE,
+    FLUTTER,
+    DOCKER,
+    OTHER,
+}
