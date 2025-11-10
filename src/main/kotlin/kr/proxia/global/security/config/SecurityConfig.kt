@@ -26,11 +26,11 @@ class SecurityConfig(
             .cors { it.configurationSource(corsConfigurationSource()) }
             .headers { headers ->
                 headers.frameOptions { it.sameOrigin() }
-            }
-            .sessionManagement { it.sessionCreationPolicy(SessionCreationPolicy.STATELESS) }
+            }.sessionManagement { it.sessionCreationPolicy(SessionCreationPolicy.STATELESS) }
             .authorizeHttpRequests {
                 it
-                    .requestMatchers("/h2-console/**").permitAll()
+                    .requestMatchers("/h2-console/**")
+                    .permitAll()
                     .anyRequest()
                     .permitAll()
             }.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter::class.java)
