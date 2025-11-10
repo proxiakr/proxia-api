@@ -11,10 +11,10 @@ class ProjectEntity(
     name: String,
     slug: String,
 ) : BaseEntity() {
-    var slug: String = slug
+    var name: String = name
         protected set
 
-    var name: String = name
+    var slug: String = slug
         protected set
 
     fun update(

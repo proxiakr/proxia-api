@@ -93,7 +93,8 @@ class ProjectService(
     @Transactional
     fun deleteProject(projectId: Long) {
         val userId = securityHolder.getUserId()
-        val project = projectRepository.findByIdOrNull(projectId) ?: throw BusinessException(ProjectError.PROJECT_NOT_FOUND)
+        val project =
+            projectRepository.findByIdOrNull(projectId) ?: throw BusinessException(ProjectError.PROJECT_NOT_FOUND)
 
         if (project.userId != userId) {
             throw BusinessException(ProjectError.PROJECT_ACCESS_DENIED)
