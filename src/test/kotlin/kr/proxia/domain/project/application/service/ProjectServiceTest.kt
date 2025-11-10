@@ -37,11 +37,13 @@ class ProjectServiceTest :
             val request =
                 CreateProjectRequest(
                     name = "Test Project",
+                    slug = "Test-project",
                 )
 
             When("유효한 요청") {
                 val projectSlot = slot<ProjectEntity>()
                 every { securityHolder.getUserId() } returns userId
+                every { projectRepository.existsBySlug(request.slug) } returns false
                 every { projectRepository.save(capture(projectSlot)) } returns mockk(relaxed = true)
 
                 projectService.createProject(request)
@@ -49,6 +51,20 @@ class ProjectServiceTest :
                 Then("프로젝트 생성") {
                     projectSlot.captured.userId shouldBe userId
                     projectSlot.captured.name shouldBe request.name
+                    projectSlot.captured.slug shouldBe request.slug
+                }
+            }
+
+            When("이미 존재하는 slug") {
+                every { securityHolder.getUserId() } returns userId
+                every { projectRepository.existsBySlug(request.slug) } returns true
+
+                Then("예외 발생") {
+                    val exception =
+                        shouldThrow<BusinessException> {
+                            projectService.createProject(request)
+                        }
+                    exception.error shouldBe ProjectError.SLUG_ALREADY_EXISTS
                 }
             }
         }
@@ -62,12 +78,14 @@ class ProjectServiceTest :
                 val project1 = mockk<ProjectEntity>(relaxed = true)
                 every { project1.id } returns 1L
                 every { project1.name } returns "Project 1"
+                every { project1.slug } returns "project-1"
                 every { project1.createdAt } returns now
                 every { project1.updatedAt } returns now
 
                 val project2 = mockk<ProjectEntity>(relaxed = true)
                 every { project2.id } returns 2L
                 every { project2.name } returns "Project 2"
+                every { project2.slug } returns "project-2"
                 every { project2.createdAt } returns now
                 every { project2.updatedAt } returns now
 
@@ -103,6 +121,7 @@ class ProjectServiceTest :
                 every { project.id } returns projectId
                 every { project.userId } returns userId
                 every { project.name } returns "Test Project"
+                every { project.slug } returns "test-project"
                 every { project.createdAt } returns now
                 every { project.updatedAt } returns now
 
@@ -115,6 +134,7 @@ class ProjectServiceTest :
                 Then("프로젝트 상세 정보 반환") {
                     result.id shouldBe projectId
                     result.name shouldBe "Test Project"
+                    result.slug shouldBe "test-project"
                     result.user.id shouldBe userId
                 }
             }

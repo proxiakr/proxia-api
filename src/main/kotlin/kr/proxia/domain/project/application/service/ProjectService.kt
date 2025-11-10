@@ -24,11 +24,17 @@ class ProjectService(
 ) {
     fun createProject(request: CreateProjectRequest) {
         val userId = securityHolder.getUserId()
+        val slug = request.slug
+
+        if (projectRepository.existsBySlug(slug)) {
+            throw BusinessException(ProjectError.SLUG_ALREADY_EXISTS)
+        }
 
         projectRepository.save(
             ProjectEntity(
                 userId = userId,
                 name = request.name,
+                slug = slug,
             ),
         )
     }
@@ -42,6 +48,7 @@ class ProjectService(
                 ProjectResponse(
                     id = project.id,
                     name = project.name,
+                    slug = project.slug,
                     createdAt = project.createdAt,
                     updatedAt = project.updatedAt,
                 )
@@ -69,6 +76,7 @@ class ProjectService(
                     avatarUrl = user.avatarUrl,
                 ),
             name = project.name,
+            slug = project.slug,
             createdAt = project.createdAt,
             updatedAt = project.updatedAt,
         )
@@ -76,7 +84,8 @@ class ProjectService(
 
     fun deleteProject(projectId: Long) {
         val userId = securityHolder.getUserId()
-        val project = projectRepository.findByIdOrNull(projectId) ?: throw BusinessException(ProjectError.PROJECT_NOT_FOUND)
+        val project =
+            projectRepository.findByIdOrNull(projectId) ?: throw BusinessException(ProjectError.PROJECT_NOT_FOUND)
 
         if (project.userId != userId) {
             throw BusinessException(ProjectError.PROJECT_ACCESS_DENIED)
