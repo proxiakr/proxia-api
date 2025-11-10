@@ -38,4 +38,9 @@ class ProjectController(
     override fun deleteProject(
         @PathVariable projectId: Long,
     ) = projectService.deleteProject(projectId)
+
+    @GetMapping("/{projectId}/canvas")
+    override fun getProjectCanvas(
+        @PathVariable projectId: Long,
+    ) = projectService.getProjectCanvas(projectId)
 }

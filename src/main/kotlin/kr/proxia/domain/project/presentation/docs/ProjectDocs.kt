@@ -23,4 +23,7 @@ interface ProjectDocs {
 
     @Operation(summary = "Delete Project")
     fun deleteProject(projectId: Long)
+
+    @Operation(summary = "Get Project Canvas")
+    fun getProjectCanvas(projectId: Long): kr.proxia.domain.service.presentation.response.ProjectCanvasResponse
 }
