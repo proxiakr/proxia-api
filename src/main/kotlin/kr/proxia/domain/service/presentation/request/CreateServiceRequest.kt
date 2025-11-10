@@ -6,6 +6,7 @@ import jakarta.validation.constraints.NotNull
 import jakarta.validation.constraints.Size
 import kr.proxia.domain.resource.presentation.request.CreateAppResourceRequest
 import kr.proxia.domain.resource.presentation.request.CreateDatabaseResourceRequest
+import kr.proxia.domain.resource.presentation.request.CreateDomainResourceRequest
 import kr.proxia.domain.service.domain.enums.ServiceType
 
 data class CreateServiceRequest(
@@ -24,4 +25,6 @@ data class CreateServiceRequest(
     val appResource: CreateAppResourceRequest?,
     @field:Valid
     val databaseResource: CreateDatabaseResourceRequest?,
+    @field:Valid
+    val domainResource: CreateDomainResourceRequest?,
 )

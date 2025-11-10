@@ -24,6 +24,7 @@ class ConnectionEntity(
     val targetId: Long,
     type: ConnectionType,
     label: String?,
+    weight: Int?,
 ) : BaseEntity() {
     @Enumerated(EnumType.STRING)
     var type: ConnectionType = type
@@ -32,11 +33,16 @@ class ConnectionEntity(
     var label: String? = label
         protected set
 
+    var weight: Int? = weight
+        protected set
+
     fun update(
         type: ConnectionType = this.type,
         label: String? = this.label,
+        weight: Int? = this.weight,
     ) {
         this.type = type
         this.label = label
+        this.weight = weight
     }
 }

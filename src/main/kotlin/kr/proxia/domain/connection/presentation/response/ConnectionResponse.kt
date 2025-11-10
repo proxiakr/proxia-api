@@ -11,6 +11,7 @@ data class ConnectionResponse(
     val targetId: Long,
     val type: ConnectionType,
     val label: String?,
+    val weight: Int?,
     val createdAt: LocalDateTime,
     val updatedAt: LocalDateTime,
 ) {
@@ -23,6 +24,7 @@ data class ConnectionResponse(
                 targetId = connection.targetId,
                 type = connection.type,
                 label = connection.label,
+                weight = connection.weight,
                 createdAt = connection.createdAt,
                 updatedAt = connection.updatedAt,
             )

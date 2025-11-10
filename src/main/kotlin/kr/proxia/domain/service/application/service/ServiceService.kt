@@ -5,10 +5,13 @@ import kr.proxia.domain.project.domain.error.ProjectError
 import kr.proxia.domain.project.domain.repository.ProjectRepository
 import kr.proxia.domain.resource.domain.entity.AppResourceEntity
 import kr.proxia.domain.resource.domain.entity.DatabaseResourceEntity
+import kr.proxia.domain.resource.domain.entity.DomainResourceEntity
 import kr.proxia.domain.resource.domain.repository.AppResourceRepository
 import kr.proxia.domain.resource.domain.repository.DatabaseResourceRepository
+import kr.proxia.domain.resource.domain.repository.DomainResourceRepository
 import kr.proxia.domain.resource.presentation.response.AppResourceResponse
 import kr.proxia.domain.resource.presentation.response.DatabaseResourceResponse
+import kr.proxia.domain.resource.presentation.response.DomainResourceResponse
 import kr.proxia.domain.service.domain.entity.ServiceEntity
 import kr.proxia.domain.service.domain.enums.ServiceType
 import kr.proxia.domain.service.domain.error.ServiceError
@@ -31,6 +34,7 @@ class ServiceService(
     private val projectRepository: ProjectRepository,
     private val appResourceRepository: AppResourceRepository,
     private val databaseResourceRepository: DatabaseResourceRepository,
+    private val domainResourceRepository: DomainResourceRepository,
     private val encryptionService: EncryptionService,
     private val securityHolder: SecurityHolder,
 ) {
@@ -74,6 +78,17 @@ class ServiceService(
                                 ),
                             ).id
                     }
+                ServiceType.DOMAIN ->
+                    request.domainResource?.let {
+                        domainResourceRepository
+                            .save(
+                                DomainResourceEntity(
+                                    userId = userId,
+                                    subdomain = it.subdomain,
+                                    customDomain = it.customDomain,
+                                ),
+                            ).id
+                    }
                 else -> null
             }
 
@@ -99,6 +114,7 @@ class ServiceService(
 
         val appResourceIds = services.filter { it.type == ServiceType.APP && it.targetId != null }.mapNotNull { it.targetId }
         val databaseResourceIds = services.filter { it.type == ServiceType.DATABASE && it.targetId != null }.mapNotNull { it.targetId }
+        val domainResourceIds = services.filter { it.type == ServiceType.DOMAIN && it.targetId != null }.mapNotNull { it.targetId }
 
         val appResources =
             if (appResourceIds.isNotEmpty()) {
@@ -114,10 +130,18 @@ class ServiceService(
                 emptyMap()
             }
 
+        val domainResources =
+            if (domainResourceIds.isNotEmpty()) {
+                domainResourceRepository.findAllById(domainResourceIds).associateBy { it.id }
+            } else {
+                emptyMap()
+            }
+
         return services.map { service ->
             val appResource = service.targetId?.let { appResources[it] }?.let { AppResourceResponse.of(it) }
             val databaseResource = service.targetId?.let { databaseResources[it] }?.let { DatabaseResourceResponse.of(it) }
-            ServiceResponse.of(service, appResource, databaseResource)
+            val domainResource = service.targetId?.let { domainResources[it] }?.let { DomainResourceResponse.of(it) }
+            ServiceResponse.of(service, appResource, databaseResource, domainResource)
         }
     }
 
@@ -144,7 +168,14 @@ class ServiceService(
                 null
             }
 
-        return ServiceResponse.of(service, appResource, databaseResource)
+        val domainResource =
+            if (service.type == ServiceType.DOMAIN && targetId != null) {
+                domainResourceRepository.findByIdOrNull(targetId)?.let { DomainResourceResponse.of(it) }
+            } else {
+                null
+            }
+
+        return ServiceResponse.of(service, appResource, databaseResource, domainResource)
     }
 
     @Transactional
@@ -217,6 +248,26 @@ class ServiceService(
                                 ).id
                         }
                     } ?: service.targetId
+                ServiceType.DOMAIN ->
+                    request.domainResource?.let {
+                        val currentTargetId = service.targetId
+                        if (currentTargetId != null) {
+                            domainResourceRepository.findByIdOrNull(currentTargetId)?.update(
+                                subdomain = it.subdomain,
+                                customDomain = it.customDomain,
+                            )
+                            currentTargetId
+                        } else {
+                            domainResourceRepository
+                                .save(
+                                    DomainResourceEntity(
+                                        userId = userId,
+                                        subdomain = it.subdomain,
+                                        customDomain = it.customDomain,
+                                    ),
+                                ).id
+                        }
+                    } ?: service.targetId
                 else -> service.targetId
             }
 
@@ -264,6 +315,7 @@ class ServiceService(
             when (service.type) {
                 ServiceType.APP -> appResourceRepository.deleteById(targetId)
                 ServiceType.DATABASE -> databaseResourceRepository.deleteById(targetId)
+                ServiceType.DOMAIN -> domainResourceRepository.deleteById(targetId)
                 else -> {}
             }
         }

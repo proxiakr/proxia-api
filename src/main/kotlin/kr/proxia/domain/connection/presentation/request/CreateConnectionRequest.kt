@@ -16,4 +16,5 @@ data class CreateConnectionRequest(
     val type: ConnectionType,
     @field:Size(max = 100, message = "라벨은 최대 100자까지 가능합니다")
     val label: String?,
+    val weight: Int?,
 )
