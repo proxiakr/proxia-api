@@ -37,7 +37,7 @@ class ProjectServiceTest :
             val request =
                 CreateProjectRequest(
                     name = "Test Project",
-                    slug = "Test-project",
+                    slug = "test-project",
                 )
 
             When("유효한 요청") {
