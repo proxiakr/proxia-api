@@ -7,13 +7,13 @@ import org.springframework.stereotype.Repository
 
 @Repository
 interface GitIntegrationRepository : JpaRepository<GitIntegrationEntity, Long> {
-    fun existsByUserIdAndProvider(
-        userId: Long,
-        provider: GitIntegrationProvider,
-    ): Boolean
-
     fun findByUserIdAndProvider(
         userId: Long,
         provider: GitIntegrationProvider,
     ): GitIntegrationEntity?
+
+    fun existsByUserIdAndProvider(
+        userId: Long,
+        provider: GitIntegrationProvider,
+    ): Boolean
 }
