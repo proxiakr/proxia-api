@@ -13,6 +13,7 @@ import kr.proxia.global.error.BusinessException
 import kr.proxia.global.security.holder.SecurityHolder
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 
 @Service
 class ServiceService(
@@ -64,6 +65,7 @@ class ServiceService(
         return ServiceResponse.from(service)
     }
 
+    @Transactional
     fun updateService(
         serviceId: Long,
         request: UpdateServiceRequest,
@@ -88,6 +90,7 @@ class ServiceService(
         )
     }
 
+    @Transactional
     fun updateServicePosition(
         serviceId: Long,
         request: UpdateServicePositionRequest,
@@ -105,6 +108,7 @@ class ServiceService(
         )
     }
 
+    @Transactional
     fun deleteService(serviceId: Long) {
         val userId = securityHolder.getUserId()
         val service = serviceRepository.findByIdOrNull(serviceId) ?: throw BusinessException(ServiceError.SERVICE_NOT_FOUND)
