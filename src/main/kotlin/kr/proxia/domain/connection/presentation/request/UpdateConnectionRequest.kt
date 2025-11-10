@@ -5,4 +5,5 @@ import kr.proxia.domain.connection.domain.enums.ConnectionType
 data class UpdateConnectionRequest(
     val type: ConnectionType,
     val label: String?,
+    val weight: Int?,
 )
