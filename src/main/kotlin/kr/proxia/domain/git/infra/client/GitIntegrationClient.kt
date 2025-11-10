@@ -20,15 +20,15 @@ class GitIntegrationClient(
             webClient
                 .post()
                 .uri {
-                    it.scheme("https")
+                    it
+                        .scheme("https")
                         .host("github.com")
                         .path("/login/oauth/access_token")
                         .queryParam("client_id", gitIntegrationProperties.github.clientId)
                         .queryParam("client_secret", gitIntegrationProperties.github.clientSecret)
                         .queryParam("code", code)
                         .build()
-                }
-                .accept(MediaType.APPLICATION_JSON)
+                }.accept(MediaType.APPLICATION_JSON)
                 .retrieve()
                 .bodyToMono<ExchangeGithubCodeResponse>()
                 .block() ?: throw BusinessException(GitError.INVALID_GITHUB_CODE)
