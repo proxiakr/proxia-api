@@ -10,12 +10,11 @@ import kr.proxia.domain.project.domain.error.ProjectError
 import kr.proxia.domain.project.domain.repository.ProjectRepository
 import kr.proxia.domain.service.domain.error.ServiceError
 import kr.proxia.domain.service.domain.repository.ServiceRepository
-import kr.proxia.domain.service.presentation.response.ProjectCanvasResponse
-import kr.proxia.domain.service.presentation.response.ServiceResponse
 import kr.proxia.global.error.BusinessException
 import kr.proxia.global.security.holder.SecurityHolder
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 
 @Service
 class ConnectionService(
@@ -82,6 +81,7 @@ class ConnectionService(
         return ConnectionResponse.from(connection)
     }
 
+    @Transactional
     fun updateConnection(
         connectionId: Long,
         request: UpdateConnectionRequest,
@@ -99,6 +99,7 @@ class ConnectionService(
         )
     }
 
+    @Transactional
     fun deleteConnection(connectionId: Long) {
         val userId = securityHolder.getUserId()
         val connection =
@@ -108,27 +109,6 @@ class ConnectionService(
         validateProjectAccess(connection.projectId, userId)
 
         connectionRepository.delete(connection)
-    }
-
-    fun getProjectCanvas(projectId: Long): ProjectCanvasResponse {
-        val userId = securityHolder.getUserId()
-        validateProjectAccess(projectId, userId)
-
-        val services =
-            serviceRepository
-                .findAllByProjectId(projectId)
-                .map { ServiceResponse.from(it) }
-
-        val connections =
-            connectionRepository
-                .findAllByProjectId(projectId)
-                .map { ConnectionResponse.from(it) }
-
-        return ProjectCanvasResponse(
-            projectId = projectId,
-            services = services,
-            connections = connections,
-        )
     }
 
     private fun validateProjectAccess(
