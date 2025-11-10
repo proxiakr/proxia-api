@@ -3,12 +3,21 @@ package kr.proxia.domain.connection.domain.entity
 import jakarta.persistence.Entity
 import jakarta.persistence.EnumType
 import jakarta.persistence.Enumerated
+import jakarta.persistence.Index
 import jakarta.persistence.Table
 import kr.proxia.domain.connection.domain.enums.ConnectionType
 import kr.proxia.global.jpa.common.BaseEntity
 
 @Entity
-@Table(name = "connections")
+@Table(
+    name = "connections",
+    indexes = [
+        Index(name = "idx_connections_project_deleted", columnList = "projectId, deletedAt"),
+        Index(name = "idx_connections_source_deleted", columnList = "sourceId, deletedAt"),
+        Index(name = "idx_connections_target_deleted", columnList = "targetId, deletedAt"),
+        Index(name = "idx_connections_source_target_deleted", columnList = "sourceId, targetId, deletedAt"),
+    ],
+)
 class ConnectionEntity(
     val projectId: Long,
     val sourceId: Long,
