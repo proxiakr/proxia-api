@@ -84,8 +84,8 @@ class ServiceService(
                             .save(
                                 DomainResourceEntity(
                                     userId = userId,
-                                    domain = it.domain,
-                                    sslEnabled = it.sslEnabled,
+                                    subdomain = it.subdomain,
+                                    customDomain = it.customDomain,
                                 ),
                             ).id
                     }
@@ -253,8 +253,8 @@ class ServiceService(
                         val currentTargetId = service.targetId
                         if (currentTargetId != null) {
                             domainResourceRepository.findByIdOrNull(currentTargetId)?.update(
-                                domain = it.domain,
-                                sslEnabled = it.sslEnabled,
+                                subdomain = it.subdomain,
+                                customDomain = it.customDomain,
                             )
                             currentTargetId
                         } else {
@@ -262,8 +262,8 @@ class ServiceService(
                                 .save(
                                     DomainResourceEntity(
                                         userId = userId,
-                                        domain = it.domain,
-                                        sslEnabled = it.sslEnabled,
+                                        subdomain = it.subdomain,
+                                        customDomain = it.customDomain,
                                     ),
                                 ).id
                         }

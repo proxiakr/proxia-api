@@ -8,20 +8,20 @@ import kr.proxia.global.jpa.common.BaseEntity
 @Table(name = "domain_resources")
 class DomainResourceEntity(
     val userId: Long,
-    domain: String,
-    sslEnabled: Boolean,
+    subdomain: String?,
+    customDomain: String?,
 ) : BaseEntity() {
-    var domain: String = domain
+    var subdomain: String? = subdomain
         protected set
 
-    var sslEnabled: Boolean = sslEnabled
+    var customDomain: String? = customDomain
         protected set
 
     fun update(
-        domain: String = this.domain,
-        sslEnabled: Boolean = this.sslEnabled,
+        subdomain: String? = this.subdomain,
+        customDomain: String? = this.customDomain,
     ) {
-        this.domain = domain
-        this.sslEnabled = sslEnabled
+        this.subdomain = subdomain
+        this.customDomain = customDomain
     }
 }
