@@ -46,7 +46,7 @@ class ConnectionService(
             throw BusinessException(ServiceError.SERVICE_ACCESS_DENIED)
         }
 
-        if (connectionRepository.existsBySourceIdAndTargetId(request.sourceId, request.targetId)) {
+        if (connectionRepository.existsBySourceIdAndTargetIdAndDeletedAtIsNull(request.sourceId, request.targetId)) {
             throw BusinessException(ConnectionError.CONNECTION_ALREADY_EXISTS)
         }
 
@@ -66,7 +66,7 @@ class ConnectionService(
         validateProjectAccess(projectId, userId)
 
         return connectionRepository
-            .findAllByProjectId(projectId)
+            .findAllByProjectIdAndDeletedAtIsNull(projectId)
             .map { ConnectionResponse.from(it) }
     }
 
