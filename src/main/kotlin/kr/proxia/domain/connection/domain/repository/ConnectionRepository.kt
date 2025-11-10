@@ -3,7 +3,6 @@ package kr.proxia.domain.connection.domain.repository
 import kr.proxia.domain.connection.domain.entity.ConnectionEntity
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.stereotype.Repository
-import java.time.LocalDateTime
 
 @Repository
 interface ConnectionRepository : JpaRepository<ConnectionEntity, Long> {
@@ -18,4 +17,6 @@ interface ConnectionRepository : JpaRepository<ConnectionEntity, Long> {
         sourceId: Long,
         targetId: Long,
     ): List<ConnectionEntity>
+
+    fun findByIdAndDeletedAtIsNull(id: Long): ConnectionEntity?
 }

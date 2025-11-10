@@ -1,5 +1,6 @@
 package kr.proxia.domain.connection.presentation.controller
 
+import jakarta.validation.Valid
 import kr.proxia.domain.connection.application.service.ConnectionService
 import kr.proxia.domain.connection.presentation.docs.ConnectionDocs
 import kr.proxia.domain.connection.presentation.request.CreateConnectionRequest
@@ -21,7 +22,7 @@ class ConnectionController(
     @PostMapping
     override fun createConnection(
         @PathVariable projectId: Long,
-        @RequestBody request: CreateConnectionRequest,
+        @Valid @RequestBody request: CreateConnectionRequest,
     ) = connectionService.createConnection(projectId, request)
 
     @GetMapping
@@ -39,7 +40,7 @@ class ConnectionController(
     override fun updateConnection(
         @PathVariable projectId: Long,
         @PathVariable connectionId: Long,
-        @RequestBody request: UpdateConnectionRequest,
+        @Valid @RequestBody request: UpdateConnectionRequest,
     ) = connectionService.updateConnection(connectionId, request)
 
     @DeleteMapping("/{connectionId}")

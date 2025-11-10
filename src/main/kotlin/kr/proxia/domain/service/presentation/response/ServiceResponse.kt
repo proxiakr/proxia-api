@@ -1,5 +1,7 @@
 package kr.proxia.domain.service.presentation.response
 
+import kr.proxia.domain.resource.presentation.response.AppResourceResponse
+import kr.proxia.domain.resource.presentation.response.DatabaseResourceResponse
 import kr.proxia.domain.service.domain.entity.ServiceEntity
 import kr.proxia.domain.service.domain.enums.ServiceType
 import java.time.LocalDateTime
@@ -12,21 +14,30 @@ data class ServiceResponse(
     val type: ServiceType,
     val x: Double,
     val y: Double,
+    val targetId: Long?,
+    val appResource: AppResourceResponse?,
+    val databaseResource: DatabaseResourceResponse?,
     val createdAt: LocalDateTime,
     val updatedAt: LocalDateTime,
 ) {
     companion object {
-        fun from(service: ServiceEntity) =
-            ServiceResponse(
-                id = service.id,
-                projectId = service.projectId,
-                name = service.name,
-                description = service.description,
-                type = service.type,
-                x = service.x,
-                y = service.y,
-                createdAt = service.createdAt,
-                updatedAt = service.updatedAt,
-            )
+        fun of(
+            service: ServiceEntity,
+            appResource: AppResourceResponse? = null,
+            databaseResource: DatabaseResourceResponse? = null,
+        ) = ServiceResponse(
+            id = service.id,
+            projectId = service.projectId,
+            name = service.name,
+            description = service.description,
+            type = service.type,
+            x = service.x,
+            y = service.y,
+            targetId = service.targetId,
+            appResource = appResource,
+            databaseResource = databaseResource,
+            createdAt = service.createdAt,
+            updatedAt = service.updatedAt,
+        )
     }
 }

@@ -30,6 +30,7 @@ class ProjectService(
     private val connectionRepository: ConnectionRepository,
     private val securityHolder: SecurityHolder,
 ) {
+    @Transactional
     fun createProject(request: CreateProjectRequest) {
         val userId = securityHolder.getUserId()
         val slug = request.slug
@@ -68,7 +69,7 @@ class ProjectService(
         val user = userRepository.findByIdOrNull(userId) ?: throw BusinessException(UserError.USER_NOT_FOUND)
 
         val project =
-            projectRepository.findByIdOrNull(projectId)
+            projectRepository.findByIdAndDeletedAtIsNull(projectId)
                 ?: throw BusinessException(ProjectError.PROJECT_NOT_FOUND)
 
         if (project.userId != userId) {
@@ -94,22 +95,31 @@ class ProjectService(
     fun deleteProject(projectId: Long) {
         val userId = securityHolder.getUserId()
         val project =
-            projectRepository.findByIdOrNull(projectId) ?: throw BusinessException(ProjectError.PROJECT_NOT_FOUND)
+            projectRepository.findByIdAndDeletedAtIsNull(projectId) ?: throw BusinessException(ProjectError.PROJECT_NOT_FOUND)
 
         if (project.userId != userId) {
             throw BusinessException(ProjectError.PROJECT_ACCESS_DENIED)
         }
 
-        if (project.isDeleted) {
-            throw BusinessException(ProjectError.PROJECT_ALREADY_DELETED)
-        }
+        serviceRepository
+            .findAllByProjectIdAndDeletedAtIsNull(projectId)
+            .forEach { service ->
+                connectionRepository
+                    .findAllBySourceIdOrTargetIdAndDeletedAtIsNull(service.id, service.id)
+                    .forEach { it.delete() }
+                service.delete()
+            }
+
+        connectionRepository
+            .findAllByProjectIdAndDeletedAtIsNull(projectId)
+            .forEach { it.delete() }
 
         project.delete()
     }
 
     fun getProjectCanvas(projectId: Long): ProjectCanvasResponse {
         val userId = securityHolder.getUserId()
-        val project = projectRepository.findByIdOrNull(projectId) ?: throw BusinessException(ProjectError.PROJECT_NOT_FOUND)
+        val project = projectRepository.findByIdAndDeletedAtIsNull(projectId) ?: throw BusinessException(ProjectError.PROJECT_NOT_FOUND)
 
         if (project.userId != userId) {
             throw BusinessException(ProjectError.PROJECT_ACCESS_DENIED)
@@ -118,7 +128,7 @@ class ProjectService(
         val services =
             serviceRepository
                 .findAllByProjectIdAndDeletedAtIsNull(projectId)
-                .map { ServiceResponse.from(it) }
+                .map { ServiceResponse.of(it) }
 
         val connections =
             connectionRepository

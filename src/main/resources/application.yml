@@ -10,6 +10,9 @@ jwt:
   access-token-expiration: 3600000
   refresh-token-expiration: 86400000
 
+encryption:
+  secret-key: ${ENCRYPTION_SECRET_KEY:default-encryption-key-change-in-production}
+
 oauth2:
   github:
     client-id: ${GITHUB_CLIENT_ID}

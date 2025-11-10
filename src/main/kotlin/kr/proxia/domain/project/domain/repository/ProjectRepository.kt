@@ -5,7 +5,6 @@ import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.stereotype.Repository
-import java.time.LocalDateTime
 
 @Repository
 interface ProjectRepository : JpaRepository<ProjectEntity, Long> {
@@ -15,4 +14,6 @@ interface ProjectRepository : JpaRepository<ProjectEntity, Long> {
     ): Page<ProjectEntity>
 
     fun existsBySlugAndDeletedAtIsNull(slug: String): Boolean
+
+    fun findByIdAndDeletedAtIsNull(id: Long): ProjectEntity?
 }

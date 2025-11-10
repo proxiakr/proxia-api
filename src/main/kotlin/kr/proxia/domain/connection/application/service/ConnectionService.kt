@@ -12,7 +12,6 @@ import kr.proxia.domain.service.domain.error.ServiceError
 import kr.proxia.domain.service.domain.repository.ServiceRepository
 import kr.proxia.global.error.BusinessException
 import kr.proxia.global.security.holder.SecurityHolder
-import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
@@ -35,11 +34,11 @@ class ConnectionService(
         }
 
         val sourceService =
-            serviceRepository.findByIdOrNull(request.sourceId)
+            serviceRepository.findByIdAndDeletedAtIsNull(request.sourceId)
                 ?: throw BusinessException(ConnectionError.SOURCE_SERVICE_NOT_FOUND)
 
         val targetService =
-            serviceRepository.findByIdOrNull(request.targetId)
+            serviceRepository.findByIdAndDeletedAtIsNull(request.targetId)
                 ?: throw BusinessException(ConnectionError.TARGET_SERVICE_NOT_FOUND)
 
         if (sourceService.projectId != projectId || targetService.projectId != projectId) {
@@ -73,7 +72,7 @@ class ConnectionService(
     fun getConnection(connectionId: Long): ConnectionResponse {
         val userId = securityHolder.getUserId()
         val connection =
-            connectionRepository.findByIdOrNull(connectionId)
+            connectionRepository.findByIdAndDeletedAtIsNull(connectionId)
                 ?: throw BusinessException(ConnectionError.CONNECTION_NOT_FOUND)
 
         validateProjectAccess(connection.projectId, userId)
@@ -88,7 +87,7 @@ class ConnectionService(
     ) {
         val userId = securityHolder.getUserId()
         val connection =
-            connectionRepository.findByIdOrNull(connectionId)
+            connectionRepository.findByIdAndDeletedAtIsNull(connectionId)
                 ?: throw BusinessException(ConnectionError.CONNECTION_NOT_FOUND)
 
         validateProjectAccess(connection.projectId, userId)
@@ -103,19 +102,19 @@ class ConnectionService(
     fun deleteConnection(connectionId: Long) {
         val userId = securityHolder.getUserId()
         val connection =
-            connectionRepository.findByIdOrNull(connectionId)
+            connectionRepository.findByIdAndDeletedAtIsNull(connectionId)
                 ?: throw BusinessException(ConnectionError.CONNECTION_NOT_FOUND)
 
         validateProjectAccess(connection.projectId, userId)
 
-        connectionRepository.delete(connection)
+        connection.delete()
     }
 
     private fun validateProjectAccess(
         projectId: Long,
         userId: Long,
     ) {
-        val project = projectRepository.findByIdOrNull(projectId) ?: throw BusinessException(ProjectError.PROJECT_NOT_FOUND)
+        val project = projectRepository.findByIdAndDeletedAtIsNull(projectId) ?: throw BusinessException(ProjectError.PROJECT_NOT_FOUND)
 
         if (project.userId != userId) {
             throw BusinessException(ProjectError.PROJECT_ACCESS_DENIED)

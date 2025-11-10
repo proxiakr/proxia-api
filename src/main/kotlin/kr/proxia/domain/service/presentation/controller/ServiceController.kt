@@ -1,5 +1,6 @@
 package kr.proxia.domain.service.presentation.controller
 
+import jakarta.validation.Valid
 import kr.proxia.domain.service.application.service.ServiceService
 import kr.proxia.domain.service.presentation.docs.ServiceDocs
 import kr.proxia.domain.service.presentation.request.CreateServiceRequest
@@ -23,7 +24,7 @@ class ServiceController(
     @PostMapping
     override fun createService(
         @PathVariable projectId: Long,
-        @RequestBody request: CreateServiceRequest,
+        @Valid @RequestBody request: CreateServiceRequest,
     ) = serviceService.createService(projectId, request)
 
     @GetMapping
@@ -41,14 +42,14 @@ class ServiceController(
     override fun updateService(
         @PathVariable projectId: Long,
         @PathVariable serviceId: Long,
-        @RequestBody request: UpdateServiceRequest,
+        @Valid @RequestBody request: UpdateServiceRequest,
     ) = serviceService.updateService(serviceId, request)
 
     @PatchMapping("/{serviceId}/position")
     override fun updateServicePosition(
         @PathVariable projectId: Long,
         @PathVariable serviceId: Long,
-        @RequestBody request: UpdateServicePositionRequest,
+        @Valid @RequestBody request: UpdateServicePositionRequest,
     ) = serviceService.updateServicePosition(serviceId, request)
 
     @DeleteMapping("/{serviceId}")

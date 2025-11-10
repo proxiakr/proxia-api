@@ -69,7 +69,7 @@ class ConnectionServiceTest :
                     mockk<ServiceEntity>(relaxed = true) {
                         every { this@mockk.projectId } returns projectId
                     }
-                every { connectionRepository.existsBySourceIdAndTargetId(sourceId, targetId) } returns false
+                every { connectionRepository.existsBySourceIdAndTargetIdAndDeletedAtIsNull(sourceId, targetId) } returns false
                 every { connectionRepository.save(any()) } returns mockk(relaxed = true)
 
                 connectionService.createConnection(projectId, request)
@@ -124,7 +124,7 @@ class ConnectionServiceTest :
                     mockk<ServiceEntity>(relaxed = true) {
                         every { this@mockk.projectId } returns projectId
                     }
-                every { connectionRepository.existsBySourceIdAndTargetId(sourceId, targetId) } returns true
+                every { connectionRepository.existsBySourceIdAndTargetIdAndDeletedAtIsNull(sourceId, targetId) } returns true
 
                 Then("예외 발생") {
                     val exception =

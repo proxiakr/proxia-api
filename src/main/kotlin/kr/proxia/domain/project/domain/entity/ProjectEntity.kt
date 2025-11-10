@@ -1,11 +1,18 @@
 package kr.proxia.domain.project.domain.entity
 
 import jakarta.persistence.Entity
+import jakarta.persistence.Index
 import jakarta.persistence.Table
 import kr.proxia.global.jpa.common.BaseEntity
 
 @Entity
-@Table(name = "projects")
+@Table(
+    name = "projects",
+    indexes = [
+        Index(name = "idx_projects_user_deleted", columnList = "userId, deletedAt"),
+        Index(name = "idx_projects_slug_deleted", columnList = "slug, deletedAt"),
+    ],
+)
 class ProjectEntity(
     val userId: Long,
     name: String,
