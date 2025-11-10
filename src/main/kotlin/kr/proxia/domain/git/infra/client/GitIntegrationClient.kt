@@ -4,6 +4,7 @@ import kr.proxia.domain.git.domain.error.GitError
 import kr.proxia.domain.git.infra.data.ExchangeGithubCodeResponse
 import kr.proxia.domain.git.infra.properties.GitIntegrationProperties
 import kr.proxia.global.error.BusinessException
+import org.springframework.http.MediaType
 import org.springframework.stereotype.Component
 import org.springframework.web.reactive.function.client.WebClient
 import org.springframework.web.reactive.function.client.WebClientResponseException
@@ -18,12 +19,16 @@ class GitIntegrationClient(
         try {
             webClient
                 .post()
-                .uri(
-                    "https://github.com/login/oauth/access_token?client_id={clientId}&client_secret={clientSecret}&code={code}",
-                    gitIntegrationProperties.github.clientId,
-                    gitIntegrationProperties.github.clientSecret,
-                    code,
-                ).header("Accept", "application/json")
+                .uri {
+                    it.scheme("https")
+                        .host("github.com")
+                        .path("/login/oauth/access_token")
+                        .queryParam("client_id", gitIntegrationProperties.github.clientId)
+                        .queryParam("client_secret", gitIntegrationProperties.github.clientSecret)
+                        .queryParam("code", code)
+                        .build()
+                }
+                .accept(MediaType.APPLICATION_JSON)
                 .retrieve()
                 .bodyToMono<ExchangeGithubCodeResponse>()
                 .block() ?: throw BusinessException(GitError.INVALID_GITHUB_CODE)
@@ -32,7 +37,7 @@ class GitIntegrationClient(
                 400, 401 -> throw BusinessException(GitError.INVALID_GITHUB_CODE)
                 else -> throw BusinessException(GitError.GITHUB_API_ERROR)
             }
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             throw BusinessException(GitError.GITHUB_API_ERROR)
         }
 }
