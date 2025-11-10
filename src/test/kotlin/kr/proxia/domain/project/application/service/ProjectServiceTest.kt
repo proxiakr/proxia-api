@@ -9,10 +9,12 @@ import io.mockk.just
 import io.mockk.mockk
 import io.mockk.slot
 import io.mockk.verify
+import kr.proxia.domain.connection.domain.repository.ConnectionRepository
 import kr.proxia.domain.project.domain.entity.ProjectEntity
 import kr.proxia.domain.project.domain.error.ProjectError
 import kr.proxia.domain.project.domain.repository.ProjectRepository
 import kr.proxia.domain.project.presentation.request.CreateProjectRequest
+import kr.proxia.domain.service.domain.repository.ServiceRepository
 import kr.proxia.domain.user.domain.entity.UserEntity
 import kr.proxia.domain.user.domain.error.UserError
 import kr.proxia.domain.user.domain.repository.UserRepository
@@ -28,9 +30,18 @@ class ProjectServiceTest :
     BehaviorSpec({
         val userRepository = mockk<UserRepository>()
         val projectRepository = mockk<ProjectRepository>()
+        val serviceRepository = mockk<ServiceRepository>()
+        val connectionRepository = mockk<ConnectionRepository>()
         val securityHolder = mockk<SecurityHolder>()
 
-        val projectService = ProjectService(userRepository, projectRepository, securityHolder)
+        val projectService =
+            ProjectService(
+                userRepository,
+                projectRepository,
+                serviceRepository,
+                connectionRepository,
+                securityHolder,
+            )
 
         Given("createProject") {
             val userId = 1L
@@ -43,7 +54,7 @@ class ProjectServiceTest :
             When("유효한 요청") {
                 val projectSlot = slot<ProjectEntity>()
                 every { securityHolder.getUserId() } returns userId
-                every { projectRepository.existsBySlug(request.slug) } returns false
+                every { projectRepository.existsBySlugAndDeletedAtIsNull(request.slug) } returns false
                 every { projectRepository.save(capture(projectSlot)) } returns mockk(relaxed = true)
 
                 projectService.createProject(request)
@@ -57,7 +68,7 @@ class ProjectServiceTest :
 
             When("이미 존재하는 slug") {
                 every { securityHolder.getUserId() } returns userId
-                every { projectRepository.existsBySlug(request.slug) } returns true
+                every { projectRepository.existsBySlugAndDeletedAtIsNull(request.slug) } returns true
 
                 Then("예외 발생") {
                     val exception =
@@ -93,7 +104,7 @@ class ProjectServiceTest :
                 val page = PageImpl(projects, PageRequest.of(0, 10), 2)
 
                 every { securityHolder.getUserId() } returns userId
-                every { projectRepository.findAllByUserId(userId, offsetLimit.toPageable()) } returns page
+                every { projectRepository.findAllByUserIdAndDeletedAtIsNull(userId, offsetLimit.toPageable()) } returns page
 
                 val result = projectService.getProjects(offsetLimit)
 
