@@ -12,6 +12,8 @@ data class ServiceResponse(
     val type: ServiceType,
     val x: Double,
     val y: Double,
+    val width: Double,
+    val height: Double,
     val createdAt: LocalDateTime,
     val updatedAt: LocalDateTime,
 ) {
@@ -25,6 +27,8 @@ data class ServiceResponse(
                 type = service.type,
                 x = service.x,
                 y = service.y,
+                width = service.width,
+                height = service.height,
                 createdAt = service.createdAt,
                 updatedAt = service.updatedAt,
             )

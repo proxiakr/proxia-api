@@ -43,6 +43,8 @@ class ServiceService(
                 type = request.type,
                 x = request.x,
                 y = request.y,
+                width = request.width,
+                height = request.height,
             ),
         )
     }
@@ -107,6 +109,8 @@ class ServiceService(
         service.updatePosition(
             x = request.x,
             y = request.y,
+            width = request.width,
+            height = request.height,
         )
     }
 

@@ -17,6 +17,8 @@ class ServiceEntity(
     type: ServiceType,
     x: Double,
     y: Double,
+    width: Double,
+    height: Double,
 ) : BaseEntity() {
     var name: String = name
         protected set
@@ -34,6 +36,12 @@ class ServiceEntity(
     var y: Double = y
         protected set
 
+    var width: Double = width
+        protected set
+
+    var height: Double = height
+        protected set
+
     fun update(
         name: String = this.name,
         description: String? = this.description,
@@ -47,8 +55,12 @@ class ServiceEntity(
     fun updatePosition(
         x: Double = this.x,
         y: Double = this.y,
+        width: Double = this.width,
+        height: Double = this.height,
     ) {
         this.x = x
         this.y = y
+        this.width = width
+        this.height = height
     }
 }
