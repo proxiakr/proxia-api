@@ -56,6 +56,7 @@ class ConnectionService(
                 targetId = request.targetId,
                 type = request.type,
                 label = request.label,
+                weight = request.weight,
             ),
         )
     }
@@ -95,6 +96,7 @@ class ConnectionService(
         connection.update(
             type = request.type,
             label = request.label,
+            weight = request.weight,
         )
     }
 
