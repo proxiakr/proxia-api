@@ -2,6 +2,7 @@ package kr.proxia.domain.service.presentation.response
 
 import kr.proxia.domain.resource.presentation.response.AppResourceResponse
 import kr.proxia.domain.resource.presentation.response.DatabaseResourceResponse
+import kr.proxia.domain.resource.presentation.response.DomainResourceResponse
 import kr.proxia.domain.service.domain.entity.ServiceEntity
 import kr.proxia.domain.service.domain.enums.ServiceType
 import java.time.LocalDateTime
@@ -17,6 +18,7 @@ data class ServiceResponse(
     val targetId: Long?,
     val appResource: AppResourceResponse?,
     val databaseResource: DatabaseResourceResponse?,
+    val domainResource: DomainResourceResponse?,
     val createdAt: LocalDateTime,
     val updatedAt: LocalDateTime,
 ) {
@@ -25,6 +27,7 @@ data class ServiceResponse(
             service: ServiceEntity,
             appResource: AppResourceResponse? = null,
             databaseResource: DatabaseResourceResponse? = null,
+            domainResource: DomainResourceResponse? = null,
         ) = ServiceResponse(
             id = service.id,
             projectId = service.projectId,
@@ -36,6 +39,7 @@ data class ServiceResponse(
             targetId = service.targetId,
             appResource = appResource,
             databaseResource = databaseResource,
+            domainResource = domainResource,
             createdAt = service.createdAt,
             updatedAt = service.updatedAt,
         )
