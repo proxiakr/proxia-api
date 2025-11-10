@@ -1,5 +1,6 @@
 package kr.proxia.domain.project.presentation.controller
 
+import jakarta.validation.Valid
 import kr.proxia.domain.project.application.service.ProjectService
 import kr.proxia.domain.project.presentation.docs.ProjectDocs
 import kr.proxia.domain.project.presentation.request.CreateProjectRequest
@@ -20,7 +21,7 @@ class ProjectController(
 ) : ProjectDocs {
     @PostMapping
     override fun createProject(
-        @RequestBody request: CreateProjectRequest,
+        @Valid @RequestBody request: CreateProjectRequest,
     ) = projectService.createProject(request)
 
     @GetMapping
