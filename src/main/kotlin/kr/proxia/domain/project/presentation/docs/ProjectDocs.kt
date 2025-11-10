@@ -5,6 +5,7 @@ import io.swagger.v3.oas.annotations.tags.Tag
 import kr.proxia.domain.project.presentation.request.CreateProjectRequest
 import kr.proxia.domain.project.presentation.response.ProjectDetailResponse
 import kr.proxia.domain.project.presentation.response.ProjectResponse
+import kr.proxia.domain.service.presentation.response.ProjectCanvasResponse
 import kr.proxia.global.response.PageResponse
 
 @Tag(name = "Project")
@@ -23,4 +24,7 @@ interface ProjectDocs {
 
     @Operation(summary = "Delete Project")
     fun deleteProject(projectId: Long)
+
+    @Operation(summary = "Get Project Canvas")
+    fun getProjectCanvas(projectId: Long): ProjectCanvasResponse
 }
