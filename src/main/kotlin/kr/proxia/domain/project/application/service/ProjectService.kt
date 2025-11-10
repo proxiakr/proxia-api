@@ -34,7 +34,7 @@ class ProjectService(
         val userId = securityHolder.getUserId()
         val slug = request.slug
 
-        if (projectRepository.existsBySlug(slug)) {
+        if (projectRepository.existsBySlugAndDeletedAtIsNull(slug)) {
             throw BusinessException(ProjectError.SLUG_ALREADY_EXISTS)
         }
 
@@ -49,7 +49,7 @@ class ProjectService(
 
     fun getProjects(offsetLimit: OffsetLimit): PageResponse<ProjectResponse> {
         val userId = securityHolder.getUserId()
-        val projects = projectRepository.findAllByUserId(userId, offsetLimit.toPageable())
+        val projects = projectRepository.findAllByUserIdAndDeletedAtIsNull(userId, offsetLimit.toPageable())
 
         return projects
             .map { project ->
@@ -117,12 +117,12 @@ class ProjectService(
 
         val services =
             serviceRepository
-                .findAllByProjectId(projectId)
+                .findAllByProjectIdAndDeletedAtIsNull(projectId)
                 .map { ServiceResponse.from(it) }
 
         val connections =
             connectionRepository
-                .findAllByProjectId(projectId)
+                .findAllByProjectIdAndDeletedAtIsNull(projectId)
                 .map { ConnectionResponse.from(it) }
 
         return ProjectCanvasResponse(

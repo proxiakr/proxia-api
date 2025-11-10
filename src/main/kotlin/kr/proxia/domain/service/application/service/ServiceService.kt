@@ -1,5 +1,6 @@
 package kr.proxia.domain.service.application.service
 
+import kr.proxia.domain.connection.domain.repository.ConnectionRepository
 import kr.proxia.domain.project.domain.error.ProjectError
 import kr.proxia.domain.project.domain.repository.ProjectRepository
 import kr.proxia.domain.service.domain.entity.ServiceEntity
@@ -18,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional
 @Service
 class ServiceService(
     private val serviceRepository: ServiceRepository,
+    private val connectionRepository: ConnectionRepository,
     private val projectRepository: ProjectRepository,
     private val securityHolder: SecurityHolder,
 ) {
@@ -28,7 +30,7 @@ class ServiceService(
         val userId = securityHolder.getUserId()
         validateProjectAccess(projectId, userId)
 
-        if (serviceRepository.existsByProjectIdAndName(projectId, request.name)) {
+        if (serviceRepository.existsByProjectIdAndNameAndDeletedAtIsNull(projectId, request.name)) {
             throw BusinessException(ServiceError.SERVICE_NAME_ALREADY_EXISTS)
         }
 
@@ -50,7 +52,7 @@ class ServiceService(
         validateProjectAccess(projectId, userId)
 
         return serviceRepository
-            .findAllByProjectId(projectId)
+            .findAllByProjectIdAndDeletedAtIsNull(projectId)
             .map { ServiceResponse.from(it) }
     }
 
@@ -78,7 +80,7 @@ class ServiceService(
         }
 
         if (service.name != request.name &&
-            serviceRepository.existsByProjectIdAndName(service.projectId, request.name)
+            serviceRepository.existsByProjectIdAndNameAndDeletedAtIsNull(service.projectId, request.name)
         ) {
             throw BusinessException(ServiceError.SERVICE_NAME_ALREADY_EXISTS)
         }
@@ -120,6 +122,10 @@ class ServiceService(
         if (service.isDeleted) {
             throw BusinessException(ServiceError.SERVICE_ALREADY_DELETED)
         }
+
+        connectionRepository
+            .findAllBySourceIdOrTargetIdAndDeletedAtIsNull(serviceId, serviceId)
+            .forEach { it.delete() }
 
         service.delete()
     }
