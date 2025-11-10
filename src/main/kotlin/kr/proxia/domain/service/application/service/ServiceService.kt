@@ -13,6 +13,7 @@ import kr.proxia.global.error.BusinessException
 import kr.proxia.global.security.holder.SecurityHolder
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 
 @Service
 class ServiceService(
@@ -55,7 +56,8 @@ class ServiceService(
 
     fun getService(serviceId: Long): ServiceResponse {
         val userId = securityHolder.getUserId()
-        val service = serviceRepository.findByIdOrNull(serviceId) ?: throw BusinessException(ServiceError.SERVICE_NOT_FOUND)
+        val service =
+            serviceRepository.findByIdOrNull(serviceId) ?: throw BusinessException(ServiceError.SERVICE_NOT_FOUND)
 
         if (service.userId != userId) {
             throw BusinessException(ServiceError.SERVICE_ACCESS_DENIED)
@@ -64,12 +66,14 @@ class ServiceService(
         return ServiceResponse.from(service)
     }
 
+    @Transactional
     fun updateService(
         serviceId: Long,
         request: UpdateServiceRequest,
     ) {
         val userId = securityHolder.getUserId()
-        val service = serviceRepository.findByIdOrNull(serviceId) ?: throw BusinessException(ServiceError.SERVICE_NOT_FOUND)
+        val service =
+            serviceRepository.findByIdOrNull(serviceId) ?: throw BusinessException(ServiceError.SERVICE_NOT_FOUND)
 
         if (service.userId != userId) {
             throw BusinessException(ServiceError.SERVICE_ACCESS_DENIED)
@@ -88,12 +92,14 @@ class ServiceService(
         )
     }
 
+    @Transactional
     fun updateServicePosition(
         serviceId: Long,
         request: UpdateServicePositionRequest,
     ) {
         val userId = securityHolder.getUserId()
-        val service = serviceRepository.findByIdOrNull(serviceId) ?: throw BusinessException(ServiceError.SERVICE_NOT_FOUND)
+        val service =
+            serviceRepository.findByIdOrNull(serviceId) ?: throw BusinessException(ServiceError.SERVICE_NOT_FOUND)
 
         if (service.userId != userId) {
             throw BusinessException(ServiceError.SERVICE_ACCESS_DENIED)
@@ -105,9 +111,11 @@ class ServiceService(
         )
     }
 
+    @Transactional
     fun deleteService(serviceId: Long) {
         val userId = securityHolder.getUserId()
-        val service = serviceRepository.findByIdOrNull(serviceId) ?: throw BusinessException(ServiceError.SERVICE_NOT_FOUND)
+        val service =
+            serviceRepository.findByIdOrNull(serviceId) ?: throw BusinessException(ServiceError.SERVICE_NOT_FOUND)
 
         if (service.userId != userId) {
             throw BusinessException(ServiceError.SERVICE_ACCESS_DENIED)
@@ -124,7 +132,8 @@ class ServiceService(
         projectId: Long,
         userId: Long,
     ) {
-        val project = projectRepository.findByIdOrNull(projectId) ?: throw BusinessException(ProjectError.PROJECT_NOT_FOUND)
+        val project =
+            projectRepository.findByIdOrNull(projectId) ?: throw BusinessException(ProjectError.PROJECT_NOT_FOUND)
 
         if (project.userId != userId) {
             throw BusinessException(ProjectError.PROJECT_ACCESS_DENIED)
