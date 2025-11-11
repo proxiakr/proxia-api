@@ -65,7 +65,7 @@ class WebhookService(
                     ),
                 )
 
-                deploymentService.deploy(service.id!!, branch)
+                deploymentService.deploy(service.id, branch)
             } catch (e: Exception) {
                 logger.error("Failed to trigger deployment for service ${service.id}", e)
                 val webhookEvent =
