@@ -3,12 +3,13 @@ package kr.proxia.global.docker.config
 import com.github.dockerjava.api.DockerClient
 import com.github.dockerjava.core.DefaultDockerClientConfig
 import com.github.dockerjava.core.DockerClientImpl
-import com.github.dockerjava.httpclient5.ApacheDockerHttpClient
+import com.github.dockerjava.zerodep.ZerodepDockerHttpClient
 import kr.proxia.global.docker.properties.DockerProperties
 import org.slf4j.LoggerFactory
 import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import java.net.URI
 import java.time.Duration
 
 @Configuration
@@ -22,30 +23,26 @@ class DockerConfig(
     fun dockerClient(): DockerClient {
         logger.info("Configuring Docker client with host: ${dockerProperties.host}")
 
+        val dockerHost = URI.create(dockerProperties.host)
+        logger.info("Docker host URI: $dockerHost")
+
         val config =
             DefaultDockerClientConfig
                 .createDefaultConfigBuilder()
+                .withDockerHost(dockerHost.toString())
+                .withDockerTlsVerify(false)
                 .apply {
-                    // Explicitly set docker host - this should override environment variables
-                    withDockerHost(dockerProperties.host)
-
-                    if (dockerProperties.tls.enabled) {
-                        withDockerTlsVerify(dockerProperties.tls.verify)
-                        dockerProperties.tls.certPath?.let { withDockerCertPath(it) }
-                    } else {
-                        withDockerTlsVerify(false)
-                    }
                     dockerProperties.registry.url?.let { withRegistryUrl(it) }
                     dockerProperties.registry.username?.let { withRegistryUsername(it) }
                     dockerProperties.registry.password?.let { withRegistryPassword(it) }
                 }.build()
 
-        logger.info("Docker client configured with host: ${config.dockerHost}")
+        logger.info("Docker client final config - host: ${config.dockerHost}")
 
         val httpClient =
-            ApacheDockerHttpClient
+            ZerodepDockerHttpClient
                 .Builder()
-                .dockerHost(config.dockerHost)
+                .dockerHost(dockerHost)
                 .sslConfig(config.sslConfig)
                 .maxConnections(100)
                 .connectionTimeout(Duration.ofSeconds(30))

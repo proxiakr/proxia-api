@@ -34,7 +34,7 @@ dependencies {
     runtimeOnly("io.jsonwebtoken:jjwt-jackson:0.12.6")
 
     implementation("com.github.docker-java:docker-java-core:3.3.6")
-    implementation("com.github.docker-java:docker-java-transport-httpclient5:3.3.6")
+    implementation("com.github.docker-java:docker-java-transport-zerodep:3.3.6")
     implementation("org.eclipse.jgit:org.eclipse.jgit:6.10.0.202406032230-r")
 
     runtimeOnly("io.micrometer:micrometer-registry-prometheus")
