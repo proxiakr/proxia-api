@@ -29,7 +29,7 @@ class GithubRepositoryClient(
                 401 -> throw BusinessException(GitError.GIT_INTEGRATION_ACCESS_DENIED)
                 else -> throw BusinessException(GitError.GITHUB_API_ERROR)
             }
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             throw BusinessException(GitError.GITHUB_API_ERROR)
         }
 }
