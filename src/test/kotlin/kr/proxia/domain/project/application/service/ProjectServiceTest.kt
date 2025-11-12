@@ -25,6 +25,7 @@ import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.repository.findByIdOrNull
 import java.time.LocalDateTime
+import java.util.UUID
 
 class ProjectServiceTest :
     BehaviorSpec({
@@ -44,7 +45,7 @@ class ProjectServiceTest :
             )
 
         Given("createProject") {
-            val userId = 1L
+            val userId = UUID.fromString("00000000-0000-0000-0000-000000000001")
             val request =
                 CreateProjectRequest(
                     name = "Test Project",
@@ -81,20 +82,22 @@ class ProjectServiceTest :
         }
 
         Given("getProjects") {
-            val userId = 1L
+            val userId = UUID.fromString("00000000-0000-0000-0000-000000000001")
             val offsetLimit = OffsetLimit(offset = 0, limit = 10)
 
             When("프로젝트 목록 조회") {
                 val now = LocalDateTime.now()
+                val projectId1 = UUID.fromString("10000000-0000-0000-0000-000000000001")
+                val projectId2 = UUID.fromString("10000000-0000-0000-0000-000000000002")
                 val project1 = mockk<ProjectEntity>(relaxed = true)
-                every { project1.id } returns 1L
+                every { project1.id } returns projectId1
                 every { project1.name } returns "Project 1"
                 every { project1.slug } returns "project-1"
                 every { project1.createdAt } returns now
                 every { project1.updatedAt } returns now
 
                 val project2 = mockk<ProjectEntity>(relaxed = true)
-                every { project2.id } returns 2L
+                every { project2.id } returns projectId2
                 every { project2.name } returns "Project 2"
                 every { project2.slug } returns "project-2"
                 every { project2.createdAt } returns now
@@ -110,16 +113,16 @@ class ProjectServiceTest :
 
                 Then("프로젝트 목록 반환") {
                     result.content.size shouldBe 2
-                    result.content[0].id shouldBe 1L
-                    result.content[1].id shouldBe 2L
+                    result.content[0].id shouldBe projectId1
+                    result.content[1].id shouldBe projectId2
                     result.hasNext shouldBe false
                 }
             }
         }
 
         Given("getProject") {
-            val userId = 1L
-            val projectId = 1L
+            val userId = UUID.fromString("00000000-0000-0000-0000-000000000001")
+            val projectId = UUID.fromString("10000000-0000-0000-0000-000000000001")
             val now = LocalDateTime.now()
 
             When("프로젝트 조회 성공") {
@@ -138,7 +141,7 @@ class ProjectServiceTest :
 
                 every { securityHolder.getUserId() } returns userId
                 every { userRepository.findByIdOrNull(userId) } returns user
-                every { projectRepository.findByIdOrNull(projectId) } returns project
+                every { projectRepository.findByIdAndDeletedAtIsNull(projectId) } returns project
 
                 val result = projectService.getProject(projectId)
 
@@ -167,7 +170,7 @@ class ProjectServiceTest :
                 val user = mockk<UserEntity>(relaxed = true)
                 every { securityHolder.getUserId() } returns userId
                 every { userRepository.findByIdOrNull(userId) } returns user
-                every { projectRepository.findByIdOrNull(projectId) } returns null
+                every { projectRepository.findByIdAndDeletedAtIsNull(projectId) } returns null
 
                 Then("예외 발생") {
                     val exception =
@@ -180,12 +183,13 @@ class ProjectServiceTest :
 
             When("프로젝트 소유자가 아님") {
                 val user = mockk<UserEntity>(relaxed = true)
+                val otherUserId = UUID.fromString("00000000-0000-0000-0000-000000000002")
                 val project = mockk<ProjectEntity>(relaxed = true)
-                every { project.userId } returns 2L
+                every { project.userId } returns otherUserId
 
                 every { securityHolder.getUserId() } returns userId
                 every { userRepository.findByIdOrNull(userId) } returns user
-                every { projectRepository.findByIdOrNull(projectId) } returns project
+                every { projectRepository.findByIdAndDeletedAtIsNull(projectId) } returns project
 
                 Then("예외 발생") {
                     val exception =
@@ -198,8 +202,8 @@ class ProjectServiceTest :
         }
 
         Given("deleteProject") {
-            val userId = 1L
-            val projectId = 1L
+            val userId = UUID.fromString("00000000-0000-0000-0000-000000000001")
+            val projectId = UUID.fromString("10000000-0000-0000-0000-000000000001")
 
             When("프로젝트 삭제 성공") {
                 val project = mockk<ProjectEntity>(relaxed = true)
@@ -208,7 +212,9 @@ class ProjectServiceTest :
                 every { project.delete() } just Runs
 
                 every { securityHolder.getUserId() } returns userId
-                every { projectRepository.findByIdOrNull(projectId) } returns project
+                every { projectRepository.findByIdAndDeletedAtIsNull(projectId) } returns project
+                every { serviceRepository.findAllByProjectIdAndDeletedAtIsNull(projectId) } returns emptyList()
+                every { connectionRepository.findAllByProjectIdAndDeletedAtIsNull(projectId) } returns emptyList()
 
                 projectService.deleteProject(projectId)
 
@@ -219,7 +225,7 @@ class ProjectServiceTest :
 
             When("프로젝트를 찾을 수 없음") {
                 every { securityHolder.getUserId() } returns userId
-                every { projectRepository.findByIdOrNull(projectId) } returns null
+                every { projectRepository.findByIdAndDeletedAtIsNull(projectId) } returns null
 
                 Then("예외 발생") {
                     val exception =
@@ -231,11 +237,12 @@ class ProjectServiceTest :
             }
 
             When("프로젝트 소유자가 아님") {
+                val otherUserId = UUID.fromString("00000000-0000-0000-0000-000000000002")
                 val project = mockk<ProjectEntity>(relaxed = true)
-                every { project.userId } returns 2L
+                every { project.userId } returns otherUserId
 
                 every { securityHolder.getUserId() } returns userId
-                every { projectRepository.findByIdOrNull(projectId) } returns project
+                every { projectRepository.findByIdAndDeletedAtIsNull(projectId) } returns project
 
                 Then("예외 발생") {
                     val exception =
@@ -247,19 +254,15 @@ class ProjectServiceTest :
             }
 
             When("이미 삭제된 프로젝트") {
-                val project = mockk<ProjectEntity>(relaxed = true)
-                every { project.userId } returns userId
-                every { project.isDeleted } returns true
-
                 every { securityHolder.getUserId() } returns userId
-                every { projectRepository.findByIdOrNull(projectId) } returns project
+                every { projectRepository.findByIdAndDeletedAtIsNull(projectId) } returns null
 
                 Then("예외 발생") {
                     val exception =
                         shouldThrow<BusinessException> {
                             projectService.deleteProject(projectId)
                         }
-                    exception.error shouldBe ProjectError.PROJECT_ALREADY_DELETED
+                    exception.error shouldBe ProjectError.PROJECT_NOT_FOUND
                 }
             }
         }

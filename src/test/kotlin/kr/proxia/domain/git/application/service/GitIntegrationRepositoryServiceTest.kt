@@ -14,6 +14,7 @@ import kr.proxia.domain.git.infra.data.GithubRepository
 import kr.proxia.global.error.BusinessException
 import kr.proxia.global.security.holder.SecurityHolder
 import org.springframework.data.repository.findByIdOrNull
+import java.util.UUID
 
 class GitIntegrationRepositoryServiceTest :
     BehaviorSpec({
@@ -29,8 +30,8 @@ class GitIntegrationRepositoryServiceTest :
             )
 
         Given("getRepositories") {
-            val userId = 1L
-            val integrationId = 5L
+            val userId = UUID.fromString("00000000-0000-0000-0000-000000000001")
+            val integrationId = UUID.fromString("40000000-0000-0000-0000-000000000001")
 
             When("유효한 요청") {
                 val integration =
@@ -77,7 +78,7 @@ class GitIntegrationRepositoryServiceTest :
             }
 
             When("다른 사용자의 integration") {
-                val otherUserId = 2L
+                val otherUserId = UUID.fromString("00000000-0000-0000-0000-000000000002")
                 val integration =
                     mockk<GitIntegrationEntity>(relaxed = true) {
                         every { this@mockk.userId } returns otherUserId

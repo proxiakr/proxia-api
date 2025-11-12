@@ -3,7 +3,9 @@ package kr.proxia.domain.connection.application.service
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.BehaviorSpec
 import io.kotest.matchers.shouldBe
+import io.mockk.Runs
 import io.mockk.every
+import io.mockk.just
 import io.mockk.mockk
 import io.mockk.slot
 import io.mockk.verify
@@ -20,6 +22,7 @@ import kr.proxia.domain.service.domain.repository.ServiceRepository
 import kr.proxia.global.error.BusinessException
 import kr.proxia.global.security.holder.SecurityHolder
 import org.springframework.data.repository.findByIdOrNull
+import java.util.UUID
 
 class ConnectionServiceTest :
     BehaviorSpec({
@@ -37,34 +40,35 @@ class ConnectionServiceTest :
             )
 
         Given("createConnection") {
-            val userId = 1L
-            val projectId = 10L
-            val sourceId = 20L
-            val targetId = 21L
+            val userId = UUID.fromString("00000000-0000-0000-0000-000000000001")
+            val projectId = UUID.fromString("10000000-0000-0000-0000-000000000001")
+            val sourceId = UUID.fromString("20000000-0000-0000-0000-000000000001")
+            val targetId = UUID.fromString("20000000-0000-0000-0000-000000000002")
             val request =
                 CreateConnectionRequest(
                     sourceId = sourceId,
                     targetId = targetId,
-                    type = ConnectionType.HTTP,
+                    type = ConnectionType.ROUTING,
                     label = "REST API",
+                    weight = 1,
                 )
 
             When("유효한 요청") {
                 every { securityHolder.getUserId() } returns userId
                 every {
-                    projectRepository.findByIdOrNull(projectId)
+                    projectRepository.findByIdAndDeletedAtIsNull(projectId)
                 } returns
                     mockk<ProjectEntity>(relaxed = true) {
                         every { this@mockk.userId } returns userId
                     }
                 every {
-                    serviceRepository.findByIdOrNull(sourceId)
+                    serviceRepository.findByIdAndDeletedAtIsNull(sourceId)
                 } returns
                     mockk<ServiceEntity>(relaxed = true) {
                         every { this@mockk.projectId } returns projectId
                     }
                 every {
-                    serviceRepository.findByIdOrNull(targetId)
+                    serviceRepository.findByIdAndDeletedAtIsNull(targetId)
                 } returns
                     mockk<ServiceEntity>(relaxed = true) {
                         every { this@mockk.projectId } returns projectId
@@ -86,7 +90,7 @@ class ConnectionServiceTest :
             When("자기 자신에게 연결") {
                 every { securityHolder.getUserId() } returns userId
                 every {
-                    projectRepository.findByIdOrNull(projectId)
+                    projectRepository.findByIdAndDeletedAtIsNull(projectId)
                 } returns
                     mockk<ProjectEntity>(relaxed = true) {
                         every { this@mockk.userId } returns userId
@@ -107,19 +111,19 @@ class ConnectionServiceTest :
             When("이미 존재하는 연결") {
                 every { securityHolder.getUserId() } returns userId
                 every {
-                    projectRepository.findByIdOrNull(projectId)
+                    projectRepository.findByIdAndDeletedAtIsNull(projectId)
                 } returns
                     mockk<ProjectEntity>(relaxed = true) {
                         every { this@mockk.userId } returns userId
                     }
                 every {
-                    serviceRepository.findByIdOrNull(sourceId)
+                    serviceRepository.findByIdAndDeletedAtIsNull(sourceId)
                 } returns
                     mockk<ServiceEntity>(relaxed = true) {
                         every { this@mockk.projectId } returns projectId
                     }
                 every {
-                    serviceRepository.findByIdOrNull(targetId)
+                    serviceRepository.findByIdAndDeletedAtIsNull(targetId)
                 } returns
                     mockk<ServiceEntity>(relaxed = true) {
                         every { this@mockk.projectId } returns projectId
@@ -137,13 +141,14 @@ class ConnectionServiceTest :
         }
 
         Given("updateConnection") {
-            val userId = 1L
-            val connectionId = 5L
-            val projectId = 10L
+            val userId = UUID.fromString("00000000-0000-0000-0000-000000000001")
+            val connectionId = UUID.fromString("30000000-0000-0000-0000-000000000001")
+            val projectId = UUID.fromString("10000000-0000-0000-0000-000000000001")
             val request =
                 UpdateConnectionRequest(
-                    type = ConnectionType.WEBSOCKET,
-                    label = "WebSocket",
+                    type = ConnectionType.NETWORK,
+                    label = "Network Connection",
+                    weight = 2,
                 )
 
             When("유효한 요청") {
@@ -152,9 +157,9 @@ class ConnectionServiceTest :
                         every { this@mockk.projectId } returns projectId
                     }
                 every { securityHolder.getUserId() } returns userId
-                every { connectionRepository.findByIdOrNull(connectionId) } returns connection
+                every { connectionRepository.findByIdAndDeletedAtIsNull(connectionId) } returns connection
                 every {
-                    projectRepository.findByIdOrNull(projectId)
+                    projectRepository.findByIdAndDeletedAtIsNull(projectId)
                 } returns
                     mockk<ProjectEntity>(relaxed = true) {
                         every { this@mockk.userId } returns userId
@@ -163,35 +168,35 @@ class ConnectionServiceTest :
                 connectionService.updateConnection(connectionId, request)
 
                 Then("연결 업데이트") {
-                    verify { connection.update(request.type, request.label) }
+                    verify { connection.update(request.type, request.label, request.weight) }
                 }
             }
         }
 
         Given("deleteConnection") {
-            val userId = 1L
-            val connectionId = 5L
-            val projectId = 10L
+            val userId = UUID.fromString("00000000-0000-0000-0000-000000000001")
+            val connectionId = UUID.fromString("30000000-0000-0000-0000-000000000001")
+            val projectId = UUID.fromString("10000000-0000-0000-0000-000000000001")
 
             When("유효한 요청") {
                 val connection =
                     mockk<ConnectionEntity>(relaxed = true) {
                         every { this@mockk.projectId } returns projectId
+                        every { delete() } just Runs
                     }
                 every { securityHolder.getUserId() } returns userId
-                every { connectionRepository.findByIdOrNull(connectionId) } returns connection
+                every { connectionRepository.findByIdAndDeletedAtIsNull(connectionId) } returns connection
                 every {
-                    projectRepository.findByIdOrNull(projectId)
+                    projectRepository.findByIdAndDeletedAtIsNull(projectId)
                 } returns
                     mockk<ProjectEntity>(relaxed = true) {
                         every { this@mockk.userId } returns userId
                     }
-                every { connectionRepository.delete(connection) } returns Unit
 
                 connectionService.deleteConnection(connectionId)
 
                 Then("연결 삭제") {
-                    verify { connectionRepository.delete(connection) }
+                    verify { connection.delete() }
                 }
             }
         }
