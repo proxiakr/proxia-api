@@ -45,8 +45,9 @@ class ConnectionServiceTest :
                 CreateConnectionRequest(
                     sourceId = sourceId,
                     targetId = targetId,
-                    type = ConnectionType.HTTP,
+                    type = ConnectionType.ROUTING,
                     label = "REST API",
+                    weight = 1,
                 )
 
             When("유효한 요청") {
@@ -142,8 +143,9 @@ class ConnectionServiceTest :
             val projectId = 10L
             val request =
                 UpdateConnectionRequest(
-                    type = ConnectionType.WEBSOCKET,
+                    type = ConnectionType.NETWORK,
                     label = "WebSocket",
+                    weight = 2,
                 )
 
             When("유효한 요청") {

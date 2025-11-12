@@ -13,6 +13,7 @@ import kr.proxia.domain.project.domain.error.ProjectError
 import kr.proxia.domain.project.domain.repository.ProjectRepository
 import kr.proxia.domain.resource.domain.repository.AppResourceRepository
 import kr.proxia.domain.resource.domain.repository.DatabaseResourceRepository
+import kr.proxia.domain.resource.domain.repository.DomainResourceRepository
 import kr.proxia.domain.service.domain.entity.ServiceEntity
 import kr.proxia.domain.service.domain.enums.ServiceType
 import kr.proxia.domain.service.domain.error.ServiceError
@@ -21,6 +22,7 @@ import kr.proxia.domain.service.presentation.request.CreateServiceRequest
 import kr.proxia.domain.service.presentation.request.UpdateServicePositionRequest
 import kr.proxia.domain.service.presentation.request.UpdateServiceRequest
 import kr.proxia.global.error.BusinessException
+import kr.proxia.global.security.encryption.EncryptionService
 import kr.proxia.global.security.holder.SecurityHolder
 import org.springframework.data.repository.findByIdOrNull
 
@@ -31,6 +33,8 @@ class ServiceServiceTest :
         val projectRepository = mockk<ProjectRepository>()
         val appResourceRepository = mockk<AppResourceRepository>()
         val databaseResourceRepository = mockk<DatabaseResourceRepository>()
+        val domainResourceRepository = mockk<DomainResourceRepository>()
+        val encryptionService = mockk<EncryptionService>()
         val securityHolder = mockk<SecurityHolder>()
 
         val serviceService =
@@ -40,6 +44,8 @@ class ServiceServiceTest :
                 projectRepository,
                 appResourceRepository,
                 databaseResourceRepository,
+                domainResourceRepository,
+                encryptionService,
                 securityHolder,
             )
 
@@ -55,6 +61,7 @@ class ServiceServiceTest :
                     y = 200.0,
                     appResource = null,
                     databaseResource = null,
+                    domainResource = null,
                 )
             val project =
                 mockk<ProjectEntity>(relaxed = true) {
@@ -157,6 +164,7 @@ class ServiceServiceTest :
                     type = ServiceType.APP,
                     appResource = null,
                     databaseResource = null,
+                    domainResource = null,
                 )
             val service =
                 mockk<ServiceEntity>(relaxed = true) {

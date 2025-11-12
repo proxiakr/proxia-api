@@ -5,4 +5,8 @@ import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.stereotype.Repository
 
 @Repository
-interface DomainResourceRepository : JpaRepository<DomainResourceEntity, Long>
+interface DomainResourceRepository : JpaRepository<DomainResourceEntity, Long> {
+    fun findBySubdomainAndDeletedAtIsNull(subdomain: String): DomainResourceEntity?
+
+    fun findByCustomDomainAndDeletedAtIsNull(customDomain: String): DomainResourceEntity?
+}

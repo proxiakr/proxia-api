@@ -24,6 +24,42 @@ git:
       client-id: ${GIT_INTEGRATION_GITHUB_CLIENT_ID}
       client-secret: ${GIT_INTEGRATION_GITHUB_CLIENT_SECRET}
 
+reverse-proxy:
+  type: ${REVERSE_PROXY_TYPE:nginx}
+  nginx:
+    enabled: ${NGINX_ENABLED:true}
+    config-dir: ${NGINX_CONFIG_DIR:/etc/nginx/conf.d}
+    container-name: ${NGINX_CONTAINER_NAME:proxia-nginx}
+    base-domain: ${NGINX_BASE_DOMAIN:proxia.kr}
+    ssl:
+      enabled: ${NGINX_SSL_ENABLED:false}
+      cert-dir: ${NGINX_SSL_CERT_DIR:/etc/letsencrypt/live}
+  cloudflare:
+    enabled: ${CLOUDFLARE_ENABLED:false}
+    account-id: ${CLOUDFLARE_ACCOUNT_ID:}
+    api-token: ${CLOUDFLARE_API_TOKEN:}
+    tunnel:
+      id: ${CLOUDFLARE_TUNNEL_ID:}
+      name: ${CLOUDFLARE_TUNNEL_NAME:proxia-tunnel}
+      config-path: ${CLOUDFLARE_TUNNEL_CONFIG_PATH:/etc/cloudflared}
+
+docker:
+  host: ${DOCKER_HOST:unix:///var/run/docker.sock}
+  tls:
+    enabled: ${DOCKER_TLS_ENABLED:false}
+    verify: ${DOCKER_TLS_VERIFY:true}
+    cert-path: ${DOCKER_CERT_PATH:}
+  network:
+    name: ${DOCKER_NETWORK_NAME:proxia-network}
+  registry:
+    url: ${DOCKER_REGISTRY_URL:}
+    username: ${DOCKER_REGISTRY_USERNAME:}
+    password: ${DOCKER_REGISTRY_PASSWORD:}
+
+webhook:
+  github:
+    secret: ${GITHUB_WEBHOOK_SECRET:}
+
 ---
 spring.config.activate.on-profile: local
 
