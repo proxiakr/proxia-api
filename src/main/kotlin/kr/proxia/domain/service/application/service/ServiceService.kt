@@ -26,6 +26,7 @@ import kr.proxia.global.security.holder.SecurityHolder
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import java.util.UUID
 
 @Service
 class ServiceService(
@@ -40,7 +41,7 @@ class ServiceService(
 ) {
     @Transactional
     fun createService(
-        projectId: Long,
+        projectId: UUID,
         request: CreateServiceRequest,
     ) {
         val userId = securityHolder.getUserId()
@@ -106,7 +107,7 @@ class ServiceService(
         )
     }
 
-    fun getServices(projectId: Long): List<ServiceResponse> {
+    fun getServices(projectId: UUID): List<ServiceResponse> {
         val userId = securityHolder.getUserId()
         validateProjectAccess(projectId, userId)
 
@@ -116,21 +117,21 @@ class ServiceService(
         val databaseResourceIds = services.filter { it.type == ServiceType.DATABASE && it.targetId != null }.mapNotNull { it.targetId }
         val domainResourceIds = services.filter { it.type == ServiceType.DOMAIN && it.targetId != null }.mapNotNull { it.targetId }
 
-        val appResources =
+        val appResources: Map<UUID, AppResourceEntity> =
             if (appResourceIds.isNotEmpty()) {
                 appResourceRepository.findAllById(appResourceIds).associateBy { it.id }
             } else {
                 emptyMap()
             }
 
-        val databaseResources =
+        val databaseResources: Map<UUID, DatabaseResourceEntity> =
             if (databaseResourceIds.isNotEmpty()) {
                 databaseResourceRepository.findAllById(databaseResourceIds).associateBy { it.id }
             } else {
                 emptyMap()
             }
 
-        val domainResources =
+        val domainResources: Map<UUID, DomainResourceEntity> =
             if (domainResourceIds.isNotEmpty()) {
                 domainResourceRepository.findAllById(domainResourceIds).associateBy { it.id }
             } else {
@@ -145,7 +146,7 @@ class ServiceService(
         }
     }
 
-    fun getService(serviceId: Long): ServiceResponse {
+    fun getService(serviceId: UUID): ServiceResponse {
         val userId = securityHolder.getUserId()
         val service = serviceRepository.findByIdAndDeletedAtIsNull(serviceId) ?: throw BusinessException(ServiceError.SERVICE_NOT_FOUND)
 
@@ -180,7 +181,7 @@ class ServiceService(
 
     @Transactional
     fun updateService(
-        serviceId: Long,
+        serviceId: UUID,
         request: UpdateServiceRequest,
     ) {
         val userId = securityHolder.getUserId()
@@ -281,7 +282,7 @@ class ServiceService(
 
     @Transactional
     fun updateServicePosition(
-        serviceId: Long,
+        serviceId: UUID,
         request: UpdateServicePositionRequest,
     ) {
         val userId = securityHolder.getUserId()
@@ -298,7 +299,7 @@ class ServiceService(
     }
 
     @Transactional
-    fun deleteService(serviceId: Long) {
+    fun deleteService(serviceId: UUID) {
         val userId = securityHolder.getUserId()
         val service = serviceRepository.findByIdAndDeletedAtIsNull(serviceId) ?: throw BusinessException(ServiceError.SERVICE_NOT_FOUND)
 
@@ -324,8 +325,8 @@ class ServiceService(
     }
 
     private fun validateProjectAccess(
-        projectId: Long,
-        userId: Long,
+        projectId: UUID,
+        userId: UUID,
     ) {
         val project = projectRepository.findByIdAndDeletedAtIsNull(projectId) ?: throw BusinessException(ProjectError.PROJECT_NOT_FOUND)
 

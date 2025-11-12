@@ -6,16 +6,17 @@ import kr.proxia.domain.resource.presentation.response.DomainResourceResponse
 import kr.proxia.domain.service.domain.entity.ServiceEntity
 import kr.proxia.domain.service.domain.enums.ServiceType
 import java.time.LocalDateTime
+import java.util.UUID
 
 data class ServiceResponse(
-    val id: Long,
-    val projectId: Long,
+    val id: UUID,
+    val projectId: UUID,
     val name: String,
     val description: String?,
     val type: ServiceType,
     val x: Double,
     val y: Double,
-    val targetId: Long?,
+    val targetId: UUID?,
     val appResource: AppResourceResponse?,
     val databaseResource: DatabaseResourceResponse?,
     val domainResource: DomainResourceResponse?,

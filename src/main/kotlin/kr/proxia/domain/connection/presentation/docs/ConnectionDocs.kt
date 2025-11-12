@@ -5,34 +5,35 @@ import io.swagger.v3.oas.annotations.tags.Tag
 import kr.proxia.domain.connection.presentation.request.CreateConnectionRequest
 import kr.proxia.domain.connection.presentation.request.UpdateConnectionRequest
 import kr.proxia.domain.connection.presentation.response.ConnectionResponse
+import java.util.UUID
 
 @Tag(name = "Connection")
 interface ConnectionDocs {
     @Operation(summary = "Create Connection")
     fun createConnection(
-        projectId: Long,
+        projectId: UUID,
         request: CreateConnectionRequest,
     )
 
     @Operation(summary = "Get Connections")
-    fun getConnections(projectId: Long): List<ConnectionResponse>
+    fun getConnections(projectId: UUID): List<ConnectionResponse>
 
     @Operation(summary = "Get Connection")
     fun getConnection(
-        projectId: Long,
-        connectionId: Long,
+        projectId: UUID,
+        connectionId: UUID,
     ): ConnectionResponse
 
     @Operation(summary = "Update Connection")
     fun updateConnection(
-        projectId: Long,
-        connectionId: Long,
+        projectId: UUID,
+        connectionId: UUID,
         request: UpdateConnectionRequest,
     )
 
     @Operation(summary = "Delete Connection")
     fun deleteConnection(
-        projectId: Long,
-        connectionId: Long,
+        projectId: UUID,
+        connectionId: UUID,
     )
 }

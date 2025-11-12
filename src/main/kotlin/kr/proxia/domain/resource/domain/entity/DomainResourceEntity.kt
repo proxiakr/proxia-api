@@ -3,11 +3,12 @@ package kr.proxia.domain.resource.domain.entity
 import jakarta.persistence.Entity
 import jakarta.persistence.Table
 import kr.proxia.global.jpa.common.BaseEntity
+import java.util.UUID
 
 @Entity
 @Table(name = "domain_resources")
 class DomainResourceEntity(
-    val userId: Long,
+    val userId: UUID,
     subdomain: String?,
     customDomain: String?,
 ) : BaseEntity() {

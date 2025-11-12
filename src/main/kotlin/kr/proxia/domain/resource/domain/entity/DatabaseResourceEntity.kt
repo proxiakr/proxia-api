@@ -6,11 +6,12 @@ import jakarta.persistence.Enumerated
 import jakarta.persistence.Table
 import kr.proxia.domain.service.domain.enums.DatabaseType
 import kr.proxia.global.jpa.common.BaseEntity
+import java.util.UUID
 
 @Entity
 @Table(name = "database_resources")
 class DatabaseResourceEntity(
-    val userId: Long,
+    val userId: UUID,
     type: DatabaseType,
     database: String?,
     username: String?,

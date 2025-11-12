@@ -21,6 +21,7 @@ import kr.proxia.global.security.holder.SecurityHolder
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import java.util.UUID
 
 @Service
 class ProjectService(
@@ -64,7 +65,7 @@ class ProjectService(
             }.toResponse()
     }
 
-    fun getProject(projectId: Long): ProjectDetailResponse {
+    fun getProject(projectId: UUID): ProjectDetailResponse {
         val userId = securityHolder.getUserId()
         val user = userRepository.findByIdOrNull(userId) ?: throw BusinessException(UserError.USER_NOT_FOUND)
 
@@ -92,7 +93,7 @@ class ProjectService(
     }
 
     @Transactional
-    fun deleteProject(projectId: Long) {
+    fun deleteProject(projectId: UUID) {
         val userId = securityHolder.getUserId()
         val project =
             projectRepository.findByIdAndDeletedAtIsNull(projectId) ?: throw BusinessException(ProjectError.PROJECT_NOT_FOUND)
@@ -117,7 +118,7 @@ class ProjectService(
         project.delete()
     }
 
-    fun getProjectCanvas(projectId: Long): ProjectCanvasResponse {
+    fun getProjectCanvas(projectId: UUID): ProjectCanvasResponse {
         val userId = securityHolder.getUserId()
         val project = projectRepository.findByIdAndDeletedAtIsNull(projectId) ?: throw BusinessException(ProjectError.PROJECT_NOT_FOUND)
 

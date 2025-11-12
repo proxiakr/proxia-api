@@ -6,13 +6,14 @@ import kr.proxia.domain.user.domain.enums.UserRole
 import kr.proxia.global.security.jwt.enums.JwtType
 import kr.proxia.global.security.jwt.properties.JwtProperties
 import org.springframework.stereotype.Component
+import java.util.UUID
 import kotlin.text.uppercase
 
 @Component
 class JwtExtractor(
     private val jwtProperties: JwtProperties,
 ) {
-    fun getSubject(token: String): Long = getPayload(token).subject.toLong()
+    fun getSubject(token: String): UUID = UUID.fromString(getPayload(token).subject)
 
     fun getRole(token: String): UserRole = UserRole.valueOf(getPayload(token).getUpper(ROLE_KEY))
 

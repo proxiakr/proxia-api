@@ -3,10 +3,11 @@ package kr.proxia.domain.service.domain.repository
 import kr.proxia.domain.service.domain.entity.ServiceEntity
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.stereotype.Repository
+import java.util.UUID
 
 @Repository
-interface ServiceRepository : JpaRepository<ServiceEntity, Long> {
-    fun findAllByProjectIdAndDeletedAtIsNull(projectId: Long): List<ServiceEntity>
+interface ServiceRepository : JpaRepository<ServiceEntity, UUID> {
+    fun findAllByProjectIdAndDeletedAtIsNull(projectId: UUID): List<ServiceEntity>
 
-    fun findByIdAndDeletedAtIsNull(id: Long): ServiceEntity?
+    fun findByIdAndDeletedAtIsNull(id: UUID): ServiceEntity?
 }

@@ -4,11 +4,12 @@ import jakarta.persistence.Entity
 import jakarta.persistence.Table
 import kr.proxia.global.jpa.common.BaseEntity
 import java.time.LocalDateTime
+import java.util.UUID
 
 @Entity
 @Table(name = "refresh_tokens")
 class RefreshTokenEntity(
-    val userId: Long,
+    val userId: UUID,
     refreshToken: String,
     val expiresAt: LocalDateTime,
 ) : BaseEntity() {

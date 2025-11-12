@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
+import java.util.UUID
 
 @RestController
 @RequestMapping("/api/projects")
@@ -32,16 +33,16 @@ class ProjectController(
 
     @GetMapping("/{projectId}")
     override fun getProject(
-        @PathVariable projectId: Long,
+        @PathVariable projectId: UUID,
     ) = projectService.getProject(projectId)
 
     @DeleteMapping("/{projectId}")
     override fun deleteProject(
-        @PathVariable projectId: Long,
+        @PathVariable projectId: UUID,
     ) = projectService.deleteProject(projectId)
 
     @GetMapping("/{projectId}/canvas")
     override fun getProjectCanvas(
-        @PathVariable projectId: Long,
+        @PathVariable projectId: UUID,
     ) = projectService.getProjectCanvas(projectId)
 }

@@ -1,9 +1,10 @@
 package kr.proxia.domain.project.presentation.response
 
 import java.time.LocalDateTime
+import java.util.UUID
 
 data class ProjectResponse(
-    val id: Long,
+    val id: UUID,
     val name: String,
     val slug: String,
     val createdAt: LocalDateTime,

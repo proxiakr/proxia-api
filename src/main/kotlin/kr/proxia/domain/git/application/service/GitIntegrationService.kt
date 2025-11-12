@@ -10,6 +10,7 @@ import kr.proxia.global.error.BusinessException
 import kr.proxia.global.security.holder.SecurityHolder
 import org.springframework.stereotype.Service
 import java.time.LocalDateTime
+import java.util.UUID
 
 @Service
 class GitIntegrationService(
@@ -43,7 +44,7 @@ class GitIntegrationService(
         gitIntegrationRepository.save(gitIntegration)
     }
 
-    fun deleteGitIntegration(integrationId: Long) {
+    fun deleteGitIntegration(integrationId: UUID) {
         val userId = securityHolder.getUserId()
         val integration =
             gitIntegrationRepository.findById(integrationId).orElseThrow {

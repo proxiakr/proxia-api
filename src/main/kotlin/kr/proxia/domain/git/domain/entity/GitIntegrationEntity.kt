@@ -8,11 +8,12 @@ import jakarta.persistence.Table
 import kr.proxia.domain.git.domain.enums.GitIntegrationProvider
 import kr.proxia.global.jpa.common.BaseEntity
 import java.time.LocalDateTime
+import java.util.UUID
 
 @Entity
 @Table(name = "git_integrations")
 class GitIntegrationEntity(
-    val userId: Long,
+    val userId: UUID,
     @Enumerated(EnumType.STRING)
     @Column(columnDefinition = "VARCHAR")
     val provider: GitIntegrationProvider,
