@@ -5,6 +5,7 @@ import jakarta.persistence.Column
 import jakarta.persistence.EntityListeners
 import jakarta.persistence.Id
 import jakarta.persistence.MappedSuperclass
+import jakarta.persistence.Transient
 import org.hibernate.proxy.HibernateProxy
 import org.springframework.data.annotation.CreatedDate
 import org.springframework.data.annotation.LastModifiedDate
@@ -57,10 +58,10 @@ abstract class BaseEntity : Persistable<UUID> {
         if (other !is HibernateProxy && this::class != other::class) return false
 
         return id ==
-            when (other) {
-                is HibernateProxy -> other.hibernateLazyInitializer.identifier
-                else -> (other as BaseEntity).id
-            }
+                when (other) {
+                    is HibernateProxy -> other.hibernateLazyInitializer.identifier
+                    else -> (other as BaseEntity).id
+                }
     }
 
     override fun hashCode() = Objects.hashCode(id)
