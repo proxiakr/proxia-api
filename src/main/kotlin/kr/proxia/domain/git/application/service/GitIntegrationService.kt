@@ -6,6 +6,7 @@ import kr.proxia.domain.git.domain.error.GitError
 import kr.proxia.domain.git.domain.repository.GitIntegrationRepository
 import kr.proxia.domain.git.infra.client.GitIntegrationClient
 import kr.proxia.domain.git.presentation.request.CreateGitIntegrationRequest
+import kr.proxia.domain.git.presentation.response.GitIntegrationResponse
 import kr.proxia.global.error.BusinessException
 import kr.proxia.global.security.holder.SecurityHolder
 import org.springframework.stereotype.Service
@@ -41,6 +42,31 @@ class GitIntegrationService(
             }
 
         gitIntegrationRepository.save(gitIntegration)
+    }
+
+    fun getGitIntegrations(): List<GitIntegrationResponse> {
+        val userId = securityHolder.getUserId()
+        return gitIntegrationRepository
+            .findByUserIdAndDeletedAtIsNull(userId)
+            .map { GitIntegrationResponse.from(it) }
+    }
+
+    fun getGitIntegration(integrationId: Long): GitIntegrationResponse {
+        val userId = securityHolder.getUserId()
+        val integration =
+            gitIntegrationRepository.findById(integrationId).orElseThrow {
+                BusinessException(GitError.GIT_INTEGRATION_NOT_FOUND)
+            }
+
+        if (integration.userId != userId) {
+            throw BusinessException(GitError.GIT_INTEGRATION_ACCESS_DENIED)
+        }
+
+        if (integration.isDeleted) {
+            throw BusinessException(GitError.GIT_INTEGRATION_NOT_FOUND)
+        }
+
+        return GitIntegrationResponse.from(integration)
     }
 
     fun deleteGitIntegration(integrationId: Long) {

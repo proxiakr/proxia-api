@@ -4,7 +4,6 @@ import io.kotest.core.spec.style.BehaviorSpec
 import io.kotest.matchers.shouldBe
 import io.mockk.every
 import io.mockk.mockk
-import io.mockk.verify
 import kr.proxia.domain.resource.domain.entity.DomainResourceEntity
 import kr.proxia.domain.resource.domain.repository.DomainResourceRepository
 import kr.proxia.global.nginx.properties.NginxProperties

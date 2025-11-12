@@ -16,4 +16,6 @@ interface GitIntegrationRepository : JpaRepository<GitIntegrationEntity, Long> {
         userId: Long,
         provider: GitIntegrationProvider,
     ): Boolean
+
+    fun findByUserIdAndDeletedAtIsNull(userId: Long): List<GitIntegrationEntity>
 }

@@ -15,7 +15,6 @@ import kr.proxia.domain.resource.domain.repository.AppResourceRepository
 import kr.proxia.domain.resource.domain.repository.DatabaseResourceRepository
 import kr.proxia.domain.resource.domain.repository.DomainResourceRepository
 import kr.proxia.domain.service.domain.entity.ServiceEntity
-import kr.proxia.global.security.encryption.EncryptionService
 import kr.proxia.domain.service.domain.enums.ServiceType
 import kr.proxia.domain.service.domain.error.ServiceError
 import kr.proxia.domain.service.domain.repository.ServiceRepository
@@ -23,6 +22,7 @@ import kr.proxia.domain.service.presentation.request.CreateServiceRequest
 import kr.proxia.domain.service.presentation.request.UpdateServicePositionRequest
 import kr.proxia.domain.service.presentation.request.UpdateServiceRequest
 import kr.proxia.global.error.BusinessException
+import kr.proxia.global.security.encryption.EncryptionService
 import kr.proxia.global.security.holder.SecurityHolder
 import org.springframework.data.repository.findByIdOrNull
 
