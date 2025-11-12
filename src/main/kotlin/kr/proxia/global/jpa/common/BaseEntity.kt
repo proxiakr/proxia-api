@@ -58,10 +58,10 @@ abstract class BaseEntity : Persistable<UUID> {
         if (other !is HibernateProxy && this::class != other::class) return false
 
         return id ==
-                when (other) {
-                    is HibernateProxy -> other.hibernateLazyInitializer.identifier
-                    else -> (other as BaseEntity).id
-                }
+            when (other) {
+                is HibernateProxy -> other.hibernateLazyInitializer.identifier
+                else -> (other as BaseEntity).id
+            }
     }
 
     override fun hashCode() = Objects.hashCode(id)
