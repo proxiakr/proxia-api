@@ -6,11 +6,12 @@ import jakarta.persistence.Enumerated
 import jakarta.persistence.Table
 import kr.proxia.domain.service.domain.enums.AppFramework
 import kr.proxia.global.jpa.common.BaseEntity
+import java.util.UUID
 
 @Entity
 @Table(name = "app_resources")
 class AppResourceEntity(
-    val userId: Long,
+    val userId: UUID,
     framework: AppFramework?,
     repositoryUrl: String?,
     branch: String?,

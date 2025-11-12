@@ -4,6 +4,7 @@ import jakarta.persistence.Entity
 import jakarta.persistence.Index
 import jakarta.persistence.Table
 import kr.proxia.global.jpa.common.BaseEntity
+import java.util.UUID
 
 @Entity
 @Table(
@@ -14,7 +15,7 @@ import kr.proxia.global.jpa.common.BaseEntity
     ],
 )
 class ProjectEntity(
-    val userId: Long,
+    val userId: UUID,
     name: String,
     slug: String,
 ) : BaseEntity() {

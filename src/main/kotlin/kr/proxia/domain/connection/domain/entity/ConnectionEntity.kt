@@ -7,6 +7,7 @@ import jakarta.persistence.Index
 import jakarta.persistence.Table
 import kr.proxia.domain.connection.domain.enums.ConnectionType
 import kr.proxia.global.jpa.common.BaseEntity
+import java.util.UUID
 
 @Entity
 @Table(
@@ -19,9 +20,9 @@ import kr.proxia.global.jpa.common.BaseEntity
     ],
 )
 class ConnectionEntity(
-    val projectId: Long,
-    val sourceId: Long,
-    val targetId: Long,
+    val projectId: UUID,
+    val sourceId: UUID,
+    val targetId: UUID,
     type: ConnectionType,
     label: String?,
     weight: Int?,

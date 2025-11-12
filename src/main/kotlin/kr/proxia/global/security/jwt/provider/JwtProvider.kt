@@ -6,13 +6,14 @@ import kr.proxia.domain.user.domain.enums.UserRole
 import kr.proxia.global.security.jwt.enums.JwtType
 import kr.proxia.global.security.jwt.properties.JwtProperties
 import org.springframework.stereotype.Component
+import java.util.UUID
 
 @Component
 class JwtProvider(
     private val jwtProperties: JwtProperties,
 ) {
     fun createAccessToken(
-        userId: Long,
+        userId: UUID,
         role: UserRole,
     ): String =
         Jwts
@@ -23,7 +24,7 @@ class JwtProvider(
             .signWith(jwtProperties.secretKeySpec)
             .compact()
 
-    fun createRefreshToken(userId: Long): String =
+    fun createRefreshToken(userId: UUID): String =
         Jwts
             .builder()
             .subject(userId.toString())

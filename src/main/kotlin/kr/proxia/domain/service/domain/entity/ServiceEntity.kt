@@ -7,6 +7,7 @@ import jakarta.persistence.Index
 import jakarta.persistence.Table
 import kr.proxia.domain.service.domain.enums.ServiceType
 import kr.proxia.global.jpa.common.BaseEntity
+import java.util.UUID
 
 @Entity
 @Table(
@@ -17,14 +18,14 @@ import kr.proxia.global.jpa.common.BaseEntity
     ],
 )
 class ServiceEntity(
-    val projectId: Long,
-    val userId: Long,
+    val projectId: UUID,
+    val userId: UUID,
     name: String,
     description: String?,
     type: ServiceType,
     x: Double,
     y: Double,
-    targetId: Long?,
+    targetId: UUID?,
 ) : BaseEntity() {
     var name: String = name
         protected set
@@ -42,14 +43,14 @@ class ServiceEntity(
     var y: Double = y
         protected set
 
-    var targetId: Long? = targetId
+    var targetId: UUID? = targetId
         protected set
 
     fun update(
         name: String = this.name,
         description: String? = this.description,
         type: ServiceType = this.type,
-        targetId: Long? = this.targetId,
+        targetId: UUID? = this.targetId,
     ) {
         this.name = name
         this.description = description

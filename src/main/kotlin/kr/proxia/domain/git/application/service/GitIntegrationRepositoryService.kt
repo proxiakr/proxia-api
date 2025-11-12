@@ -9,6 +9,7 @@ import kr.proxia.global.error.BusinessException
 import kr.proxia.global.security.holder.SecurityHolder
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
+import java.util.UUID
 
 @Service
 class GitIntegrationRepositoryService(
@@ -16,7 +17,7 @@ class GitIntegrationRepositoryService(
     private val githubRepositoryClient: GithubRepositoryClient,
     private val securityHolder: SecurityHolder,
 ) {
-    fun getRepositories(gitIntegrationId: Long): List<GitIntegrationRepositoryResponse> {
+    fun getRepositories(gitIntegrationId: UUID): List<GitIntegrationRepositoryResponse> {
         val userId = securityHolder.getUserId()
         val gitIntegration =
             gitIntegrationRepository.findByIdOrNull(gitIntegrationId)

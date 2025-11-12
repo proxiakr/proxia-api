@@ -3,12 +3,13 @@ package kr.proxia.domain.connection.presentation.response
 import kr.proxia.domain.connection.domain.entity.ConnectionEntity
 import kr.proxia.domain.connection.domain.enums.ConnectionType
 import java.time.LocalDateTime
+import java.util.UUID
 
 data class ConnectionResponse(
-    val id: Long,
-    val projectId: Long,
-    val sourceId: Long,
-    val targetId: Long,
+    val id: UUID,
+    val projectId: UUID,
+    val sourceId: UUID,
+    val targetId: UUID,
     val type: ConnectionType,
     val label: String?,
     val weight: Int?,

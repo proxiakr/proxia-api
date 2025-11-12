@@ -5,11 +5,12 @@ import jakarta.persistence.Table
 import kr.proxia.domain.deployment.domain.enums.DeploymentStatus
 import kr.proxia.global.jpa.common.BaseEntity
 import java.time.LocalDateTime
+import java.util.UUID
 
 @Entity
 @Table(name = "deployments")
 class DeploymentEntity(
-    val projectId: Long,
+    val projectId: UUID,
     val commitSha: String,
     val commitMessage: String?,
     val commitAuthor: String?,

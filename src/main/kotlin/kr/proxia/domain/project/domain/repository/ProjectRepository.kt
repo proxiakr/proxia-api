@@ -5,15 +5,16 @@ import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.stereotype.Repository
+import java.util.UUID
 
 @Repository
-interface ProjectRepository : JpaRepository<ProjectEntity, Long> {
+interface ProjectRepository : JpaRepository<ProjectEntity, UUID> {
     fun findAllByUserIdAndDeletedAtIsNull(
-        userId: Long,
+        userId: UUID,
         pageable: Pageable,
     ): Page<ProjectEntity>
 
     fun existsBySlugAndDeletedAtIsNull(slug: String): Boolean
 
-    fun findByIdAndDeletedAtIsNull(id: Long): ProjectEntity?
+    fun findByIdAndDeletedAtIsNull(id: UUID): ProjectEntity?
 }

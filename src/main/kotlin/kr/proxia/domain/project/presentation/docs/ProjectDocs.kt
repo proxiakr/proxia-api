@@ -6,6 +6,7 @@ import kr.proxia.domain.project.presentation.request.CreateProjectRequest
 import kr.proxia.domain.project.presentation.response.ProjectDetailResponse
 import kr.proxia.domain.project.presentation.response.ProjectResponse
 import kr.proxia.global.response.PageResponse
+import java.util.UUID
 
 @Tag(name = "Project")
 interface ProjectDocs {
@@ -19,11 +20,11 @@ interface ProjectDocs {
     ): PageResponse<ProjectResponse>
 
     @Operation(summary = "Get Project")
-    fun getProject(projectId: Long): ProjectDetailResponse
+    fun getProject(projectId: UUID): ProjectDetailResponse
 
     @Operation(summary = "Delete Project")
-    fun deleteProject(projectId: Long)
+    fun deleteProject(projectId: UUID)
 
     @Operation(summary = "Get Project Canvas")
-    fun getProjectCanvas(projectId: Long): kr.proxia.domain.service.presentation.response.ProjectCanvasResponse
+    fun getProjectCanvas(projectId: UUID): kr.proxia.domain.service.presentation.response.ProjectCanvasResponse
 }

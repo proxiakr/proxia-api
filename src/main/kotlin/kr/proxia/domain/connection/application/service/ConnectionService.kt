@@ -14,6 +14,7 @@ import kr.proxia.global.error.BusinessException
 import kr.proxia.global.security.holder.SecurityHolder
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import java.util.UUID
 
 @Service
 class ConnectionService(
@@ -23,7 +24,7 @@ class ConnectionService(
     private val securityHolder: SecurityHolder,
 ) {
     fun createConnection(
-        projectId: Long,
+        projectId: UUID,
         request: CreateConnectionRequest,
     ) {
         val userId = securityHolder.getUserId()
@@ -61,7 +62,7 @@ class ConnectionService(
         )
     }
 
-    fun getConnections(projectId: Long): List<ConnectionResponse> {
+    fun getConnections(projectId: UUID): List<ConnectionResponse> {
         val userId = securityHolder.getUserId()
         validateProjectAccess(projectId, userId)
 
@@ -70,7 +71,7 @@ class ConnectionService(
             .map { ConnectionResponse.from(it) }
     }
 
-    fun getConnection(connectionId: Long): ConnectionResponse {
+    fun getConnection(connectionId: UUID): ConnectionResponse {
         val userId = securityHolder.getUserId()
         val connection =
             connectionRepository.findByIdAndDeletedAtIsNull(connectionId)
@@ -83,7 +84,7 @@ class ConnectionService(
 
     @Transactional
     fun updateConnection(
-        connectionId: Long,
+        connectionId: UUID,
         request: UpdateConnectionRequest,
     ) {
         val userId = securityHolder.getUserId()
@@ -101,7 +102,7 @@ class ConnectionService(
     }
 
     @Transactional
-    fun deleteConnection(connectionId: Long) {
+    fun deleteConnection(connectionId: UUID) {
         val userId = securityHolder.getUserId()
         val connection =
             connectionRepository.findByIdAndDeletedAtIsNull(connectionId)
@@ -113,8 +114,8 @@ class ConnectionService(
     }
 
     private fun validateProjectAccess(
-        projectId: Long,
-        userId: Long,
+        projectId: UUID,
+        userId: UUID,
     ) {
         val project = projectRepository.findByIdAndDeletedAtIsNull(projectId) ?: throw BusinessException(ProjectError.PROJECT_NOT_FOUND)
 

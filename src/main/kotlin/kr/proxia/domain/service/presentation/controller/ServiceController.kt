@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
+import java.util.UUID
 
 @RestController
 @RequestMapping("/api/projects/{projectId}/services")
@@ -23,38 +24,38 @@ class ServiceController(
 ) : ServiceDocs {
     @PostMapping
     override fun createService(
-        @PathVariable projectId: Long,
+        @PathVariable projectId: UUID,
         @Valid @RequestBody request: CreateServiceRequest,
     ) = serviceService.createService(projectId, request)
 
     @GetMapping
     override fun getServices(
-        @PathVariable projectId: Long,
+        @PathVariable projectId: UUID,
     ) = serviceService.getServices(projectId)
 
     @GetMapping("/{serviceId}")
     override fun getService(
-        @PathVariable projectId: Long,
-        @PathVariable serviceId: Long,
+        @PathVariable projectId: UUID,
+        @PathVariable serviceId: UUID,
     ) = serviceService.getService(serviceId)
 
     @PutMapping("/{serviceId}")
     override fun updateService(
-        @PathVariable projectId: Long,
-        @PathVariable serviceId: Long,
+        @PathVariable projectId: UUID,
+        @PathVariable serviceId: UUID,
         @Valid @RequestBody request: UpdateServiceRequest,
     ) = serviceService.updateService(serviceId, request)
 
     @PatchMapping("/{serviceId}/position")
     override fun updateServicePosition(
-        @PathVariable projectId: Long,
-        @PathVariable serviceId: Long,
+        @PathVariable projectId: UUID,
+        @PathVariable serviceId: UUID,
         @Valid @RequestBody request: UpdateServicePositionRequest,
     ) = serviceService.updateServicePosition(serviceId, request)
 
     @DeleteMapping("/{serviceId}")
     override fun deleteService(
-        @PathVariable projectId: Long,
-        @PathVariable serviceId: Long,
+        @PathVariable projectId: UUID,
+        @PathVariable serviceId: UUID,
     ) = serviceService.deleteService(serviceId)
 }

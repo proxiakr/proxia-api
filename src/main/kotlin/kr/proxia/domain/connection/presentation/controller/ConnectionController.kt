@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
+import java.util.UUID
 
 @RestController
 @RequestMapping("/api/projects/{projectId}/connections")
@@ -21,31 +22,31 @@ class ConnectionController(
 ) : ConnectionDocs {
     @PostMapping
     override fun createConnection(
-        @PathVariable projectId: Long,
+        @PathVariable projectId: UUID,
         @Valid @RequestBody request: CreateConnectionRequest,
     ) = connectionService.createConnection(projectId, request)
 
     @GetMapping
     override fun getConnections(
-        @PathVariable projectId: Long,
+        @PathVariable projectId: UUID,
     ) = connectionService.getConnections(projectId)
 
     @GetMapping("/{connectionId}")
     override fun getConnection(
-        @PathVariable projectId: Long,
-        @PathVariable connectionId: Long,
+        @PathVariable projectId: UUID,
+        @PathVariable connectionId: UUID,
     ) = connectionService.getConnection(connectionId)
 
     @PutMapping("/{connectionId}")
     override fun updateConnection(
-        @PathVariable projectId: Long,
-        @PathVariable connectionId: Long,
+        @PathVariable projectId: UUID,
+        @PathVariable connectionId: UUID,
         @Valid @RequestBody request: UpdateConnectionRequest,
     ) = connectionService.updateConnection(connectionId, request)
 
     @DeleteMapping("/{connectionId}")
     override fun deleteConnection(
-        @PathVariable projectId: Long,
-        @PathVariable connectionId: Long,
+        @PathVariable projectId: UUID,
+        @PathVariable connectionId: UUID,
     ) = connectionService.deleteConnection(connectionId)
 }
