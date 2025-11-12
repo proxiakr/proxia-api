@@ -35,6 +35,7 @@ import kr.proxia.global.security.oauth2.google.client.GoogleOAuthClient
 import kr.proxia.global.security.oauth2.google.data.GoogleUserInfo
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.security.crypto.password.PasswordEncoder
+import java.util.UUID
 
 class AuthServiceTest :
     BehaviorSpec({
@@ -74,9 +75,10 @@ class AuthServiceTest :
                 )
 
             When("새로운 사용자가 로그인") {
+                val userId = UUID.fromString("00000000-0000-0000-0000-000000000001")
                 val savedUser =
                     mockk<UserEntity>(relaxed = true) {
-                        every { id } returns 1L
+                        every { id } returns userId
                         every { email } returns googleUserInfo.email
                         every { name } returns googleUserInfo.name
                         every { avatarUrl } returns googleUserInfo.picture
@@ -88,8 +90,8 @@ class AuthServiceTest :
                 every { userRepository.findByEmail(googleUserInfo.email) } returns null
                 every { userRepository.save(capture(userSlot)) } returns savedUser
                 every { jwtProperties.refreshTokenExpiration } returns 604800000L
-                every { jwtProvider.createAccessToken(1L, UserRole.USER) } returns "access-token"
-                every { jwtProvider.createRefreshToken(1L) } returns "refresh-token"
+                every { jwtProvider.createAccessToken(userId, UserRole.USER) } returns "access-token"
+                every { jwtProvider.createRefreshToken(userId) } returns "refresh-token"
                 every { refreshTokenRepository.save(any()) } returns mockk()
 
                 val result = authService.googleLogin(request)
@@ -108,9 +110,10 @@ class AuthServiceTest :
             }
 
             When("기존 사용자가 로그인") {
+                val userId = UUID.fromString("00000000-0000-0000-0000-000000000002")
                 val existingUser =
                     mockk<UserEntity>(relaxed = true) {
-                        every { id } returns 2L
+                        every { id } returns userId
                         every { email } returns googleUserInfo.email
                         every { name } returns googleUserInfo.name
                         every { avatarUrl } returns googleUserInfo.picture
@@ -120,8 +123,8 @@ class AuthServiceTest :
                 every { googleOAuthClient.getUserInfo(request.idToken) } returns googleUserInfo
                 every { userRepository.findByEmail(googleUserInfo.email) } returns existingUser
                 every { jwtProperties.refreshTokenExpiration } returns 604800000L
-                every { jwtProvider.createAccessToken(2L, UserRole.USER) } returns "access-token"
-                every { jwtProvider.createRefreshToken(2L) } returns "refresh-token"
+                every { jwtProvider.createAccessToken(userId, UserRole.USER) } returns "access-token"
+                every { jwtProvider.createRefreshToken(userId) } returns "refresh-token"
                 every { refreshTokenRepository.save(any()) } returns mockk()
 
                 val result = authService.googleLogin(request)
@@ -146,9 +149,10 @@ class AuthServiceTest :
                 )
 
             When("새로운 사용자가 로그인") {
+                val userId = UUID.fromString("00000000-0000-0000-0000-000000000003")
                 val savedUser =
                     mockk<UserEntity>(relaxed = true) {
-                        every { id } returns 3L
+                        every { id } returns userId
                         every { email } returns githubUserInfo.email
                         every { name } returns githubUserInfo.name!!
                         every { avatarUrl } returns githubUserInfo.avatarUrl
@@ -160,8 +164,8 @@ class AuthServiceTest :
                 every { userRepository.findByEmail(githubUserInfo.email) } returns null
                 every { userRepository.save(capture(userSlot)) } returns savedUser
                 every { jwtProperties.refreshTokenExpiration } returns 604800000L
-                every { jwtProvider.createAccessToken(3L, UserRole.USER) } returns "access-token"
-                every { jwtProvider.createRefreshToken(3L) } returns "refresh-token"
+                every { jwtProvider.createAccessToken(userId, UserRole.USER) } returns "access-token"
+                every { jwtProvider.createRefreshToken(userId) } returns "refresh-token"
                 every { refreshTokenRepository.save(any()) } returns mockk()
 
                 val result = authService.githubLogin(request)
@@ -179,10 +183,11 @@ class AuthServiceTest :
             }
 
             When("이름이 null인 사용자가 로그인") {
+                val userId = UUID.fromString("00000000-0000-0000-0000-000000000004")
                 val userInfoWithoutName = githubUserInfo.copy(name = null)
                 val savedUser =
                     mockk<UserEntity>(relaxed = true) {
-                        every { id } returns 4L
+                        every { id } returns userId
                         every { email } returns userInfoWithoutName.email
                         every { name } returns userInfoWithoutName.login
                         every { avatarUrl } returns userInfoWithoutName.avatarUrl
@@ -194,8 +199,8 @@ class AuthServiceTest :
                 every { userRepository.findByEmail(userInfoWithoutName.email) } returns null
                 every { userRepository.save(capture(userSlot)) } returns savedUser
                 every { jwtProperties.refreshTokenExpiration } returns 604800000L
-                every { jwtProvider.createAccessToken(4L, UserRole.USER) } returns "access-token"
-                every { jwtProvider.createRefreshToken(4L) } returns "refresh-token"
+                every { jwtProvider.createAccessToken(userId, UserRole.USER) } returns "access-token"
+                every { jwtProvider.createRefreshToken(userId) } returns "refresh-token"
                 every { refreshTokenRepository.save(any()) } returns mockk()
 
                 authService.githubLogin(request)
@@ -206,9 +211,10 @@ class AuthServiceTest :
             }
 
             When("기존 사용자가 로그인") {
+                val userId = UUID.fromString("00000000-0000-0000-0000-000000000005")
                 val existingUser =
                     mockk<UserEntity>(relaxed = true) {
-                        every { id } returns 5L
+                        every { id } returns userId
                         every { email } returns githubUserInfo.email
                         every { name } returns (githubUserInfo.name ?: githubUserInfo.login)
                         every { avatarUrl } returns githubUserInfo.avatarUrl
@@ -218,8 +224,8 @@ class AuthServiceTest :
                 every { githubOAuthClient.getUserInfo(request.code) } returns githubUserInfo
                 every { userRepository.findByEmail(githubUserInfo.email) } returns existingUser
                 every { jwtProperties.refreshTokenExpiration } returns 604800000L
-                every { jwtProvider.createAccessToken(5L, UserRole.USER) } returns "access-token"
-                every { jwtProvider.createRefreshToken(5L) } returns "refresh-token"
+                every { jwtProvider.createAccessToken(userId, UserRole.USER) } returns "access-token"
+                every { jwtProvider.createRefreshToken(userId) } returns "refresh-token"
                 every { refreshTokenRepository.save(any()) } returns mockk()
 
                 val result = authService.githubLogin(request)
@@ -276,9 +282,10 @@ class AuthServiceTest :
                 )
 
             When("유효한 로그인") {
+                val userId = UUID.fromString("00000000-0000-0000-0000-000000000006")
                 val user =
                     mockk<UserEntity>(relaxed = true) {
-                        every { id } returns 6L
+                        every { id } returns userId
                         every { email } returns request.email
                         every { name } returns "Test User"
                         every { password } returns "encoded-password"
@@ -290,8 +297,8 @@ class AuthServiceTest :
                 every { userRepository.findByEmail(request.email) } returns user
                 every { passwordEncoder.matches(request.password, "encoded-password") } returns true
                 every { jwtProperties.refreshTokenExpiration } returns 604800000L
-                every { jwtProvider.createAccessToken(6L, UserRole.USER) } returns "access-token"
-                every { jwtProvider.createRefreshToken(6L) } returns "refresh-token"
+                every { jwtProvider.createAccessToken(userId, UserRole.USER) } returns "access-token"
+                every { jwtProvider.createRefreshToken(userId) } returns "refresh-token"
                 every { refreshTokenRepository.save(any()) } returns mockk()
 
                 val result = authService.login(request)
@@ -380,7 +387,7 @@ class AuthServiceTest :
 
         Given("reissue") {
             val request = ReissueRequest(refreshToken = "old-refresh-token")
-            val userId = 7L
+            val userId = UUID.fromString("00000000-0000-0000-0000-000000000007")
 
             When("유효한 리프레시 토큰") {
                 val user =
@@ -448,7 +455,7 @@ class AuthServiceTest :
         }
 
         Given("logout") {
-            val userId = 8L
+            val userId = UUID.fromString("00000000-0000-0000-0000-000000000008")
 
             When("유효한 사용자") {
                 every { securityHolder.getUserId() } returns userId

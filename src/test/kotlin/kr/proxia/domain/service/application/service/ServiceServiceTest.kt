@@ -3,7 +3,9 @@ package kr.proxia.domain.service.application.service
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.BehaviorSpec
 import io.kotest.matchers.shouldBe
+import io.mockk.Runs
 import io.mockk.every
+import io.mockk.just
 import io.mockk.mockk
 import io.mockk.slot
 import io.mockk.verify
@@ -13,6 +15,8 @@ import kr.proxia.domain.project.domain.error.ProjectError
 import kr.proxia.domain.project.domain.repository.ProjectRepository
 import kr.proxia.domain.resource.domain.repository.AppResourceRepository
 import kr.proxia.domain.resource.domain.repository.DatabaseResourceRepository
+import kr.proxia.domain.resource.domain.repository.DomainResourceRepository
+import kr.proxia.global.security.encryption.EncryptionService
 import kr.proxia.domain.service.domain.entity.ServiceEntity
 import kr.proxia.domain.service.domain.enums.ServiceType
 import kr.proxia.domain.service.domain.error.ServiceError
@@ -23,6 +27,7 @@ import kr.proxia.domain.service.presentation.request.UpdateServiceRequest
 import kr.proxia.global.error.BusinessException
 import kr.proxia.global.security.holder.SecurityHolder
 import org.springframework.data.repository.findByIdOrNull
+import java.util.UUID
 
 class ServiceServiceTest :
     BehaviorSpec({
@@ -33,6 +38,9 @@ class ServiceServiceTest :
         val databaseResourceRepository = mockk<DatabaseResourceRepository>()
         val securityHolder = mockk<SecurityHolder>()
 
+        val domainResourceRepository = mockk<DomainResourceRepository>()
+        val encryptionService = mockk<EncryptionService>()
+
         val serviceService =
             ServiceService(
                 serviceRepository,
@@ -40,12 +48,14 @@ class ServiceServiceTest :
                 projectRepository,
                 appResourceRepository,
                 databaseResourceRepository,
+                domainResourceRepository,
+                encryptionService,
                 securityHolder,
             )
 
         Given("createService") {
-            val userId = 1L
-            val projectId = 10L
+            val userId = UUID.fromString("00000000-0000-0000-0000-000000000001")
+            val projectId = UUID.fromString("10000000-0000-0000-0000-000000000001")
             val request =
                 CreateServiceRequest(
                     name = "API Server",
@@ -55,6 +65,7 @@ class ServiceServiceTest :
                     y = 200.0,
                     appResource = null,
                     databaseResource = null,
+                    domainResource = null,
                 )
             val project =
                 mockk<ProjectEntity>(relaxed = true) {
@@ -63,7 +74,7 @@ class ServiceServiceTest :
 
             When("유효한 요청") {
                 every { securityHolder.getUserId() } returns userId
-                every { projectRepository.findByIdOrNull(projectId) } returns project
+                every { projectRepository.findByIdAndDeletedAtIsNull(projectId) } returns project
                 every { serviceRepository.save(any()) } returns mockk(relaxed = true)
 
                 serviceService.createService(projectId, request)
@@ -82,7 +93,7 @@ class ServiceServiceTest :
 
             When("프로젝트가 존재하지 않음") {
                 every { securityHolder.getUserId() } returns userId
-                every { projectRepository.findByIdOrNull(projectId) } returns null
+                every { projectRepository.findByIdAndDeletedAtIsNull(projectId) } returns null
 
                 Then("예외 발생") {
                     val exception =
@@ -94,9 +105,9 @@ class ServiceServiceTest :
             }
 
             When("프로젝트 접근 권한 없음") {
-                val otherUserId = 2L
+                val otherUserId = UUID.fromString("00000000-0000-0000-0000-000000000002")
                 every { securityHolder.getUserId() } returns otherUserId
-                every { projectRepository.findByIdOrNull(projectId) } returns project
+                every { projectRepository.findByIdAndDeletedAtIsNull(projectId) } returns project
 
                 Then("예외 발생") {
                     val exception =
@@ -109,24 +120,26 @@ class ServiceServiceTest :
         }
 
         Given("getServices") {
-            val userId = 1L
-            val projectId = 10L
+            val userId = UUID.fromString("00000000-0000-0000-0000-000000000001")
+            val projectId = UUID.fromString("10000000-0000-0000-0000-000000000001")
             val project =
                 mockk<ProjectEntity>(relaxed = true) {
                     every { this@mockk.userId } returns userId
                 }
 
             When("유효한 요청") {
+                val serviceId1 = UUID.fromString("20000000-0000-0000-0000-000000000001")
+                val serviceId2 = UUID.fromString("20000000-0000-0000-0000-000000000002")
                 val services =
                     listOf(
                         mockk<ServiceEntity>(relaxed = true) {
-                            every { id } returns 1L
+                            every { id } returns serviceId1
                             every { name } returns "API Server"
                             every { type } returns ServiceType.APP
                             every { targetId } returns null
                         },
                         mockk<ServiceEntity>(relaxed = true) {
-                            every { id } returns 2L
+                            every { id } returns serviceId2
                             every { name } returns "Database"
                             every { type } returns ServiceType.DATABASE
                             every { targetId } returns null
@@ -134,7 +147,7 @@ class ServiceServiceTest :
                     )
 
                 every { securityHolder.getUserId() } returns userId
-                every { projectRepository.findByIdOrNull(projectId) } returns project
+                every { projectRepository.findByIdAndDeletedAtIsNull(projectId) } returns project
                 every { serviceRepository.findAllByProjectIdAndDeletedAtIsNull(projectId) } returns services
 
                 val result = serviceService.getServices(projectId)
@@ -148,8 +161,8 @@ class ServiceServiceTest :
         }
 
         Given("updateService") {
-            val userId = 1L
-            val serviceId = 5L
+            val userId = UUID.fromString("00000000-0000-0000-0000-000000000001")
+            val serviceId = UUID.fromString("20000000-0000-0000-0000-000000000001")
             val request =
                 UpdateServiceRequest(
                     name = "Updated API Server",
@@ -157,18 +170,19 @@ class ServiceServiceTest :
                     type = ServiceType.APP,
                     appResource = null,
                     databaseResource = null,
+                    domainResource = null,
                 )
             val service =
                 mockk<ServiceEntity>(relaxed = true) {
                     every { this@mockk.userId } returns userId
                     every { name } returns "API Server"
-                    every { projectId } returns 10L
+                    every { projectId } returns UUID.fromString("10000000-0000-0000-0000-000000000001")
                     every { targetId } returns null
                 }
 
             When("유효한 요청") {
                 every { securityHolder.getUserId() } returns userId
-                every { serviceRepository.findByIdOrNull(serviceId) } returns service
+                every { serviceRepository.findByIdAndDeletedAtIsNull(serviceId) } returns service
 
                 serviceService.updateService(serviceId, request)
 
@@ -186,7 +200,7 @@ class ServiceServiceTest :
 
             When("서비스가 존재하지 않음") {
                 every { securityHolder.getUserId() } returns userId
-                every { serviceRepository.findByIdOrNull(serviceId) } returns null
+                every { serviceRepository.findByIdAndDeletedAtIsNull(serviceId) } returns null
 
                 Then("예외 발생") {
                     val exception =
@@ -198,9 +212,9 @@ class ServiceServiceTest :
             }
 
             When("서비스 접근 권한 없음") {
-                val otherUserId = 2L
+                val otherUserId = UUID.fromString("00000000-0000-0000-0000-000000000002")
                 every { securityHolder.getUserId() } returns otherUserId
-                every { serviceRepository.findByIdOrNull(serviceId) } returns service
+                every { serviceRepository.findByIdAndDeletedAtIsNull(serviceId) } returns service
 
                 Then("예외 발생") {
                     val exception =
@@ -213,8 +227,8 @@ class ServiceServiceTest :
         }
 
         Given("updateServicePosition") {
-            val userId = 1L
-            val serviceId = 5L
+            val userId = UUID.fromString("00000000-0000-0000-0000-000000000001")
+            val serviceId = UUID.fromString("20000000-0000-0000-0000-000000000001")
             val request =
                 UpdateServicePositionRequest(
                     x = 300.0,
@@ -227,7 +241,7 @@ class ServiceServiceTest :
 
             When("유효한 요청") {
                 every { securityHolder.getUserId() } returns userId
-                every { serviceRepository.findByIdOrNull(serviceId) } returns service
+                every { serviceRepository.findByIdAndDeletedAtIsNull(serviceId) } returns service
 
                 serviceService.updateServicePosition(serviceId, request)
 
@@ -238,17 +252,19 @@ class ServiceServiceTest :
         }
 
         Given("deleteService") {
-            val userId = 1L
-            val serviceId = 5L
+            val userId = UUID.fromString("00000000-0000-0000-0000-000000000001")
+            val serviceId = UUID.fromString("20000000-0000-0000-0000-000000000001")
             val service =
                 mockk<ServiceEntity>(relaxed = true) {
                     every { this@mockk.userId } returns userId
                     every { isDeleted } returns false
+                    every { targetId } returns null
+                    every { delete() } just Runs
                 }
 
             When("유효한 요청") {
                 every { securityHolder.getUserId() } returns userId
-                every { serviceRepository.findByIdOrNull(serviceId) } returns service
+                every { serviceRepository.findByIdAndDeletedAtIsNull(serviceId) } returns service
                 every { connectionRepository.findAllBySourceIdOrTargetIdAndDeletedAtIsNull(serviceId, serviceId) } returns emptyList()
 
                 serviceService.deleteService(serviceId)
@@ -260,16 +276,14 @@ class ServiceServiceTest :
 
             When("이미 삭제된 서비스") {
                 every { securityHolder.getUserId() } returns userId
-                every { serviceRepository.findByIdOrNull(serviceId) } returns service
-                every { service.isDeleted } returns true
-                every { connectionRepository.findAllBySourceIdOrTargetIdAndDeletedAtIsNull(serviceId, serviceId) } returns emptyList()
+                every { serviceRepository.findByIdAndDeletedAtIsNull(serviceId) } returns null
 
                 Then("예외 발생") {
                     val exception =
                         shouldThrow<BusinessException> {
                             serviceService.deleteService(serviceId)
                         }
-                    exception.error shouldBe ServiceError.SERVICE_ALREADY_DELETED
+                    exception.error shouldBe ServiceError.SERVICE_NOT_FOUND
                 }
             }
         }
