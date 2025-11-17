@@ -42,15 +42,18 @@ class DeploymentService(
     @Async
     @Transactional
     fun deploy(serviceId: UUID) {
-        val service = serviceRepository.findByIdAndDeletedAtIsNull(serviceId)
-            ?: throw BusinessException(ServiceError.SERVICE_NOT_FOUND)
+        val service =
+            serviceRepository.findByIdAndDeletedAtIsNull(serviceId)
+                ?: throw BusinessException(ServiceError.SERVICE_NOT_FOUND)
 
         val node = nodeScheduler.chooseNode()
 
         logger.info { "Selected node '${node.name}' for service $serviceId" }
 
-        val appResource = appResourceRepository.findById(service.targetId!!)
-            .orElseThrow { BusinessException(ResourceError.RESOURCE_NOT_FOUND) }
+        val appResource =
+            appResourceRepository
+                .findById(service.targetId!!)
+                .orElseThrow { BusinessException(ResourceError.RESOURCE_NOT_FOUND) }
 
         val repoDir = cloneRepository(appResource.repositoryUrl!!, appResource.branch ?: "main", service.id)
         val commitInfo = getLatestCommitInfo(repoDir)
@@ -58,26 +61,29 @@ class DeploymentService(
 
         val imageName = "proxia-service-${service.id}"
 
-        val imageId = imageBuilder.buildImage(
-            endpoint = node.endpoint,
-            contextDir = repoDir,
-            dockerfile = dockerfile,
-            imageName = imageName
-        )
+        val imageId =
+            imageBuilder.buildImage(
+                endpoint = node.endpoint,
+                contextDir = repoDir,
+                dockerfile = dockerfile,
+                imageName = imageName,
+            )
 
         val env = parseEnvVariables(appResource.envVariables)
 
-        val containerSpec = ContainerSpec(
-            name = "svc-${service.id}-${System.currentTimeMillis()}",
-            image = "$imageName:latest",
-            env = env,
-            ports = listOf(
-                ContainerSpec.PortMapping(
-                    internal = 8080,
-                    host = null,
-                )
-            ),
-        )
+        val containerSpec =
+            ContainerSpec(
+                name = "svc-${service.id}-${System.currentTimeMillis()}",
+                image = "$imageName:latest",
+                env = env,
+                ports =
+                    listOf(
+                        ContainerSpec.PortMapping(
+                            internal = 8080,
+                            host = null,
+                        ),
+                    ),
+            )
 
         val endpoint = node.endpoint
         val containerId = containerOrchestrator.createContainer(endpoint, containerSpec)
@@ -94,7 +100,7 @@ class DeploymentService(
                 imageId = imageId,
                 port = assignedPort,
                 internalPort = 8080,
-            )
+            ),
         )
 
         val domain = createOrResolveDomain(serviceId)
@@ -174,10 +180,12 @@ class DeploymentService(
     private fun detectFramework(dir: File): AppFramework =
         when {
             File(dir, "package.json").exists() -> AppFramework.NODE_JS
-            File(dir, "pom.xml").exists() || File(dir, "build.gradle").exists() || File(
-                dir,
-                "build.gradle.kts"
-            ).exists() -> AppFramework.SPRING_BOOT
+            File(dir, "pom.xml").exists() ||
+                File(dir, "build.gradle").exists() ||
+                File(
+                    dir,
+                    "build.gradle.kts",
+                ).exists() -> AppFramework.SPRING_BOOT
 
             File(dir, "requirements.txt").exists() -> AppFramework.PYTHON
             File(dir, "go.mod").exists() -> AppFramework.GO
@@ -191,26 +199,30 @@ class DeploymentService(
     ): File {
         val dockerfileContent =
             when (framework) {
-                AppFramework.SPRING_BOOT -> dockerfileGenerator.generateSpringBootDockerfile(
-                    appResource.buildCommand,
-                    appResource.startCommand
-                )
+                AppFramework.SPRING_BOOT ->
+                    dockerfileGenerator.generateSpringBootDockerfile(
+                        appResource.buildCommand,
+                        appResource.startCommand,
+                    )
 
-                AppFramework.NODE_JS -> dockerfileGenerator.generateNodeJsDockerfile(
-                    appResource.installCommand,
-                    appResource.buildCommand,
-                    appResource.startCommand
-                )
+                AppFramework.NODE_JS ->
+                    dockerfileGenerator.generateNodeJsDockerfile(
+                        appResource.installCommand,
+                        appResource.buildCommand,
+                        appResource.startCommand,
+                    )
 
-                AppFramework.PYTHON -> dockerfileGenerator.generatePythonDockerfile(
-                    appResource.installCommand,
-                    appResource.startCommand
-                )
+                AppFramework.PYTHON ->
+                    dockerfileGenerator.generatePythonDockerfile(
+                        appResource.installCommand,
+                        appResource.startCommand,
+                    )
 
-                AppFramework.GO -> dockerfileGenerator.generateGoDockerfile(
-                    appResource.buildCommand,
-                    appResource.startCommand
-                )
+                AppFramework.GO ->
+                    dockerfileGenerator.generateGoDockerfile(
+                        appResource.buildCommand,
+                        appResource.startCommand,
+                    )
 
                 else -> dockerfileGenerator.generateGenericDockerfile(appResource.startCommand)
             }

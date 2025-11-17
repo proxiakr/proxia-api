@@ -96,7 +96,8 @@ class ProjectService(
     fun deleteProject(projectId: UUID) {
         val userId = securityHolder.getUserId()
         val project =
-            projectRepository.findByIdAndDeletedAtIsNull(projectId) ?: throw BusinessException(ProjectError.PROJECT_NOT_FOUND)
+            projectRepository.findByIdAndDeletedAtIsNull(projectId)
+                ?: throw BusinessException(ProjectError.PROJECT_NOT_FOUND)
 
         if (project.userId != userId) {
             throw BusinessException(ProjectError.PROJECT_ACCESS_DENIED)
@@ -120,7 +121,9 @@ class ProjectService(
 
     fun getProjectCanvas(projectId: UUID): ProjectCanvasResponse {
         val userId = securityHolder.getUserId()
-        val project = projectRepository.findByIdAndDeletedAtIsNull(projectId) ?: throw BusinessException(ProjectError.PROJECT_NOT_FOUND)
+        val project =
+            projectRepository.findByIdAndDeletedAtIsNull(projectId)
+                ?: throw BusinessException(ProjectError.PROJECT_NOT_FOUND)
 
         if (project.userId != userId) {
             throw BusinessException(ProjectError.PROJECT_ACCESS_DENIED)
@@ -129,7 +132,7 @@ class ProjectService(
         val services =
             serviceRepository
                 .findAllByProjectIdAndDeletedAtIsNull(projectId)
-                .map { ServiceResponse.of(it) }
+                .map { ServiceResponse.from(it) }
 
         val connections =
             connectionRepository

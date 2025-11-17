@@ -11,5 +11,4 @@ import org.springframework.web.bind.annotation.RestController
 class MonitoringController(
     private val containerMetricsService: ContainerMetricsService,
     private val healthCheckService: NodeHealthCheckService,
-) : MonitoringDocs {
-}
+) : MonitoringDocs
