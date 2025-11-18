@@ -28,6 +28,7 @@ dependencies {
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     implementation("com.github.docker-java:docker-java-core:3.4.1")
     implementation("com.github.docker-java:docker-java-transport-zerodep:3.4.1")
+    implementation("org.eclipse.jgit:org.eclipse.jgit:7.4.0.202509020913-r")
 
     testImplementation("io.kotest:kotest-runner-junit5:5.9.1")
     testImplementation("io.kotest:kotest-assertions-core:5.9.1")
