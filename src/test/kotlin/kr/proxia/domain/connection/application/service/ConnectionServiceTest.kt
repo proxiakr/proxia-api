@@ -21,7 +21,6 @@ import kr.proxia.domain.service.domain.entity.ServiceEntity
 import kr.proxia.domain.service.domain.repository.ServiceRepository
 import kr.proxia.global.error.BusinessException
 import kr.proxia.global.security.holder.SecurityHolder
-import org.springframework.data.repository.findByIdOrNull
 import java.util.UUID
 
 class ConnectionServiceTest :

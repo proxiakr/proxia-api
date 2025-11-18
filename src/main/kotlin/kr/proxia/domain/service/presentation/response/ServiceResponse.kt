@@ -24,7 +24,7 @@ data class ServiceResponse(
     val updatedAt: LocalDateTime,
 ) {
     companion object {
-        fun of(
+        fun from(
             service: ServiceEntity,
             appResource: AppResourceResponse? = null,
             databaseResource: DatabaseResourceResponse? = null,

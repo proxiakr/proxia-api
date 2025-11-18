@@ -2,13 +2,16 @@ package kr.proxia.domain.service.domain.enums
 
 enum class AppFramework {
     SPRING_BOOT,
+    NODE_JS,
     EXPRESS,
     NEST_JS,
+    PYTHON,
     DJANGO,
     FLASK,
     FASTAPI,
     LARAVEL,
     RAILS,
+    GO,
     GO_GIN,
     REACT,
     VUE,
