@@ -24,6 +24,14 @@ git:
       client-id: ${GIT_INTEGRATION_GITHUB_CLIENT_ID}
       client-secret: ${GIT_INTEGRATION_GITHUB_CLIENT_SECRET}
 
+kubernetes:
+  namespace: ${KUBERNETES_NAMESPACE:default}
+  config-path: ${KUBERNETES_CONFIG_PATH:}
+
+build:
+  registry: ${BUILD_REGISTRY:localhost:5000}
+  timeout-minutes: ${BUILD_TIMEOUT_MINUTES:10}
+
 ---
 spring.config.activate.on-profile: local
 
