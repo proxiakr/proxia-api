@@ -24,6 +24,10 @@ git:
       client-id: ${GIT_INTEGRATION_GITHUB_CLIENT_ID}
       client-secret: ${GIT_INTEGRATION_GITHUB_CLIENT_SECRET}
 
+webhook:
+  github:
+    secret: ${WEBHOOK_GITHUB_SECRET:}
+
 ---
 spring.config.activate.on-profile: local
 

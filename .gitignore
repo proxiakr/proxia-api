@@ -44,3 +44,6 @@ out/
 
 ### Environment Variables ###
 .env
+
+### Claude Code ###
+.claude/

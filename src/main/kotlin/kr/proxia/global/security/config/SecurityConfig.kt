@@ -29,7 +29,7 @@ class SecurityConfig(
             }.sessionManagement { it.sessionCreationPolicy(SessionCreationPolicy.STATELESS) }
             .authorizeHttpRequests {
                 it
-                    .requestMatchers("/h2-console/**")
+                    .requestMatchers("/h2-console/**", "/api/webhooks/**")
                     .permitAll()
                     .anyRequest()
                     .permitAll()
