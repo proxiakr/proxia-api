@@ -1,4 +1,4 @@
-package kr.proxia.domain.webhook.properties
+package kr.proxia.domain.webhook.infra.properties
 
 import org.springframework.boot.context.properties.ConfigurationProperties
 

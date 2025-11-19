@@ -5,11 +5,11 @@ import com.fasterxml.jackson.annotation.JsonProperty
 data class GithubWebhookPayload(
     val ref: String,
     val repository: Repository,
-    @JsonProperty("head_commit")
+    @field:JsonProperty("head_commit")
     val headCommit: Commit?,
 ) {
     data class Repository(
-        @JsonProperty("clone_url")
+        @field:JsonProperty("clone_url")
         val cloneUrl: String,
     )
 
