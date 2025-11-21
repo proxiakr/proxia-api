@@ -1,4 +1,4 @@
-package kr.proxia.domain.webhook.application.event
+package kr.proxia.domain.deployment.application.event
 
 import io.github.oshai.kotlinlogging.KotlinLogging
 import kr.proxia.domain.deployment.domain.entity.DeploymentEntity
