@@ -1,6 +1,5 @@
 package kr.proxia.global.git.response
 
-
 data class GitCommitResponse(
     val sha: String,
     val commit: CommitInfo,
