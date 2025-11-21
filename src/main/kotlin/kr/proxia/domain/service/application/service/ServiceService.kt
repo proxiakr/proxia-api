@@ -23,6 +23,7 @@ import kr.proxia.domain.service.presentation.response.ServiceResponse
 import kr.proxia.global.error.BusinessException
 import kr.proxia.global.security.encryption.EncryptionService
 import kr.proxia.global.security.holder.SecurityHolder
+import org.springframework.context.ApplicationEventPublisher
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -38,6 +39,7 @@ class ServiceService(
     private val domainResourceRepository: DomainResourceRepository,
     private val encryptionService: EncryptionService,
     private val securityHolder: SecurityHolder,
+    private val eventPublisher: ApplicationEventPublisher,
 ) {
     @Transactional
     fun createService(
@@ -66,6 +68,7 @@ class ServiceService(
                                 ),
                             ).id
                     }
+
                 ServiceType.DATABASE ->
                     request.databaseResource?.let {
                         databaseResourceRepository
@@ -79,6 +82,7 @@ class ServiceService(
                                 ),
                             ).id
                     }
+
                 ServiceType.DOMAIN ->
                     request.domainResource?.let {
                         domainResourceRepository
@@ -90,6 +94,7 @@ class ServiceService(
                                 ),
                             ).id
                     }
+
                 else -> null
             }
 
@@ -105,17 +110,22 @@ class ServiceService(
                 targetId = targetId,
             ),
         )
+
+        eventPublisher.publishEvent()
     }
 
     fun getServices(projectId: UUID): List<ServiceResponse> {
         val userId = securityHolder.getUserId()
         validateProjectAccess(projectId, userId)
 
-        val services = serviceRepository.findAllByProjectIdAndDeletedAtIsNull(projectId)
+        val services = serviceRepository.findAllByProjectIdAndDeletedAtIsNullAndTargetIdIsNotNull(projectId)
 
-        val appResourceIds = services.filter { it.type == ServiceType.APP && it.targetId != null }.mapNotNull { it.targetId }
-        val databaseResourceIds = services.filter { it.type == ServiceType.DATABASE && it.targetId != null }.mapNotNull { it.targetId }
-        val domainResourceIds = services.filter { it.type == ServiceType.DOMAIN && it.targetId != null }.mapNotNull { it.targetId }
+        val appResourceIds =
+            services.filter { it.type == ServiceType.APP }.mapNotNull { it.targetId }
+        val databaseResourceIds =
+            services.filter { it.type == ServiceType.DATABASE }.mapNotNull { it.targetId }
+        val domainResourceIds =
+            services.filter { it.type == ServiceType.DOMAIN }.mapNotNull { it.targetId }
 
         val appResources: Map<UUID, AppResourceEntity> =
             if (appResourceIds.isNotEmpty()) {
@@ -140,7 +150,8 @@ class ServiceService(
 
         return services.map { service ->
             val appResource = service.targetId?.let { appResources[it] }?.let { AppResourceResponse.of(it) }
-            val databaseResource = service.targetId?.let { databaseResources[it] }?.let { DatabaseResourceResponse.of(it) }
+            val databaseResource =
+                service.targetId?.let { databaseResources[it] }?.let { DatabaseResourceResponse.of(it) }
             val domainResource = service.targetId?.let { domainResources[it] }?.let { DomainResourceResponse.of(it) }
             ServiceResponse.of(service, appResource, databaseResource, domainResource)
         }
@@ -148,7 +159,9 @@ class ServiceService(
 
     fun getService(serviceId: UUID): ServiceResponse {
         val userId = securityHolder.getUserId()
-        val service = serviceRepository.findByIdAndDeletedAtIsNull(serviceId) ?: throw BusinessException(ServiceError.SERVICE_NOT_FOUND)
+        val service =
+            serviceRepository.findByIdAndDeletedAtIsNull(serviceId)
+                ?: throw BusinessException(ServiceError.SERVICE_NOT_FOUND)
 
         if (service.userId != userId) {
             throw BusinessException(ServiceError.SERVICE_ACCESS_DENIED)
@@ -185,7 +198,9 @@ class ServiceService(
         request: UpdateServiceRequest,
     ) {
         val userId = securityHolder.getUserId()
-        val service = serviceRepository.findByIdAndDeletedAtIsNull(serviceId) ?: throw BusinessException(ServiceError.SERVICE_NOT_FOUND)
+        val service =
+            serviceRepository.findByIdAndDeletedAtIsNull(serviceId)
+                ?: throw BusinessException(ServiceError.SERVICE_NOT_FOUND)
 
         if (service.userId != userId) {
             throw BusinessException(ServiceError.SERVICE_ACCESS_DENIED)
@@ -225,6 +240,7 @@ class ServiceService(
                                 ).id
                         }
                     } ?: service.targetId
+
                 ServiceType.DATABASE ->
                     request.databaseResource?.let {
                         val currentTargetId = service.targetId
@@ -249,6 +265,7 @@ class ServiceService(
                                 ).id
                         }
                     } ?: service.targetId
+
                 ServiceType.DOMAIN ->
                     request.domainResource?.let {
                         val currentTargetId = service.targetId
@@ -269,6 +286,7 @@ class ServiceService(
                                 ).id
                         }
                     } ?: service.targetId
+
                 else -> service.targetId
             }
 
@@ -286,7 +304,9 @@ class ServiceService(
         request: UpdateServicePositionRequest,
     ) {
         val userId = securityHolder.getUserId()
-        val service = serviceRepository.findByIdAndDeletedAtIsNull(serviceId) ?: throw BusinessException(ServiceError.SERVICE_NOT_FOUND)
+        val service =
+            serviceRepository.findByIdAndDeletedAtIsNull(serviceId)
+                ?: throw BusinessException(ServiceError.SERVICE_NOT_FOUND)
 
         if (service.userId != userId) {
             throw BusinessException(ServiceError.SERVICE_ACCESS_DENIED)
@@ -301,7 +321,9 @@ class ServiceService(
     @Transactional
     fun deleteService(serviceId: UUID) {
         val userId = securityHolder.getUserId()
-        val service = serviceRepository.findByIdAndDeletedAtIsNull(serviceId) ?: throw BusinessException(ServiceError.SERVICE_NOT_FOUND)
+        val service =
+            serviceRepository.findByIdAndDeletedAtIsNull(serviceId)
+                ?: throw BusinessException(ServiceError.SERVICE_NOT_FOUND)
 
         if (service.userId != userId) {
             throw BusinessException(ServiceError.SERVICE_ACCESS_DENIED)
@@ -328,7 +350,9 @@ class ServiceService(
         projectId: UUID,
         userId: UUID,
     ) {
-        val project = projectRepository.findByIdAndDeletedAtIsNull(projectId) ?: throw BusinessException(ProjectError.PROJECT_NOT_FOUND)
+        val project =
+            projectRepository.findByIdAndDeletedAtIsNull(projectId)
+                ?: throw BusinessException(ProjectError.PROJECT_NOT_FOUND)
 
         if (project.userId != userId) {
             throw BusinessException(ProjectError.PROJECT_ACCESS_DENIED)

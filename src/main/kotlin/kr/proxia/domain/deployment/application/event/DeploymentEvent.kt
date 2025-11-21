@@ -1,4 +1,4 @@
-package kr.proxia.domain.webhook.application.event
+package kr.proxia.domain.deployment.application.event
 
 import java.util.UUID
 

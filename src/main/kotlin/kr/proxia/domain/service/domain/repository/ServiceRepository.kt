@@ -9,6 +9,8 @@ import java.util.UUID
 interface ServiceRepository : JpaRepository<ServiceEntity, UUID> {
     fun findAllByProjectIdAndDeletedAtIsNull(projectId: UUID): List<ServiceEntity>
 
+    fun findAllByProjectIdAndDeletedAtIsNullAndTargetIdIsNotNull(projectId: UUID): List<ServiceEntity>
+
     fun findByIdAndDeletedAtIsNull(id: UUID): ServiceEntity?
 
     fun findAllByTargetIdIsNotNullAndDeletedAtIsNull(): List<ServiceEntity>
