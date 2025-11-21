@@ -1,9 +1,9 @@
 package kr.proxia.domain.webhook.application.service
 
 import io.github.oshai.kotlinlogging.KotlinLogging
+import kr.proxia.domain.deployment.application.event.DeploymentEvent
 import kr.proxia.domain.resource.domain.repository.AppResourceRepository
 import kr.proxia.domain.service.domain.repository.ServiceRepository
-import kr.proxia.domain.webhook.application.event.DeploymentEvent
 import kr.proxia.domain.webhook.domain.error.WebhookError
 import kr.proxia.domain.webhook.infra.properties.WebhookProperties
 import kr.proxia.domain.webhook.presentation.request.GithubWebhookPayload
