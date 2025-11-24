@@ -9,6 +9,7 @@ import kr.proxia.domain.git.presentation.request.CreateGitIntegrationRequest
 import kr.proxia.global.error.BusinessException
 import kr.proxia.global.security.holder.SecurityHolder
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 import java.time.LocalDateTime
 import java.util.UUID
 
@@ -18,6 +19,7 @@ class GitIntegrationService(
     private val gitIntegrationRepository: GitIntegrationRepository,
     private val securityHolder: SecurityHolder,
 ) {
+    @Transactional
     fun createGitIntegration(request: CreateGitIntegrationRequest) {
         val userId = securityHolder.getUserId()
 
@@ -44,6 +46,7 @@ class GitIntegrationService(
         gitIntegrationRepository.save(gitIntegration)
     }
 
+    @Transactional
     fun deleteGitIntegration(integrationId: UUID) {
         val userId = securityHolder.getUserId()
         val integration =
