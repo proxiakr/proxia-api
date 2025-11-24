@@ -63,6 +63,7 @@ class ServiceService(
                                     installCommand = it.installCommand,
                                     startCommand = it.startCommand,
                                     envVariables = it.envVariables,
+                                    gitRepositoryId = it.gitRepositoryId,
                                 ),
                             ).id
                     }
@@ -206,6 +207,7 @@ class ServiceService(
                                 installCommand = it.installCommand,
                                 startCommand = it.startCommand,
                                 envVariables = it.envVariables,
+                                gitRepositoryId = it.gitRepositoryId,
                             )
                             currentTargetId
                         } else {
@@ -221,6 +223,7 @@ class ServiceService(
                                         installCommand = it.installCommand,
                                         startCommand = it.startCommand,
                                         envVariables = it.envVariables,
+                                        gitRepositoryId = it.gitRepositoryId,
                                     ),
                                 ).id
                         }
