@@ -3,7 +3,6 @@ package kr.proxia.domain.git.presentation.controller
 import kr.proxia.domain.git.application.service.GitRepositoryService
 import kr.proxia.domain.git.presentation.docs.GitRepositoryDocs
 import kr.proxia.domain.git.presentation.request.CreateGitRepositoryRequest
-import kr.proxia.domain.git.presentation.response.GitRepositoryResponse
 import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable

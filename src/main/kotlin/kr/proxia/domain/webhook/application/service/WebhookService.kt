@@ -10,7 +10,6 @@ import kr.proxia.domain.webhook.infra.properties.WebhookProperties
 import kr.proxia.domain.webhook.presentation.request.GithubWebhookPayload
 import kr.proxia.global.error.BusinessException
 import org.springframework.context.ApplicationEventPublisher
-import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import javax.crypto.Mac
 import javax.crypto.spec.SecretKeySpec

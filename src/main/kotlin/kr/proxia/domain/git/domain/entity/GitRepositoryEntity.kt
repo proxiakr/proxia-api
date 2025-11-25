@@ -11,10 +11,10 @@ import java.util.UUID
     name = "git_repositories",
     indexes = [
         Index(name = "idx_git_repos_integration", columnList = "gitIntegrationId, deletedAt"),
-        Index(name = "idx_git_repos_fullname", columnList = "fullName, deletedAt")
-    ]
+        Index(name = "idx_git_repos_fullname", columnList = "fullName, deletedAt"),
+    ],
 )
 class GitRepositoryEntity(
     val gitIntegrationId: UUID,
-    val fullName: String  // "username/repo"
+    val fullName: String, // "username/repo"
 ) : BaseEntity()
