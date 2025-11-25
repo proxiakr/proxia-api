@@ -8,7 +8,6 @@ import kr.proxia.domain.git.presentation.request.CreateGitRepositoryRequest
 import kr.proxia.domain.git.presentation.response.GitRepositoryResponse
 import kr.proxia.global.error.BusinessException
 import kr.proxia.global.security.holder.SecurityHolder
-import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.util.UUID
@@ -26,15 +25,11 @@ class GitRepositoryService(
     ) {
         val userId = securityHolder.getUserId()
         val gitIntegration =
-            gitIntegrationRepository.findByIdOrNull(integrationId)
+            gitIntegrationRepository.findByIdAndDeletedAtIsNull(integrationId)
                 ?: throw BusinessException(GitError.GIT_INTEGRATION_NOT_FOUND)
 
         if (gitIntegration.userId != userId) {
             throw BusinessException(GitError.GIT_INTEGRATION_ACCESS_DENIED)
-        }
-
-        if (gitIntegration.isDeleted) {
-            throw BusinessException(GitError.GIT_INTEGRATION_NOT_FOUND)
         }
 
         if (gitRepositoryRepository.findByFullNameAndDeletedAtIsNull(request.fullName) != null) {
@@ -53,15 +48,11 @@ class GitRepositoryService(
     fun getGitRepositories(integrationId: UUID): List<GitRepositoryResponse> {
         val userId = securityHolder.getUserId()
         val gitIntegration =
-            gitIntegrationRepository.findByIdOrNull(integrationId)
+            gitIntegrationRepository.findByIdAndDeletedAtIsNull(integrationId)
                 ?: throw BusinessException(GitError.GIT_INTEGRATION_NOT_FOUND)
 
         if (gitIntegration.userId != userId) {
             throw BusinessException(GitError.GIT_INTEGRATION_ACCESS_DENIED)
-        }
-
-        if (gitIntegration.isDeleted) {
-            throw BusinessException(GitError.GIT_INTEGRATION_NOT_FOUND)
         }
 
         return GitRepositoryResponse.of(
@@ -73,11 +64,11 @@ class GitRepositoryService(
     fun deleteGitRepository(repositoryId: UUID) {
         val userId = securityHolder.getUserId()
         val gitRepository =
-            gitRepositoryRepository.findByIdOrNull(repositoryId)
+            gitRepositoryRepository.findByIdAndDeletedAtIsNull(repositoryId)
                 ?: throw BusinessException(GitError.GIT_REPOSITORY_NOT_FOUND)
 
         val gitIntegration =
-            gitIntegrationRepository.findByIdOrNull(gitRepository.gitIntegrationId)
+            gitIntegrationRepository.findByIdAndDeletedAtIsNull(gitRepository.gitIntegrationId)
                 ?: throw BusinessException(GitError.GIT_INTEGRATION_NOT_FOUND)
 
         if (gitIntegration.userId != userId) {
