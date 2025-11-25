@@ -13,4 +13,7 @@ enum class GitError(
     UNSUPPORTED_GIT_PROVIDER(HttpStatus.BAD_REQUEST, "Unsupported git provider"),
     GITHUB_API_ERROR(HttpStatus.BAD_GATEWAY, "Failed to communicate with GitHub API"),
     INVALID_GITHUB_CODE(HttpStatus.BAD_REQUEST, "Invalid GitHub authorization code"),
+    GIT_REPOSITORY_NOT_FOUND(HttpStatus.NOT_FOUND, "Git repository not found"),
+    GIT_REPOSITORY_ACCESS_DENIED(HttpStatus.FORBIDDEN, "You do not have access to this git repository"),
+    GIT_REPOSITORY_ALREADY_EXISTS(HttpStatus.CONFLICT, "Git repository already exists"),
 }

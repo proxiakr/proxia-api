@@ -20,6 +20,7 @@ class AppResourceEntity(
     installCommand: String?,
     startCommand: String?,
     envVariables: String?,
+    gitRepositoryId: UUID?,
 ) : BaseEntity() {
     @Enumerated(EnumType.STRING)
     var framework: AppFramework? = framework
@@ -46,6 +47,9 @@ class AppResourceEntity(
     var envVariables: String? = envVariables
         protected set
 
+    var gitRepositoryId: UUID? = gitRepositoryId
+        protected set
+
     fun update(
         framework: AppFramework? = this.framework,
         repositoryUrl: String? = this.repositoryUrl,
@@ -55,6 +59,7 @@ class AppResourceEntity(
         installCommand: String? = this.installCommand,
         startCommand: String? = this.startCommand,
         envVariables: String? = this.envVariables,
+        gitRepositoryId: UUID? = this.gitRepositoryId,
     ) {
         this.framework = framework
         this.repositoryUrl = repositoryUrl
@@ -64,5 +69,6 @@ class AppResourceEntity(
         this.installCommand = installCommand
         this.startCommand = startCommand
         this.envVariables = envVariables
+        this.gitRepositoryId = gitRepositoryId
     }
 }

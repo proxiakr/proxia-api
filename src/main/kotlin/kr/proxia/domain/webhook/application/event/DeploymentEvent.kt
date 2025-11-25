@@ -10,4 +10,5 @@ data class DeploymentEvent(
     val commitSha: String,
     val commitMessage: String?,
     val commitAuthor: String?,
+    val gitRepositoryId: UUID,
 )

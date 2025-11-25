@@ -8,6 +8,8 @@ import java.util.UUID
 
 @Repository
 interface GitIntegrationRepository : JpaRepository<GitIntegrationEntity, UUID> {
+    fun findByIdAndDeletedAtIsNull(id: UUID): GitIntegrationEntity?
+
     fun findByUserIdAndProvider(
         userId: UUID,
         provider: GitIntegrationProvider,
@@ -17,4 +19,6 @@ interface GitIntegrationRepository : JpaRepository<GitIntegrationEntity, UUID> {
         userId: UUID,
         provider: GitIntegrationProvider,
     ): Boolean
+
+    fun findAllByUserIdAndDeletedAtIsNull(userId: UUID): List<GitIntegrationEntity>
 }

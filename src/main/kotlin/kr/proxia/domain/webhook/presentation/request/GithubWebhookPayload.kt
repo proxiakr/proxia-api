@@ -11,6 +11,8 @@ data class GithubWebhookPayload(
     data class Repository(
         @field:JsonProperty("clone_url")
         val cloneUrl: String,
+        @field:JsonProperty("full_name")
+        val fullName: String,
     )
 
     data class Commit(

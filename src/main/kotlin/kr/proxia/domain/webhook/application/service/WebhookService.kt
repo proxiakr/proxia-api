@@ -1,6 +1,7 @@
 package kr.proxia.domain.webhook.application.service
 
 import io.github.oshai.kotlinlogging.KotlinLogging
+import kr.proxia.domain.git.domain.repository.GitRepositoryRepository
 import kr.proxia.domain.resource.domain.repository.AppResourceRepository
 import kr.proxia.domain.service.domain.repository.ServiceRepository
 import kr.proxia.domain.webhook.application.event.DeploymentEvent
@@ -9,7 +10,6 @@ import kr.proxia.domain.webhook.infra.properties.WebhookProperties
 import kr.proxia.domain.webhook.presentation.request.GithubWebhookPayload
 import kr.proxia.global.error.BusinessException
 import org.springframework.context.ApplicationEventPublisher
-import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import javax.crypto.Mac
 import javax.crypto.spec.SecretKeySpec
@@ -20,6 +20,7 @@ private val logger = KotlinLogging.logger {}
 class WebhookService(
     private val serviceRepository: ServiceRepository,
     private val appResourceRepository: AppResourceRepository,
+    private val gitRepositoryRepository: GitRepositoryRepository,
     private val eventPublisher: ApplicationEventPublisher,
     private val webhookProperties: WebhookProperties,
 ) {
@@ -62,14 +63,17 @@ class WebhookService(
             .joinToString("") { "%02x".format(it) }
 
     private fun handlePush(payload: GithubWebhookPayload) {
-        serviceRepository
-            .findAllByTargetIdIsNotNullAndDeletedAtIsNull()
-            .forEach { service ->
-                val resource = appResourceRepository.findByIdOrNull(service.targetId!!) ?: return@forEach
+        val gitRepository =
+            gitRepositoryRepository.findByFullNameAndDeletedAtIsNull(payload.repository.fullName)
+                ?: return
 
-                if (resource.repositoryUrl != payload.repositoryUrl || resource.branch != payload.branch) {
-                    return@forEach
-                }
+        val appResources = appResourceRepository.findAllByGitRepositoryIdAndDeletedAtIsNull(gitRepository.id)
+        val services = serviceRepository.findAllByTargetIdIsNotNullAndDeletedAtIsNull()
+
+        appResources
+            .filter { it.branch == payload.branch }
+            .forEach { resource ->
+                val service = services.find { it.targetId == resource.id } ?: return@forEach
 
                 eventPublisher.publishEvent(
                     DeploymentEvent(
@@ -80,6 +84,7 @@ class WebhookService(
                         commitSha = payload.headCommit?.id ?: "",
                         commitMessage = payload.headCommit?.message,
                         commitAuthor = payload.headCommit?.author?.name,
+                        gitRepositoryId = gitRepository.id,
                     ),
                 )
             }
