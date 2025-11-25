@@ -7,6 +7,7 @@ import kr.proxia.domain.deployment.domain.repository.DeploymentRepository
 import kr.proxia.domain.git.domain.repository.GitIntegrationRepository
 import kr.proxia.domain.git.domain.repository.GitRepositoryRepository
 import org.springframework.context.event.EventListener
+import org.springframework.data.repository.findByIdOrNull
 import org.springframework.scheduling.annotation.Async
 import org.springframework.stereotype.Component
 import org.springframework.transaction.annotation.Transactional
@@ -25,21 +26,19 @@ class DeploymentEventListener(
     fun handle(event: DeploymentEvent) {
         logger.info { "Deploying service ${event.serviceId}" }
 
-        // Query accessToken: GitRepository → GitIntegration → accessToken
-        val gitRepository = gitRepositoryRepository.findById(event.gitRepositoryId).orElse(null)
+        val gitRepository = gitRepositoryRepository.findByIdOrNull(event.gitRepositoryId)
         if (gitRepository == null) {
             logger.error { "GitRepository ${event.gitRepositoryId} not found" }
             return
         }
 
-        val gitIntegration = gitIntegrationRepository.findById(gitRepository.gitIntegrationId).orElse(null)
+        val gitIntegration = gitIntegrationRepository.findByIdOrNull(gitRepository.gitIntegrationId)
         if (gitIntegration == null) {
             logger.error { "GitIntegration ${gitRepository.gitIntegrationId} not found" }
             return
         }
 
         val accessToken = gitIntegration.accessToken
-        logger.info { "Retrieved access token for deployment" }
 
         val deployment =
             deploymentRepository.save(
@@ -55,8 +54,6 @@ class DeploymentEventListener(
                 ),
             )
 
-        logger.info { "Deployment ${deployment.id} created with access token" }
-
-        // TODO: Build and deploy using accessToken
+        logger.info { "Deployment ${deployment.id} created" }
     }
 }

@@ -64,19 +64,16 @@ class WebhookService(
             .joinToString("") { "%02x".format(it) }
 
     private fun handlePush(payload: GithubWebhookPayload) {
-        // Find GitRepository by full_name
-        val gitRepository = gitRepositoryRepository.findByFullNameAndDeletedAtIsNull(payload.repository.fullName)
-            ?: return
+        val gitRepository =
+            gitRepositoryRepository.findByFullNameAndDeletedAtIsNull(payload.repository.fullName)
+                ?: return
 
-        // Find all AppResources linked to this GitRepository
         val appResources = appResourceRepository.findAllByGitRepositoryIdAndDeletedAtIsNull(gitRepository.id)
+        val services = serviceRepository.findAllByTargetIdIsNotNullAndDeletedAtIsNull()
 
-        // Filter by branch and trigger deployment
         appResources
             .filter { it.branch == payload.branch }
             .forEach { resource ->
-                // Find service that has this resource as targetId
-                val services = serviceRepository.findAllByTargetIdIsNotNullAndDeletedAtIsNull()
                 val service = services.find { it.targetId == resource.id } ?: return@forEach
 
                 eventPublisher.publishEvent(
