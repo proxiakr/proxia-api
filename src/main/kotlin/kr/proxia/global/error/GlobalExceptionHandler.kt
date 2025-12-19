@@ -14,24 +14,34 @@ class GlobalExceptionHandler {
     private val logger = LoggerFactory.getLogger(this::class.java)
 
     @ExceptionHandler(BusinessException::class)
-    fun handleBusiness(e: BusinessException): ResponseEntity<ErrorResponse> {
-        return ResponseEntity.status(e.error.status).body(ErrorResponse(e.error))
-    }
+    fun handleBusiness(e: BusinessException): ResponseEntity<ErrorResponse> =
+        ResponseEntity.status(e.error.status).body(ErrorResponse(e.error))
 
     @ExceptionHandler(MethodArgumentNotValidException::class)
-    fun handleMethodArgumentNotValidException(e: MethodArgumentNotValidException): ResponseEntity<ErrorResponse> {
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ErrorResponse("METHOD_ARGUMENT_NOT_VALID", e.bindingResult.allErrors.joinToString(", ") { it.defaultMessage ?: "Invalid value" }))
-    }
+    fun handleMethodArgumentNotValidException(e: MethodArgumentNotValidException): ResponseEntity<ErrorResponse> =
+        ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
+            ErrorResponse(
+                "METHOD_ARGUMENT_NOT_VALID",
+                e.bindingResult.allErrors.joinToString(", ") {
+                    it.defaultMessage
+                        ?: "Invalid value"
+                },
+            ),
+        )
 
     @ExceptionHandler(MethodArgumentTypeMismatchException::class)
-    fun handleMethodArgumentTypeMismatchException(e: MethodArgumentTypeMismatchException): ResponseEntity<ErrorResponse> {
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ErrorResponse("METHOD_ARGUMENT_TYPE_MISMATCH", "Invalid value for parameter '${e.name}': ${e.value}"))
-    }
+    fun handleMethodArgumentTypeMismatchException(e: MethodArgumentTypeMismatchException): ResponseEntity<ErrorResponse> =
+        ResponseEntity
+            .status(
+                HttpStatus.BAD_REQUEST,
+            ).body(ErrorResponse("METHOD_ARGUMENT_TYPE_MISMATCH", "Invalid value for parameter '${e.name}': ${e.value}"))
 
     @ExceptionHandler(HttpRequestMethodNotSupportedException::class)
-    fun handleHttpRequestMethodNotSupportedException(e: HttpRequestMethodNotSupportedException): ResponseEntity<ErrorResponse> {
-        return ResponseEntity.status(HttpStatus.METHOD_NOT_ALLOWED).body(ErrorResponse("METHOD_NOT_ALLOWED", "HTTP method '${e.method}' is not supported for this endpoint"))
-    }
+    fun handleHttpRequestMethodNotSupportedException(e: HttpRequestMethodNotSupportedException): ResponseEntity<ErrorResponse> =
+        ResponseEntity
+            .status(
+                HttpStatus.METHOD_NOT_ALLOWED,
+            ).body(ErrorResponse("METHOD_NOT_ALLOWED", "HTTP method '${e.method}' is not supported for this endpoint"))
 
     @ExceptionHandler(Exception::class)
     fun handleException(e: Exception): ResponseEntity<ErrorResponse> {

@@ -9,14 +9,16 @@ sealed class ProjectError(
 ) : DomainError {
     data object NotFound : ProjectError(
         HttpStatus.NOT_FOUND,
-        "Project not found"
+        "Project not found",
     )
+
     data object SlugAlreadyExists : ProjectError(
         HttpStatus.CONFLICT,
-        "Slug already exists"
+        "Slug already exists",
     )
+
     data object AccessDenied : ProjectError(
         HttpStatus.FORBIDDEN,
-        "Project does not belong to user"
+        "Project does not belong to user",
     )
 }

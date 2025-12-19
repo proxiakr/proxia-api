@@ -7,9 +7,10 @@ interface DomainError {
     val message: String
     val code: String
         get() {
-            val prefix = this.javaClass.enclosingClass.simpleName
-                .removeSuffix("Error")
-                .toSnakeCase()
+            val prefix =
+                this.javaClass.enclosingClass.simpleName
+                    .removeSuffix("Error")
+                    .toSnakeCase()
             val suffix = this.javaClass.simpleName.toSnakeCase()
 
             return "${prefix}_$suffix"

@@ -1,6 +1,5 @@
 package kr.proxia.global.security.encryption
 
-import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Component
 import java.util.Base64
 import javax.crypto.Cipher
@@ -8,7 +7,7 @@ import javax.crypto.spec.SecretKeySpec
 
 @Component
 class EncryptionService(
-    private val encryptionProperties: EncryptionProperties
+    private val encryptionProperties: EncryptionProperties,
 ) {
     private val algorithm = "AES"
     private val transformation = "AES/ECB/PKCS5Padding"

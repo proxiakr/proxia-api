@@ -14,10 +14,10 @@ import kr.proxia.domain.service.presentation.response.ServiceResponse
 import kr.proxia.domain.user.domain.error.UserError
 import kr.proxia.domain.user.domain.repository.UserRepository
 import kr.proxia.global.error.BusinessException
+import kr.proxia.global.security.holder.SecurityHolder
 import kr.proxia.global.support.OffsetLimit
 import kr.proxia.global.support.PageResponse
 import kr.proxia.global.support.toResponse
-import kr.proxia.global.security.holder.SecurityHolder
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional

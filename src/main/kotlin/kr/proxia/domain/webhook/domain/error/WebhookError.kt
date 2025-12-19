@@ -9,6 +9,6 @@ sealed class WebhookError(
 ) : DomainError {
     data object InvalidSignature : WebhookError(
         HttpStatus.UNAUTHORIZED,
-        "Invalid webhook signature"
+        "Invalid webhook signature",
     )
 }

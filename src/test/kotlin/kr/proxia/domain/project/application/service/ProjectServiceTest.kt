@@ -19,8 +19,8 @@ import kr.proxia.domain.user.domain.entity.UserEntity
 import kr.proxia.domain.user.domain.error.UserError
 import kr.proxia.domain.user.domain.repository.UserRepository
 import kr.proxia.global.error.BusinessException
-import kr.proxia.global.support.OffsetLimit
 import kr.proxia.global.security.holder.SecurityHolder
+import kr.proxia.global.support.OffsetLimit
 import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.repository.findByIdOrNull
