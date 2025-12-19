@@ -18,7 +18,7 @@ class GoogleOAuthClient(
                 .uri("https://oauth2.googleapis.com/tokeninfo?id_token=$idToken")
                 .retrieve()
                 .bodyToMono<GoogleUserInfo>()
-                .block() ?: throw BusinessException(AuthError.INVALID_TOKEN)
+                .block() ?: throw BusinessException(AuthError.InvalidToken)
 
         return userInfo
     }

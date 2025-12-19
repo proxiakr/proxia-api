@@ -30,7 +30,7 @@ class WebhookService(
         payload: GithubWebhookPayload,
     ) {
         if (!verify(raw, signature)) {
-            throw BusinessException(WebhookError.INVALID_SIGNATURE)
+            throw BusinessException(WebhookError.InvalidSignature)
         }
 
         when (event) {

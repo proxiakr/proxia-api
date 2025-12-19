@@ -31,13 +31,13 @@ class GitIntegrationClient(
                 }.accept(MediaType.APPLICATION_JSON)
                 .retrieve()
                 .bodyToMono<ExchangeGithubCodeResponse>()
-                .block() ?: throw BusinessException(GitError.INVALID_GITHUB_CODE)
+                .block() ?: throw BusinessException(GitError.InvalidGithubCode)
         } catch (e: WebClientResponseException) {
             when (e.statusCode.value()) {
-                400, 401 -> throw BusinessException(GitError.INVALID_GITHUB_CODE)
-                else -> throw BusinessException(GitError.GITHUB_API_ERROR)
+                400, 401 -> throw BusinessException(GitError.InvalidGithubCode)
+                else -> throw BusinessException(GitError.GithubApiError)
             }
         } catch (_: Exception) {
-            throw BusinessException(GitError.GITHUB_API_ERROR)
+            throw BusinessException(GitError.GithubApiError)
         }
 }

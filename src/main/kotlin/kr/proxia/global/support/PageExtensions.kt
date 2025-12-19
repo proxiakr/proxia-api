@@ -1,4 +1,4 @@
-package kr.proxia.global.response
+package kr.proxia.global.support
 
 import org.springframework.data.domain.Page
 

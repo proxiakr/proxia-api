@@ -5,7 +5,7 @@ import io.swagger.v3.oas.annotations.tags.Tag
 import kr.proxia.domain.project.presentation.request.CreateProjectRequest
 import kr.proxia.domain.project.presentation.response.ProjectDetailResponse
 import kr.proxia.domain.project.presentation.response.ProjectResponse
-import kr.proxia.global.response.PageResponse
+import kr.proxia.global.support.PageResponse
 import java.util.UUID
 
 @Tag(name = "Project")

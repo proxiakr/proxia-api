@@ -23,13 +23,13 @@ class GithubRepositoryClient(
                 }.retrieve()
                 .bodyToFlux<GithubRepository>()
                 .collectList()
-                .block() ?: throw BusinessException(GitError.GITHUB_API_ERROR)
+                .block() ?: throw BusinessException(GitError.GithubApiError)
         } catch (e: WebClientResponseException) {
             when (e.statusCode.value()) {
-                401 -> throw BusinessException(GitError.GIT_INTEGRATION_ACCESS_DENIED)
-                else -> throw BusinessException(GitError.GITHUB_API_ERROR)
+                401 -> throw BusinessException(GitError.AccessDenied)
+                else -> throw BusinessException(GitError.GithubApiError)
             }
         } catch (_: Exception) {
-            throw BusinessException(GitError.GITHUB_API_ERROR)
+            throw BusinessException(GitError.GithubApiError)
         }
 }

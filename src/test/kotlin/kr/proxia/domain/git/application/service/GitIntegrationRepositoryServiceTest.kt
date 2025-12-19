@@ -73,7 +73,7 @@ class GitIntegrationRepositoryServiceTest :
                         shouldThrow<BusinessException> {
                             service.getRepositories(integrationId)
                         }
-                    exception.error shouldBe GitError.GIT_INTEGRATION_NOT_FOUND
+                    exception.error shouldBe GitError.NotFound
                 }
             }
 
@@ -92,7 +92,7 @@ class GitIntegrationRepositoryServiceTest :
                         shouldThrow<BusinessException> {
                             service.getRepositories(integrationId)
                         }
-                    exception.error shouldBe GitError.GIT_INTEGRATION_ACCESS_DENIED
+                    exception.error shouldBe GitError.AccessDenied
                 }
             }
 
@@ -111,7 +111,7 @@ class GitIntegrationRepositoryServiceTest :
                         shouldThrow<BusinessException> {
                             service.getRepositories(integrationId)
                         }
-                    exception.error shouldBe GitError.GIT_INTEGRATION_NOT_FOUND
+                    exception.error shouldBe GitError.NotFound
                 }
             }
         }

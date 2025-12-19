@@ -269,7 +269,7 @@ class AuthServiceTest :
                         shouldThrow<BusinessException> {
                             authService.register(request)
                         }
-                    exception.error shouldBe UserError.EMAIL_ALREADY_EXISTS
+                    exception.error shouldBe UserError.EmailAlreadyExists
                 }
             }
         }
@@ -318,7 +318,7 @@ class AuthServiceTest :
                         shouldThrow<BusinessException> {
                             authService.login(request)
                         }
-                    exception.error shouldBe UserError.USER_NOT_FOUND
+                    exception.error shouldBe UserError.NotFound
                 }
             }
 
@@ -336,7 +336,7 @@ class AuthServiceTest :
                         shouldThrow<BusinessException> {
                             authService.login(request)
                         }
-                    exception.error shouldBe UserError.INVALID_OAUTH_PROVIDER
+                    exception.error shouldBe UserError.InvalidOAuthProvider("GOOGLE")
                 }
             }
 
@@ -356,7 +356,7 @@ class AuthServiceTest :
                         shouldThrow<BusinessException> {
                             authService.login(request)
                         }
-                    exception.error shouldBe AuthError.INVALID_PASSWORD
+                    exception.error shouldBe AuthError.InvalidPassword
                 }
             }
         }
@@ -429,7 +429,7 @@ class AuthServiceTest :
                         shouldThrow<BusinessException> {
                             authService.reissue(request)
                         }
-                    exception.error shouldBe UserError.USER_NOT_FOUND
+                    exception.error shouldBe UserError.NotFound
                 }
             }
 
@@ -449,7 +449,7 @@ class AuthServiceTest :
                         shouldThrow<BusinessException> {
                             authService.reissue(request)
                         }
-                    exception.error shouldBe AuthError.REFRESH_TOKEN_NOT_FOUND
+                    exception.error shouldBe AuthError.RefreshTokenNotFound
                 }
             }
         }
@@ -478,7 +478,7 @@ class AuthServiceTest :
                         shouldThrow<BusinessException> {
                             authService.logout()
                         }
-                    exception.error shouldBe UserError.USER_NOT_FOUND
+                    exception.error shouldBe UserError.NotFound
                 }
             }
         }

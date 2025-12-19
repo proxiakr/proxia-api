@@ -4,7 +4,7 @@ import jakarta.validation.Valid
 import kr.proxia.domain.project.application.service.ProjectService
 import kr.proxia.domain.project.presentation.docs.ProjectDocs
 import kr.proxia.domain.project.presentation.request.CreateProjectRequest
-import kr.proxia.global.response.OffsetLimit
+import kr.proxia.global.support.OffsetLimit
 import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable

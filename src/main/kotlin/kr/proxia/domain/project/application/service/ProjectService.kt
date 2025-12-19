@@ -14,9 +14,9 @@ import kr.proxia.domain.service.presentation.response.ServiceResponse
 import kr.proxia.domain.user.domain.error.UserError
 import kr.proxia.domain.user.domain.repository.UserRepository
 import kr.proxia.global.error.BusinessException
-import kr.proxia.global.response.OffsetLimit
-import kr.proxia.global.response.PageResponse
-import kr.proxia.global.response.toResponse
+import kr.proxia.global.support.OffsetLimit
+import kr.proxia.global.support.PageResponse
+import kr.proxia.global.support.toResponse
 import kr.proxia.global.security.holder.SecurityHolder
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
@@ -37,7 +37,7 @@ class ProjectService(
         val slug = request.slug
 
         if (projectRepository.existsBySlugAndDeletedAtIsNull(slug)) {
-            throw BusinessException(ProjectError.SLUG_ALREADY_EXISTS)
+            throw BusinessException(ProjectError.SlugAlreadyExists)
         }
 
         projectRepository.save(
@@ -67,14 +67,14 @@ class ProjectService(
 
     fun getProject(projectId: UUID): ProjectDetailResponse {
         val userId = securityHolder.getUserId()
-        val user = userRepository.findByIdOrNull(userId) ?: throw BusinessException(UserError.USER_NOT_FOUND)
+        val user = userRepository.findByIdOrNull(userId) ?: throw BusinessException(UserError.NotFound)
 
         val project =
             projectRepository.findByIdAndDeletedAtIsNull(projectId)
-                ?: throw BusinessException(ProjectError.PROJECT_NOT_FOUND)
+                ?: throw BusinessException(ProjectError.NotFound)
 
         if (project.userId != userId) {
-            throw BusinessException(ProjectError.PROJECT_ACCESS_DENIED)
+            throw BusinessException(ProjectError.AccessDenied)
         }
 
         return ProjectDetailResponse(
@@ -96,10 +96,10 @@ class ProjectService(
     fun deleteProject(projectId: UUID) {
         val userId = securityHolder.getUserId()
         val project =
-            projectRepository.findByIdAndDeletedAtIsNull(projectId) ?: throw BusinessException(ProjectError.PROJECT_NOT_FOUND)
+            projectRepository.findByIdAndDeletedAtIsNull(projectId) ?: throw BusinessException(ProjectError.NotFound)
 
         if (project.userId != userId) {
-            throw BusinessException(ProjectError.PROJECT_ACCESS_DENIED)
+            throw BusinessException(ProjectError.AccessDenied)
         }
 
         serviceRepository
@@ -120,10 +120,10 @@ class ProjectService(
 
     fun getProjectCanvas(projectId: UUID): ProjectCanvasResponse {
         val userId = securityHolder.getUserId()
-        val project = projectRepository.findByIdAndDeletedAtIsNull(projectId) ?: throw BusinessException(ProjectError.PROJECT_NOT_FOUND)
+        val project = projectRepository.findByIdAndDeletedAtIsNull(projectId) ?: throw BusinessException(ProjectError.NotFound)
 
         if (project.userId != userId) {
-            throw BusinessException(ProjectError.PROJECT_ACCESS_DENIED)
+            throw BusinessException(ProjectError.AccessDenied)
         }
 
         val services =

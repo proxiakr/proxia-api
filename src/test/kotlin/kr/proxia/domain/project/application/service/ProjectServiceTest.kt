@@ -19,7 +19,7 @@ import kr.proxia.domain.user.domain.entity.UserEntity
 import kr.proxia.domain.user.domain.error.UserError
 import kr.proxia.domain.user.domain.repository.UserRepository
 import kr.proxia.global.error.BusinessException
-import kr.proxia.global.response.OffsetLimit
+import kr.proxia.global.support.OffsetLimit
 import kr.proxia.global.security.holder.SecurityHolder
 import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.PageRequest
@@ -76,7 +76,7 @@ class ProjectServiceTest :
                         shouldThrow<BusinessException> {
                             projectService.createProject(request)
                         }
-                    exception.error shouldBe ProjectError.SLUG_ALREADY_EXISTS
+                    exception.error shouldBe ProjectError.SlugAlreadyExists
                 }
             }
         }
@@ -162,7 +162,7 @@ class ProjectServiceTest :
                         shouldThrow<BusinessException> {
                             projectService.getProject(projectId)
                         }
-                    exception.error shouldBe UserError.USER_NOT_FOUND
+                    exception.error shouldBe UserError.NotFound
                 }
             }
 
@@ -177,7 +177,7 @@ class ProjectServiceTest :
                         shouldThrow<BusinessException> {
                             projectService.getProject(projectId)
                         }
-                    exception.error shouldBe ProjectError.PROJECT_NOT_FOUND
+                    exception.error shouldBe ProjectError.NotFound
                 }
             }
 
@@ -196,7 +196,7 @@ class ProjectServiceTest :
                         shouldThrow<BusinessException> {
                             projectService.getProject(projectId)
                         }
-                    exception.error shouldBe ProjectError.PROJECT_ACCESS_DENIED
+                    exception.error shouldBe ProjectError.AccessDenied
                 }
             }
         }
@@ -232,7 +232,7 @@ class ProjectServiceTest :
                         shouldThrow<BusinessException> {
                             projectService.deleteProject(projectId)
                         }
-                    exception.error shouldBe ProjectError.PROJECT_NOT_FOUND
+                    exception.error shouldBe ProjectError.NotFound
                 }
             }
 
@@ -249,7 +249,7 @@ class ProjectServiceTest :
                         shouldThrow<BusinessException> {
                             projectService.deleteProject(projectId)
                         }
-                    exception.error shouldBe ProjectError.PROJECT_ACCESS_DENIED
+                    exception.error shouldBe ProjectError.AccessDenied
                 }
             }
 
@@ -262,7 +262,7 @@ class ProjectServiceTest :
                         shouldThrow<BusinessException> {
                             projectService.deleteProject(projectId)
                         }
-                    exception.error shouldBe ProjectError.PROJECT_NOT_FOUND
+                    exception.error shouldBe ProjectError.NotFound
                 }
             }
         }

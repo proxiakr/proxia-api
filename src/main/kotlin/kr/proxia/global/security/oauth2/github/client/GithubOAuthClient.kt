@@ -29,7 +29,7 @@ class GithubOAuthClient(
                 ).retrieve()
                 .bodyToMono<GithubTokenResponse>()
                 .block()
-                ?.accessToken ?: throw BusinessException(AuthError.INVALID_TOKEN)
+                ?.accessToken ?: throw BusinessException(AuthError.InvalidToken)
 
         val userInfo =
             webClient
@@ -38,7 +38,7 @@ class GithubOAuthClient(
                 .header("Authorization", "Bearer $accessToken")
                 .retrieve()
                 .bodyToMono<GithubUserInfo>()
-                .block() ?: throw BusinessException(AuthError.INVALID_CREDENTIALS)
+                .block() ?: throw BusinessException(AuthError.InvalidCredentials)
 
         return userInfo
     }

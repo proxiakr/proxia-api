@@ -78,7 +78,7 @@ class GitIntegrationServiceTest :
                         shouldThrow<BusinessException> {
                             gitIntegrationService.createGitIntegration(request)
                         }
-                    exception.error shouldBe GitError.GIT_INTEGRATION_ALREADY_EXISTS
+                    exception.error shouldBe GitError.AlreadyExists
                 }
             }
         }
@@ -113,7 +113,7 @@ class GitIntegrationServiceTest :
                         shouldThrow<BusinessException> {
                             gitIntegrationService.deleteGitIntegration(integrationId)
                         }
-                    exception.error shouldBe GitError.GIT_INTEGRATION_NOT_FOUND
+                    exception.error shouldBe GitError.NotFound
                 }
             }
 
@@ -132,7 +132,7 @@ class GitIntegrationServiceTest :
                         shouldThrow<BusinessException> {
                             gitIntegrationService.deleteGitIntegration(integrationId)
                         }
-                    exception.error shouldBe GitError.GIT_INTEGRATION_ACCESS_DENIED
+                    exception.error shouldBe GitError.AccessDenied
                 }
             }
         }

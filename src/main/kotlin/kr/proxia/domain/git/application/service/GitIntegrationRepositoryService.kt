@@ -21,14 +21,14 @@ class GitIntegrationRepositoryService(
         val userId = securityHolder.getUserId()
         val gitIntegration =
             gitIntegrationRepository.findByIdOrNull(gitIntegrationId)
-                ?: throw BusinessException(GitError.GIT_INTEGRATION_NOT_FOUND)
+                ?: throw BusinessException(GitError.NotFound)
 
         if (gitIntegration.userId != userId) {
-            throw BusinessException(GitError.GIT_INTEGRATION_ACCESS_DENIED)
+            throw BusinessException(GitError.AccessDenied)
         }
 
         if (gitIntegration.isDeleted) {
-            throw BusinessException(GitError.GIT_INTEGRATION_NOT_FOUND)
+            throw BusinessException(GitError.NotFound)
         }
 
         return when (gitIntegration.provider) {
@@ -37,7 +37,7 @@ class GitIntegrationRepositoryService(
                 GitIntegrationRepositoryResponse.of(repositories)
             }
 
-            else -> throw BusinessException(GitError.UNSUPPORTED_GIT_PROVIDER)
+            else -> throw BusinessException(GitError.UnsupportedProvider)
         }
     }
 }

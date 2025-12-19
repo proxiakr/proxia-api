@@ -103,7 +103,7 @@ class ConnectionServiceTest :
                                 request.copy(targetId = sourceId),
                             )
                         }
-                    exception.error shouldBe ConnectionError.INVALID_CONNECTION
+                    exception.error shouldBe ConnectionError.SelfConnection
                 }
             }
 
@@ -134,7 +134,7 @@ class ConnectionServiceTest :
                         shouldThrow<BusinessException> {
                             connectionService.createConnection(projectId, request)
                         }
-                    exception.error shouldBe ConnectionError.CONNECTION_ALREADY_EXISTS
+                    exception.error shouldBe ConnectionError.AlreadyExists
                 }
             }
         }

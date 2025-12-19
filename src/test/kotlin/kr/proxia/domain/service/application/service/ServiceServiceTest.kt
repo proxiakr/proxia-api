@@ -99,7 +99,7 @@ class ServiceServiceTest :
                         shouldThrow<BusinessException> {
                             serviceService.createService(projectId, request)
                         }
-                    exception.error shouldBe ProjectError.PROJECT_NOT_FOUND
+                    exception.error shouldBe ProjectError.NotFound
                 }
             }
 
@@ -113,7 +113,7 @@ class ServiceServiceTest :
                         shouldThrow<BusinessException> {
                             serviceService.createService(projectId, request)
                         }
-                    exception.error shouldBe ProjectError.PROJECT_ACCESS_DENIED
+                    exception.error shouldBe ProjectError.AccessDenied
                 }
             }
         }
@@ -206,7 +206,7 @@ class ServiceServiceTest :
                         shouldThrow<BusinessException> {
                             serviceService.updateService(serviceId, request)
                         }
-                    exception.error shouldBe ServiceError.SERVICE_NOT_FOUND
+                    exception.error shouldBe ServiceError.NotFound
                 }
             }
 
@@ -220,7 +220,7 @@ class ServiceServiceTest :
                         shouldThrow<BusinessException> {
                             serviceService.updateService(serviceId, request)
                         }
-                    exception.error shouldBe ServiceError.SERVICE_ACCESS_DENIED
+                    exception.error shouldBe ServiceError.AccessDenied
                 }
             }
         }
@@ -282,7 +282,7 @@ class ServiceServiceTest :
                         shouldThrow<BusinessException> {
                             serviceService.deleteService(serviceId)
                         }
-                    exception.error shouldBe ServiceError.SERVICE_NOT_FOUND
+                    exception.error shouldBe ServiceError.NotFound
                 }
             }
         }

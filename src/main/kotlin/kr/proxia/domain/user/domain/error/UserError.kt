@@ -1,13 +1,22 @@
 package kr.proxia.domain.user.domain.error
 
-import kr.proxia.global.error.BaseError
+import kr.proxia.global.error.DomainError
 import org.springframework.http.HttpStatus
 
-enum class UserError(
+sealed class UserError(
     override val status: HttpStatus,
     override val message: String,
-) : BaseError {
-    USER_NOT_FOUND(HttpStatus.NOT_FOUND, "User not found"),
-    EMAIL_ALREADY_EXISTS(HttpStatus.CONFLICT, "Email already exists"),
-    INVALID_OAUTH_PROVIDER(HttpStatus.BAD_REQUEST, "User is registered with %s provider"),
+) : DomainError {
+    data object NotFound : UserError(
+        HttpStatus.NOT_FOUND,
+        "User not found"
+    )
+    data object EmailAlreadyExists : UserError(
+        HttpStatus.CONFLICT,
+        "Email already exists"
+    )
+    data class InvalidOAuthProvider(val provider: String) : UserError(
+        HttpStatus.BAD_REQUEST,
+        "User is registered with $provider provider"
+    )
 }

@@ -79,7 +79,7 @@ class AuthService(
 
     fun register(request: RegisterRequest) {
         if (userRepository.existsByEmail(request.email)) {
-            throw BusinessException(UserError.EMAIL_ALREADY_EXISTS)
+            throw BusinessException(UserError.EmailAlreadyExists)
         }
 
         /**
@@ -99,14 +99,14 @@ class AuthService(
     fun login(request: LoginRequest): LoginResponse {
         val user =
             userRepository.findByEmail(request.email)
-                ?: throw BusinessException(UserError.USER_NOT_FOUND)
+                ?: throw BusinessException(UserError.NotFound)
 
         if (user.provider != OAuthProvider.LOCAL) {
-            throw BusinessException(UserError.INVALID_OAUTH_PROVIDER, user.provider)
+            throw BusinessException(UserError.InvalidOAuthProvider(user.provider.name))
         }
 
         if (!passwordEncoder.matches(request.password, user.password)) {
-            throw BusinessException(AuthError.INVALID_PASSWORD)
+            throw BusinessException(AuthError.InvalidPassword)
         }
 
         return generateLoginResponse(user)
@@ -124,11 +124,11 @@ class AuthService(
         val userId = jwtExtractor.getSubject(request.refreshToken)
         val user =
             userRepository.findByIdOrNull(userId)
-                ?: throw BusinessException(UserError.USER_NOT_FOUND)
+                ?: throw BusinessException(UserError.NotFound)
 
         val refreshToken =
             refreshTokenRepository.findByUserIdAndRefreshToken(user.id, request.refreshToken)
-                ?: throw BusinessException(AuthError.REFRESH_TOKEN_NOT_FOUND)
+                ?: throw BusinessException(AuthError.RefreshTokenNotFound)
 
         val newRefreshToken = jwtProvider.createRefreshToken(user.id)
         refreshToken.update(refreshToken = newRefreshToken)
@@ -143,7 +143,7 @@ class AuthService(
         val userId = securityHolder.getUserId()
 
         if (!userRepository.existsById(userId)) {
-            throw BusinessException(UserError.USER_NOT_FOUND)
+            throw BusinessException(UserError.NotFound)
         }
 
         refreshTokenRepository.deleteByUserId(userId)

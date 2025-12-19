@@ -1,17 +1,16 @@
 spring:
   application:
     name: proxia
-    version: 1.0.0
+    version: 0.1.0
   jpa:
     open-in-view: false
 
 jwt:
-  secret-key: ${JWT_SECRET_KEY}
   access-token-expiration: 3600000
   refresh-token-expiration: 86400000
 
 encryption:
-  secret-key: ${ENCRYPTION_SECRET_KEY:default-encryption-key-change-in-production}
+  secret-key: ${ENCRYPTION_SECRET_KEY}
 
 oauth2:
   github:
@@ -27,26 +26,3 @@ git:
 webhook:
   github:
     secret: ${WEBHOOK_GITHUB_SECRET:}
-
----
-spring.config.activate.on-profile: local
-
-spring:
-  datasource:
-    driver-class-name: org.h2.Driver
-    url: jdbc:h2:mem:proxia;MODE=PostgreSQL;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
-    username: sa
-    password:
-  jpa:
-    hibernate:
-      ddl-auto: create
-    show-sql: true
-    properties:
-      hibernate:
-        format_sql: true
-  h2:
-    console:
-      enabled: true
-
----
-spring.config.activate.on-profile: dev

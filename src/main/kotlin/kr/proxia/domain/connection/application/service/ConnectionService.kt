@@ -31,23 +31,23 @@ class ConnectionService(
         validateProjectAccess(projectId, userId)
 
         if (request.sourceId == request.targetId) {
-            throw BusinessException(ConnectionError.INVALID_CONNECTION)
+            throw BusinessException(ConnectionError.SelfConnection)
         }
 
         val sourceService =
             serviceRepository.findByIdAndDeletedAtIsNull(request.sourceId)
-                ?: throw BusinessException(ConnectionError.SOURCE_SERVICE_NOT_FOUND)
+                ?: throw BusinessException(ConnectionError.SourceNotFound)
 
         val targetService =
             serviceRepository.findByIdAndDeletedAtIsNull(request.targetId)
-                ?: throw BusinessException(ConnectionError.TARGET_SERVICE_NOT_FOUND)
+                ?: throw BusinessException(ConnectionError.TargetNotFound)
 
         if (sourceService.projectId != projectId || targetService.projectId != projectId) {
-            throw BusinessException(ServiceError.SERVICE_ACCESS_DENIED)
+            throw BusinessException(ServiceError.AccessDenied)
         }
 
         if (connectionRepository.existsBySourceIdAndTargetIdAndDeletedAtIsNull(request.sourceId, request.targetId)) {
-            throw BusinessException(ConnectionError.CONNECTION_ALREADY_EXISTS)
+            throw BusinessException(ConnectionError.AlreadyExists)
         }
 
         connectionRepository.save(
@@ -75,7 +75,7 @@ class ConnectionService(
         val userId = securityHolder.getUserId()
         val connection =
             connectionRepository.findByIdAndDeletedAtIsNull(connectionId)
-                ?: throw BusinessException(ConnectionError.CONNECTION_NOT_FOUND)
+                ?: throw BusinessException(ConnectionError.NotFound)
 
         validateProjectAccess(connection.projectId, userId)
 
@@ -90,7 +90,7 @@ class ConnectionService(
         val userId = securityHolder.getUserId()
         val connection =
             connectionRepository.findByIdAndDeletedAtIsNull(connectionId)
-                ?: throw BusinessException(ConnectionError.CONNECTION_NOT_FOUND)
+                ?: throw BusinessException(ConnectionError.NotFound)
 
         validateProjectAccess(connection.projectId, userId)
 
@@ -106,7 +106,7 @@ class ConnectionService(
         val userId = securityHolder.getUserId()
         val connection =
             connectionRepository.findByIdAndDeletedAtIsNull(connectionId)
-                ?: throw BusinessException(ConnectionError.CONNECTION_NOT_FOUND)
+                ?: throw BusinessException(ConnectionError.NotFound)
 
         validateProjectAccess(connection.projectId, userId)
 
@@ -117,10 +117,10 @@ class ConnectionService(
         projectId: UUID,
         userId: UUID,
     ) {
-        val project = projectRepository.findByIdAndDeletedAtIsNull(projectId) ?: throw BusinessException(ProjectError.PROJECT_NOT_FOUND)
+        val project = projectRepository.findByIdAndDeletedAtIsNull(projectId) ?: throw BusinessException(ProjectError.NotFound)
 
         if (project.userId != userId) {
-            throw BusinessException(ProjectError.PROJECT_ACCESS_DENIED)
+            throw BusinessException(ProjectError.AccessDenied)
         }
     }
 }

@@ -22,7 +22,7 @@ class GitIntegrationService(
         val userId = securityHolder.getUserId()
 
         if (gitIntegrationRepository.existsByUserIdAndProvider(userId, request.provider)) {
-            throw BusinessException(GitError.GIT_INTEGRATION_ALREADY_EXISTS)
+            throw BusinessException(GitError.AlreadyExists)
         }
 
         val gitIntegration =
@@ -38,7 +38,7 @@ class GitIntegrationService(
                     )
                 }
 
-                else -> throw BusinessException(GitError.UNSUPPORTED_GIT_PROVIDER)
+                else -> throw BusinessException(GitError.UnsupportedProvider)
             }
 
         gitIntegrationRepository.save(gitIntegration)
@@ -48,15 +48,15 @@ class GitIntegrationService(
         val userId = securityHolder.getUserId()
         val integration =
             gitIntegrationRepository.findById(integrationId).orElseThrow {
-                BusinessException(GitError.GIT_INTEGRATION_NOT_FOUND)
+                BusinessException(GitError.NotFound)
             }
 
         if (integration.userId != userId) {
-            throw BusinessException(GitError.GIT_INTEGRATION_ACCESS_DENIED)
+            throw BusinessException(GitError.AccessDenied)
         }
 
         if (integration.isDeleted) {
-            throw BusinessException(GitError.GIT_INTEGRATION_NOT_FOUND)
+            throw BusinessException(GitError.NotFound)
         }
 
         integration.delete()
