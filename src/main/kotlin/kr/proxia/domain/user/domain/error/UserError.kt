@@ -20,7 +20,7 @@ sealed class UserError(
     data class InvalidOAuthProvider(
         val provider: String,
     ) : UserError(
-            HttpStatus.BAD_REQUEST,
-            "User is registered with $provider provider",
-        )
+        HttpStatus.BAD_REQUEST,
+        "User is registered with $provider provider",
+    )
 }

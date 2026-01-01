@@ -4,7 +4,7 @@ import kr.proxia.domain.service.domain.enums.AppFramework
 
 data class CreateAppResourceRequest(
     val framework: AppFramework?,
-    val repositoryUrl: String?,
+    val repositoryUrl: String,
     val branch: String?,
     val rootDirectory: String?,
     val buildCommand: String?,

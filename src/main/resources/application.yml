@@ -26,3 +26,7 @@ git:
 webhook:
   github:
     secret: ${WEBHOOK_GITHUB_SECRET:}
+
+github:
+  username: ${GITHUB_USERNAME}
+  pat: ${GITHUB_PAT}

@@ -11,3 +11,7 @@ spring:
 
 jwt:
   secret-key: ${JWT_SECRET_KEY}
+
+github:
+  username: ${GITHUB_USERNAME}
+  pat: ${GITHUB_PAT}

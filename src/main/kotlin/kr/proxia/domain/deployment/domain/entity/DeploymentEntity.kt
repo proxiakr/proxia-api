@@ -10,7 +10,7 @@ import java.util.UUID
 @Entity
 @Table(name = "deployments")
 class DeploymentEntity(
-    val projectId: UUID,
+    val serviceId: UUID,
     val commitSha: String,
     val commitMessage: String?,
     val commitAuthor: String?,

@@ -27,4 +27,12 @@ data class CreateServiceRequest(
     val databaseResource: CreateDatabaseResourceRequest?,
     @field:Valid
     val domainResource: CreateDomainResourceRequest?,
-)
+) {
+    init {
+        when (type) {
+            ServiceType.APP -> requireNotNull(appResource) { "appResource field is required." }
+            ServiceType.DATABASE -> requireNotNull(databaseResource) { "databaseResource field is required." }
+            ServiceType.DOMAIN -> requireNotNull(domainResource) { "domainResource field is required." }
+        }
+    }
+}

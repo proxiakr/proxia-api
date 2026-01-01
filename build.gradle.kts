@@ -30,6 +30,8 @@ dependencies {
     implementation("com.github.docker-java:docker-java-transport-zerodep:3.4.1")
     implementation("org.eclipse.jgit:org.eclipse.jgit:7.4.0.202509020913-r")
 
+    implementation("io.fabric8:kubernetes-client:7.4.0")
+
     testImplementation("io.kotest:kotest-runner-junit5:5.9.1")
     testImplementation("io.kotest:kotest-assertions-core:5.9.1")
     testImplementation("io.kotest:kotest-framework-engine:5.9.1")
@@ -37,6 +39,9 @@ dependencies {
     implementation("io.jsonwebtoken:jjwt-api:0.12.6")
     runtimeOnly("io.jsonwebtoken:jjwt-impl:0.12.6")
     runtimeOnly("io.jsonwebtoken:jjwt-jackson:0.12.6")
+
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor")
 
     runtimeOnly("io.micrometer:micrometer-registry-prometheus")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
