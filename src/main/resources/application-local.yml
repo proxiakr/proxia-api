@@ -18,3 +18,7 @@ jwt:
 
 encryption:
   secret-key: local-encryption-secret-key-change-in-production
+
+github:
+  username: ${GITHUB_USERNAME}
+  pat: ${GITHUB_PAT}

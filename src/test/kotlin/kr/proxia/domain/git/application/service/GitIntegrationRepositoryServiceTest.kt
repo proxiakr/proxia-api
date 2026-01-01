@@ -9,8 +9,8 @@ import kr.proxia.domain.git.domain.entity.GitIntegrationEntity
 import kr.proxia.domain.git.domain.enums.GitIntegrationProvider
 import kr.proxia.domain.git.domain.error.GitError
 import kr.proxia.domain.git.domain.repository.GitIntegrationRepository
-import kr.proxia.domain.git.infra.client.GithubRepositoryClient
-import kr.proxia.domain.git.infra.data.GithubRepository
+import kr.proxia.domain.git.infra.client.GitRepositoryClient
+import kr.proxia.domain.git.infra.data.GitRepository
 import kr.proxia.global.error.BusinessException
 import kr.proxia.global.security.holder.SecurityHolder
 import org.springframework.data.repository.findByIdOrNull
@@ -19,13 +19,13 @@ import java.util.UUID
 class GitIntegrationRepositoryServiceTest :
     BehaviorSpec({
         val gitIntegrationRepository = mockk<GitIntegrationRepository>()
-        val githubRepositoryClient = mockk<GithubRepositoryClient>()
+        val gitRepositoryClient = mockk<GitRepositoryClient>()
         val securityHolder = mockk<SecurityHolder>()
 
         val service =
             GitIntegrationRepositoryService(
                 gitIntegrationRepository,
-                githubRepositoryClient,
+                gitRepositoryClient,
                 securityHolder,
             )
 
@@ -43,7 +43,7 @@ class GitIntegrationRepositoryServiceTest :
                     }
                 val repositories =
                     listOf(
-                        GithubRepository(
+                        GitRepository(
                             id = 1,
                             name = "test-repo",
                             fullName = "user/test-repo",
@@ -54,7 +54,7 @@ class GitIntegrationRepositoryServiceTest :
 
                 every { securityHolder.getUserId() } returns userId
                 every { gitIntegrationRepository.findByIdOrNull(integrationId) } returns integration
-                every { githubRepositoryClient.getGithubRepositories("gho_test_token") } returns repositories
+                every { gitRepositoryClient.getGitRepositories("gho_test_token") } returns repositories
 
                 val result = service.getRepositories(integrationId)
 

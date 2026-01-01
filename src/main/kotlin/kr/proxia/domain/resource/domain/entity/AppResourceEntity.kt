@@ -13,7 +13,7 @@ import java.util.UUID
 class AppResourceEntity(
     val userId: UUID,
     framework: AppFramework?,
-    repositoryUrl: String?,
+    repositoryUrl: String,
     branch: String?,
     rootDirectory: String?,
     buildCommand: String?,
@@ -25,7 +25,7 @@ class AppResourceEntity(
     var framework: AppFramework? = framework
         protected set
 
-    var repositoryUrl: String? = repositoryUrl
+    var repositoryUrl: String = repositoryUrl
         protected set
 
     var branch: String? = branch
@@ -48,7 +48,7 @@ class AppResourceEntity(
 
     fun update(
         framework: AppFramework? = this.framework,
-        repositoryUrl: String? = this.repositoryUrl,
+        repositoryUrl: String = this.repositoryUrl,
         branch: String? = this.branch,
         rootDirectory: String? = this.rootDirectory,
         buildCommand: String? = this.buildCommand,

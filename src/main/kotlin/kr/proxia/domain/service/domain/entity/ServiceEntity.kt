@@ -25,7 +25,7 @@ class ServiceEntity(
     type: ServiceType,
     x: Double,
     y: Double,
-    targetId: UUID?,
+    targetId: UUID,
 ) : BaseEntity() {
     var name: String = name
         protected set
@@ -43,14 +43,14 @@ class ServiceEntity(
     var y: Double = y
         protected set
 
-    var targetId: UUID? = targetId
+    var targetId: UUID = targetId
         protected set
 
     fun update(
         name: String = this.name,
         description: String? = this.description,
         type: ServiceType = this.type,
-        targetId: UUID? = this.targetId,
+        targetId: UUID = this.targetId,
     ) {
         this.name = name
         this.description = description

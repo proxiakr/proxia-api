@@ -5,7 +5,9 @@ import org.springframework.data.jpa.repository.JpaRepository
 import java.util.UUID
 
 interface DeploymentRepository : JpaRepository<DeploymentEntity, UUID> {
-    fun findAllByProjectIdAndDeletedAtIsNull(projectId: UUID): List<DeploymentEntity>
+    fun findAllByServiceIdAndDeletedAtIsNull(serviceId: UUID): List<DeploymentEntity>
 
-    fun findAllByProjectIdAndDeletedAtIsNullOrderByCreatedAtDesc(projectId: UUID): List<DeploymentEntity>
+    fun findAllByServiceIdAndDeletedAtIsNullOrderByCreatedAtDesc(serviceId: UUID): List<DeploymentEntity>
+
+    fun existsByServiceId(serviceId: UUID): Boolean
 }
