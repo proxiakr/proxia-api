@@ -1,6 +1,8 @@
 package kr.proxia.core.domain.auth
 
 import kr.proxia.core.enums.AuthProvider
+import kr.proxia.core.support.error.CoreException
+import kr.proxia.core.support.error.ErrorType
 import kr.proxia.storage.db.core.entity.RefreshToken
 import kr.proxia.storage.db.core.entity.User
 import kr.proxia.storage.db.core.repository.RefreshTokenRepository
@@ -39,11 +41,11 @@ class AuthService(
     @Transactional
     fun refresh(token: String): TokenPair {
         val refreshToken = refreshTokenRepository.findByToken(token)
-            ?: throw IllegalArgumentException("Invalid token")
+            ?: throw CoreException(ErrorType.INVALID_TOKEN)
 
         if (refreshToken.expiresAt.isBefore(LocalDateTime.now())) {
             refreshTokenRepository.delete(refreshToken)
-            throw IllegalArgumentException("Token expired")
+            throw CoreException(ErrorType.TOKEN_EXPIRED)
         }
 
         refreshTokenRepository.delete(refreshToken)

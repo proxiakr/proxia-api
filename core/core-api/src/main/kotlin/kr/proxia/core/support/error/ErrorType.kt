@@ -17,4 +17,5 @@ enum class ErrorType(
     FORBIDDEN(HttpStatus.FORBIDDEN, "Access denied"),
 
     OAUTH_FAILED(HttpStatus.BAD_REQUEST, "OAuth authentication failed"),
+    EMAIL_NOT_FOUND(HttpStatus.BAD_REQUEST, "No verified email found"),
 }

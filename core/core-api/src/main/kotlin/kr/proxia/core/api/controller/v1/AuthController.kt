@@ -8,6 +8,8 @@ import kr.proxia.core.api.controller.v1.request.RefreshRequest
 import kr.proxia.core.domain.auth.AuthService
 import kr.proxia.core.domain.auth.TokenPair
 import kr.proxia.core.enums.AuthProvider
+import kr.proxia.core.support.error.CoreException
+import kr.proxia.core.support.error.ErrorType
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
@@ -45,7 +47,7 @@ class AuthController(
             val emails = gitHubOAuthClient.getUserEmails(tokenResponse.accessToken)
             emails.firstOrNull { it.primary && it.verified }?.email
                 ?: emails.firstOrNull { it.verified }?.email
-                ?: throw IllegalArgumentException("No verified email found")
+                ?: throw CoreException(ErrorType.EMAIL_NOT_FOUND)
         }
 
         return authService.authenticateOAuth(
