@@ -1,0 +1,74 @@
+= Proxia API Documentation
+:doctype: book
+:icons: font
+:source-highlighter: highlightjs
+:toc: left
+:toclevels: 2
+:sectlinks:
+
+[[overview]]
+== Overview
+
+Proxia API 문서입니다.
+
+[[auth]]
+== Authentication
+
+OAuth 기반 인증 API입니다.
+
+[[auth-google]]
+=== Google OAuth 로그인
+
+Google OAuth authorization code를 사용하여 로그인합니다.
+
+.Request
+include::{snippets}/auth-google/request-fields.adoc[]
+
+.Response
+include::{snippets}/auth-google/response-fields.adoc[]
+
+.Example
+include::{snippets}/auth-google/http-request.adoc[]
+include::{snippets}/auth-google/http-response.adoc[]
+
+[[auth-github]]
+=== GitHub OAuth 로그인
+
+GitHub OAuth authorization code를 사용하여 로그인합니다.
+
+.Request
+include::{snippets}/auth-github/request-fields.adoc[]
+
+.Response
+include::{snippets}/auth-github/response-fields.adoc[]
+
+.Example
+include::{snippets}/auth-github/http-request.adoc[]
+include::{snippets}/auth-github/http-response.adoc[]
+
+[[auth-refresh]]
+=== 토큰 갱신
+
+Refresh token을 사용하여 새로운 토큰을 발급받습니다. (Token Rotation 적용)
+
+.Request
+include::{snippets}/auth-refresh/request-fields.adoc[]
+
+.Response
+include::{snippets}/auth-refresh/response-fields.adoc[]
+
+.Example
+include::{snippets}/auth-refresh/http-request.adoc[]
+include::{snippets}/auth-refresh/http-response.adoc[]
+
+[[auth-logout]]
+=== 로그아웃
+
+Refresh token을 무효화합니다.
+
+.Request
+include::{snippets}/auth-logout/request-fields.adoc[]
+
+.Example
+include::{snippets}/auth-logout/http-request.adoc[]
+include::{snippets}/auth-logout/http-response.adoc[]

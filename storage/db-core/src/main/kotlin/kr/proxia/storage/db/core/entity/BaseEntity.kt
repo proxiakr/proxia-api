@@ -19,11 +19,12 @@ abstract class BaseEntity {
     val id: UUID = UlidCreator.getMonotonicUlid().toUuid()
 
     @CreatedDate
-    @Column(updatable = false)
+    @Column(nullable = false, updatable = false)
     var createdAt: LocalDateTime = LocalDateTime.now()
         protected set
 
     @LastModifiedDate
+    @Column(nullable = false)
     var updatedAt: LocalDateTime = LocalDateTime.now()
         protected set
 }

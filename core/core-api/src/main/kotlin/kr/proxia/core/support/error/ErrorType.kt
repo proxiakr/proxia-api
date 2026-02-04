@@ -10,4 +10,11 @@ enum class ErrorType(
 ) {
     INTERNAL_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "Internal server error", LogLevel.ERROR),
     VALIDATION_ERROR(HttpStatus.BAD_REQUEST, "Validation failed"),
+
+    UNAUTHORIZED(HttpStatus.UNAUTHORIZED, "Authentication required"),
+    INVALID_TOKEN(HttpStatus.UNAUTHORIZED, "Invalid token"),
+    TOKEN_EXPIRED(HttpStatus.UNAUTHORIZED, "Token expired"),
+    FORBIDDEN(HttpStatus.FORBIDDEN, "Access denied"),
+
+    OAUTH_FAILED(HttpStatus.BAD_REQUEST, "OAuth authentication failed"),
 }
