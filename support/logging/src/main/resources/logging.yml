@@ -1,0 +1,27 @@
+logging:
+  level:
+    root: INFO
+    kr.proxia: DEBUG
+    org.springframework: INFO
+    org.hibernate.SQL: DEBUG
+    org.hibernate.orm.jdbc.bind: TRACE
+
+---
+spring:
+  config:
+    activate:
+      on-profile: local
+logging:
+  level:
+    kr.proxia: DEBUG
+
+---
+spring:
+  config:
+    activate:
+      on-profile: live
+logging:
+  level:
+    root: WARN
+    kr.proxia: INFO
+    org.hibernate.SQL: WARN

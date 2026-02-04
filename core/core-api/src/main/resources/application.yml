@@ -1,0 +1,35 @@
+spring:
+  application:
+    name: proxia
+  profiles:
+    active: local
+  config:
+    import:
+      - db-core.yml
+      - logging.yml
+      - monitoring.yml
+  web:
+    resources:
+      add-mappings: false
+
+server:
+  tomcat:
+    max-connections: 20000
+    threads:
+      max: 600
+      min-spare: 100
+
+---
+spring:
+  config:
+    activate:
+      on-profile: local
+
+---
+spring:
+  config:
+    activate:
+      on-profile: dev | staging | live
+  docker:
+    compose:
+      enabled: false
