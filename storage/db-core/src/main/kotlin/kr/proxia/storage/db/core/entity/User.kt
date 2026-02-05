@@ -13,14 +13,13 @@ import kr.proxia.core.enums.UserRole
 class User(
     @Column(nullable = false)
     val email: String,
-
+    @Column(nullable = false)
+    val name: String,
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     val provider: AuthProvider,
-
     @Column(nullable = false)
     val providerId: String,
-
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     val role: UserRole = UserRole.USER,
