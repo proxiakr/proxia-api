@@ -2,6 +2,8 @@ package kr.proxia.storage.db.core.entity
 
 import jakarta.persistence.DiscriminatorValue
 import jakarta.persistence.Entity
+import jakarta.persistence.EnumType
+import jakarta.persistence.Enumerated
 import jakarta.persistence.FetchType
 import jakarta.persistence.JoinColumn
 import jakarta.persistence.ManyToOne
@@ -20,6 +22,7 @@ class DatabaseService(
     @JoinColumn(name = "project_id", nullable = false)
     override val project: Project,
     override val status: ServiceStatus,
+    @Enumerated(EnumType.STRING)
     val databaseType: DatabaseType,
     val version: String,
     val username: String,
