@@ -80,7 +80,10 @@ class WorkspaceController(
     }
 
     @DeleteMapping("/{workspaceId}")
-    fun deleteWorkspace(@AuthenticationPrincipal userId: UUID, @PathVariable workspaceId: UUID) {
+    fun deleteWorkspace(
+        @AuthenticationPrincipal userId: UUID,
+        @PathVariable workspaceId: UUID,
+    ) {
         workspaceService.deleteWorkspace(userId, workspaceId)
     }
 }

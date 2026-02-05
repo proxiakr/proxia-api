@@ -17,10 +17,13 @@ import java.util.UUID
 @RestController
 @RequestMapping("/api/v1/workspaces/{workspaceId}/projects")
 class ProjectController(
-    private val projectService: ProjectService
+    private val projectService: ProjectService,
 ) {
     @GetMapping
-    fun getProjects(@AuthenticationPrincipal userId: UUID, @PathVariable workspaceId: UUID): List<ProjectResponse> {
+    fun getProjects(
+        @AuthenticationPrincipal userId: UUID,
+        @PathVariable workspaceId: UUID,
+    ): List<ProjectResponse> {
         val projects = projectService.getProjects(userId, workspaceId)
 
         return projects.map {
@@ -34,7 +37,11 @@ class ProjectController(
     }
 
     @GetMapping("/{projectId}")
-    fun getProject(@AuthenticationPrincipal userId: UUID, @PathVariable workspaceId: UUID, @PathVariable projectId: UUID): ProjectDetailResponse {
+    fun getProject(
+        @AuthenticationPrincipal userId: UUID,
+        @PathVariable workspaceId: UUID,
+        @PathVariable projectId: UUID,
+    ): ProjectDetailResponse {
         val project = projectService.getProject(userId, workspaceId, projectId)
 
         return ProjectDetailResponse(
@@ -47,7 +54,11 @@ class ProjectController(
     }
 
     @PostMapping
-    fun createProject(@AuthenticationPrincipal userId: UUID, @PathVariable workspaceId: UUID, @RequestBody request: CreateProjectRequest): ProjectResponse {
+    fun createProject(
+        @AuthenticationPrincipal userId: UUID,
+        @PathVariable workspaceId: UUID,
+        @RequestBody request: CreateProjectRequest,
+    ): ProjectResponse {
         val project = projectService.createProject(userId, workspaceId, request.toDomain())
 
         return ProjectResponse(
@@ -59,7 +70,11 @@ class ProjectController(
     }
 
     @DeleteMapping("/{projectId}")
-    fun deleteProject(@AuthenticationPrincipal userId: UUID, @PathVariable workspaceId: UUID, @PathVariable projectId: UUID) {
+    fun deleteProject(
+        @AuthenticationPrincipal userId: UUID,
+        @PathVariable workspaceId: UUID,
+        @PathVariable projectId: UUID,
+    ) {
         projectService.deleteProject(userId, workspaceId, projectId)
     }
 }

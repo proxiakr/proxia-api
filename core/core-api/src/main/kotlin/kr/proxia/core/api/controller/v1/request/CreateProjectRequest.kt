@@ -4,10 +4,11 @@ import kr.proxia.core.domain.CreateProject
 
 data class CreateProjectRequest(
     val name: String,
-    val subdomain: String
+    val subdomain: String,
 ) {
-    fun toDomain() = CreateProject(
-        name = name,
-        subdomain = subdomain
-    )
+    fun toDomain() =
+        CreateProject(
+            name = name,
+            subdomain = subdomain,
+        )
 }
