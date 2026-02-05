@@ -14,7 +14,8 @@ internal class AwsConfig(
 ) {
     @Bean
     fun awsS3Client(): S3Client =
-        S3Client.builder()
+        S3Client
+            .builder()
             .region(Region.of(awsProperties.s3.region))
             .credentialsProvider(DefaultCredentialsProvider.builder().build())
             .build()
