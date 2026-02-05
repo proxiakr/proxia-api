@@ -15,14 +15,19 @@ class S3Client internal constructor(
             true
         }.getOrDefault(false)
 
-    fun upload(bucketName: String, key: String, content: String): Boolean =
+    fun upload(
+        bucketName: String,
+        key: String,
+        content: String,
+    ): Boolean =
         runCatching {
             awsS3Client.putObject(
-                PutObjectRequest.builder()
+                PutObjectRequest
+                    .builder()
                     .bucket(bucketName)
                     .key(key)
                     .build(),
-                RequestBody.fromString(content)
+                RequestBody.fromString(content),
             )
             true
         }.getOrDefault(false)
