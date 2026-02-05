@@ -1,4 +1,4 @@
-package kr.proxia.core.domain.auth
+package kr.proxia.core.domain
 
 import kr.proxia.core.enums.AuthProvider
 import kr.proxia.core.support.error.CoreException
@@ -19,29 +19,40 @@ class AuthService(
     private val refreshTokenRepository: RefreshTokenRepository,
     private val jwtProvider: JwtProvider,
     private val jwtProperties: JwtProperties,
+    private val workspaceService: WorkspaceService,
 ) {
     @Transactional
     fun authenticateOAuth(
         provider: AuthProvider,
         providerId: String,
         email: String,
+        name: String,
     ): TokenPair {
-        val user = userRepository.findByProviderAndProviderId(provider, providerId)
-            ?: userRepository.save(
-                User(
-                    email = email,
-                    provider = provider,
-                    providerId = providerId,
-                ),
-            )
+        val existingUser = userRepository.findByProviderAndProviderId(provider, providerId)
+
+        val user =
+            existingUser ?: run {
+                val newUser =
+                    userRepository.save(
+                        User(
+                            email = email,
+                            name = name,
+                            provider = provider,
+                            providerId = providerId,
+                        ),
+                    )
+                workspaceService.createDefaultWorkspace(newUser)
+                newUser
+            }
 
         return createTokenPair(user)
     }
 
     @Transactional
     fun refresh(token: String): TokenPair {
-        val refreshToken = refreshTokenRepository.findByToken(token)
-            ?: throw CoreException(ErrorType.INVALID_TOKEN)
+        val refreshToken =
+            refreshTokenRepository.findByToken(token)
+                ?: throw CoreException(ErrorType.INVALID_TOKEN)
 
         if (refreshToken.expiresAt.isBefore(LocalDateTime.now())) {
             refreshTokenRepository.delete(refreshToken)
@@ -63,8 +74,10 @@ class AuthService(
         val accessToken = jwtProvider.createAccessToken(user.id, user.role.name)
         val refreshToken = jwtProvider.createRefreshToken(user.id)
 
-        val expiresAt = LocalDateTime.now()
-            .plusSeconds(jwtProperties.refreshExpiration / 1000)
+        val expiresAt =
+            LocalDateTime
+                .now()
+                .plusSeconds(jwtProperties.refreshExpiration / 1000)
 
         refreshTokenRepository.save(
             RefreshToken(
