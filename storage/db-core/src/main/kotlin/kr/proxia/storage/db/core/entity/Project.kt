@@ -6,16 +6,15 @@ import jakarta.persistence.FetchType
 import jakarta.persistence.JoinColumn
 import jakarta.persistence.ManyToOne
 import jakarta.persistence.Table
-import java.time.LocalDateTime
 
 @Entity
-@Table(name = "refresh_tokens")
-class RefreshToken(
+@Table(name = "projects")
+class Project(
+    @Column(nullable = false)
+    val name: String,
+    @Column(nullable = false)
+    val slug: String,
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", nullable = false)
-    val user: User,
-    @Column(nullable = false)
-    val token: String,
-    @Column(nullable = false)
-    val expiresAt: LocalDateTime,
+    @JoinColumn(name = "workspace_id", nullable = false)
+    val workspace: Workspace,
 ) : BaseEntity()

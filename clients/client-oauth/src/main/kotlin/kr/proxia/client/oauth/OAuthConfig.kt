@@ -10,25 +10,29 @@ import org.springframework.web.client.RestClient
 class OAuthConfig {
     @Bean
     fun googleRestClient(): RestClient =
-        RestClient.builder()
+        RestClient
+            .builder()
             .baseUrl("https://oauth2.googleapis.com")
             .build()
 
     @Bean
     fun googleApiRestClient(): RestClient =
-        RestClient.builder()
+        RestClient
+            .builder()
             .baseUrl("https://www.googleapis.com")
             .build()
 
     @Bean
     fun githubRestClient(): RestClient =
-        RestClient.builder()
+        RestClient
+            .builder()
             .baseUrl("https://github.com")
             .build()
 
     @Bean
     fun githubApiRestClient(): RestClient =
-        RestClient.builder()
+        RestClient
+            .builder()
             .baseUrl("https://api.github.com")
             .build()
 }

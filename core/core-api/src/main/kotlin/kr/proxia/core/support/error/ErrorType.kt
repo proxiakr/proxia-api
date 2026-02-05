@@ -18,4 +18,7 @@ enum class ErrorType(
 
     OAUTH_FAILED(HttpStatus.BAD_REQUEST, "OAuth authentication failed"),
     EMAIL_NOT_FOUND(HttpStatus.BAD_REQUEST, "No verified email found"),
+    NAME_NOT_FOUND(HttpStatus.BAD_REQUEST, "No name found in OAuth profile"),
+    USER_NOT_FOUND(HttpStatus.NOT_FOUND, "User not found"),
+    WORKSPACE_NOT_FOUND(HttpStatus.NOT_FOUND, "Workspace not found"),
 }

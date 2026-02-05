@@ -5,8 +5,8 @@ import kr.proxia.client.oauth.github.GitHubOAuthClient
 import kr.proxia.client.oauth.google.GoogleOAuthClient
 import kr.proxia.core.api.controller.v1.request.OAuthRequest
 import kr.proxia.core.api.controller.v1.request.RefreshRequest
-import kr.proxia.core.domain.auth.AuthService
-import kr.proxia.core.domain.auth.TokenPair
+import kr.proxia.core.domain.AuthService
+import kr.proxia.core.domain.TokenPair
 import kr.proxia.core.enums.AuthProvider
 import kr.proxia.core.support.error.CoreException
 import kr.proxia.core.support.error.ErrorType
@@ -29,10 +29,13 @@ class AuthController(
         val tokenResponse = googleOAuthClient.getAccessToken(request.code)
         val userInfo = googleOAuthClient.getUserInfo(tokenResponse.accessToken)
 
+        val name = userInfo.name ?: throw CoreException(ErrorType.NAME_NOT_FOUND)
+
         return authService.authenticateOAuth(
             provider = AuthProvider.GOOGLE,
             providerId = userInfo.id,
             email = userInfo.email,
+            name = name,
         )
     }
 
@@ -43,17 +46,21 @@ class AuthController(
         val tokenResponse = gitHubOAuthClient.getAccessToken(request.code)
         val userInfo = gitHubOAuthClient.getUserInfo(tokenResponse.accessToken)
 
-        val email = userInfo.email ?: run {
-            val emails = gitHubOAuthClient.getUserEmails(tokenResponse.accessToken)
-            emails.firstOrNull { it.primary && it.verified }?.email
-                ?: emails.firstOrNull { it.verified }?.email
-                ?: throw CoreException(ErrorType.EMAIL_NOT_FOUND)
-        }
+        val email =
+            userInfo.email ?: run {
+                val emails = gitHubOAuthClient.getUserEmails(tokenResponse.accessToken)
+                emails.firstOrNull { it.primary && it.verified }?.email
+                    ?: emails.firstOrNull { it.verified }?.email
+                    ?: throw CoreException(ErrorType.EMAIL_NOT_FOUND)
+            }
+
+        val name = userInfo.name ?: throw CoreException(ErrorType.NAME_NOT_FOUND)
 
         return authService.authenticateOAuth(
             provider = AuthProvider.GITHUB,
             providerId = userInfo.id.toString(),
             email = email,
+            name = name,
         )
     }
 

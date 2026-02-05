@@ -13,15 +13,17 @@ class GoogleOAuthClient(
     private val properties: OAuthProperties,
 ) {
     fun getAccessToken(code: String): GoogleTokenResponse {
-        val params = LinkedMultiValueMap<String, String>().apply {
-            add("code", code)
-            add("client_id", properties.google.clientId)
-            add("client_secret", properties.google.clientSecret)
-            add("redirect_uri", properties.google.redirectUri)
-            add("grant_type", "authorization_code")
-        }
+        val params =
+            LinkedMultiValueMap<String, String>().apply {
+                add("code", code)
+                add("client_id", properties.google.clientId)
+                add("client_secret", properties.google.clientSecret)
+                add("redirect_uri", properties.google.redirectUri)
+                add("grant_type", "authorization_code")
+            }
 
-        return googleRestClient.post()
+        return googleRestClient
+            .post()
             .uri("/token")
             .contentType(MediaType.APPLICATION_FORM_URLENCODED)
             .body(params)
@@ -29,11 +31,11 @@ class GoogleOAuthClient(
             .body(GoogleTokenResponse::class.java)!!
     }
 
-    fun getUserInfo(accessToken: String): GoogleUserInfo {
-        return googleApiRestClient.get()
+    fun getUserInfo(accessToken: String): GoogleUserInfo =
+        googleApiRestClient
+            .get()
             .uri("/oauth2/v2/userinfo")
             .header("Authorization", "Bearer $accessToken")
             .retrieve()
             .body(GoogleUserInfo::class.java)!!
-    }
 }
