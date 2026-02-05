@@ -10,6 +10,7 @@ spring:
       - monitoring.yml
       - security.yml
       - client-oauth.yml
+      - client-aws.yml
   web:
     resources:
       add-mappings: false

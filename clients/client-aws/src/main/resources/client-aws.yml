@@ -1,0 +1,12 @@
+aws:
+  s3:
+    region: ${AWS_S3_REGION:ap-northeast-2}
+    bucket-name: ${AWS_S3_BUCKET_NAME:}
+    log-prefix: ${AWS_S3_LOG_PREFIX:logs}
+    max-attempts: ${AWS_S3_MAX_ATTEMPTS:3}
+    connection-timeout: ${AWS_S3_CONNECTION_TIMEOUT:5000}
+    request-timeout: ${AWS_S3_REQUEST_TIMEOUT:60000}
+
+logging:
+  level:
+    software.amazon.awssdk: WARN
