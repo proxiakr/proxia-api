@@ -81,7 +81,7 @@ class AuthControllerDocsTest {
                 picture = null,
             )
         every {
-            authService.authenticateOAuth(AuthProvider.GOOGLE, "google-user-id", "user@gmail.com")
+            authService.authenticateOAuth(AuthProvider.GOOGLE, "google-user-id", "user@gmail.com", "Test User")
         } returns tokenPair
 
         mockMvc
@@ -130,7 +130,7 @@ class AuthControllerDocsTest {
                 avatarUrl = null,
             )
         every {
-            authService.authenticateOAuth(AuthProvider.GITHUB, "12345678", "user@github.com")
+            authService.authenticateOAuth(AuthProvider.GITHUB, "12345678", "user@github.com", "Test User")
         } returns tokenPair
 
         mockMvc

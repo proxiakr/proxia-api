@@ -94,6 +94,7 @@ class WorkspaceControllerDocsTest {
         val user =
             User(
                 email = "user@example.com",
+                name = "Test User",
                 provider = AuthProvider.GOOGLE,
                 providerId = "google-123",
             )
