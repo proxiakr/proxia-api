@@ -73,4 +73,13 @@ class WorkspaceService(
 
         return workspaceMemberRepository.findByWorkspaceWithUser(workspace)
     }
+
+    fun deleteWorkspace(
+        userId: UUID,
+        workspaceId: UUID,
+    ) {
+        val workspace = getWorkspace(userId, workspaceId)
+
+        workspaceRepository.delete(workspace)
+    }
 }
