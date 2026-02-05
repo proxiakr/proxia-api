@@ -72,3 +72,50 @@ include::{snippets}/auth-logout/request-fields.adoc[]
 .Example
 include::{snippets}/auth-logout/http-request.adoc[]
 include::{snippets}/auth-logout/http-response.adoc[]
+
+[[workspace]]
+== Workspace
+
+워크스페이스 관리 API입니다.
+
+[[workspace-list]]
+=== 워크스페이스 목록 조회
+
+사용자가 속한 워크스페이스 목록을 조회합니다.
+
+.Response
+include::{snippets}/workspace-list/response-fields.adoc[]
+
+.Example
+include::{snippets}/workspace-list/http-request.adoc[]
+include::{snippets}/workspace-list/http-response.adoc[]
+
+[[workspace-detail]]
+=== 워크스페이스 상세 조회
+
+워크스페이스 상세 정보와 멤버 목록을 조회합니다.
+
+.Path Parameters
+include::{snippets}/workspace-detail/path-parameters.adoc[]
+
+.Response
+include::{snippets}/workspace-detail/response-fields.adoc[]
+
+.Example
+include::{snippets}/workspace-detail/http-request.adoc[]
+include::{snippets}/workspace-detail/http-response.adoc[]
+
+[[workspace-create]]
+=== 워크스페이스 생성
+
+새로운 워크스페이스를 생성합니다. 생성자는 자동으로 OWNER 권한을 갖습니다.
+
+.Request
+include::{snippets}/workspace-create/request-fields.adoc[]
+
+.Response
+include::{snippets}/workspace-create/response-fields.adoc[]
+
+.Example
+include::{snippets}/workspace-create/http-request.adoc[]
+include::{snippets}/workspace-create/http-response.adoc[]
