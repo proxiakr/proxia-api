@@ -1,7 +1,7 @@
 package kr.proxia.client.docker
 
-import com.github.dockerjava.api.DockerClient as DockerJavaClient
 import org.springframework.stereotype.Component
+import com.github.dockerjava.api.DockerClient as DockerJavaClient
 
 @Component
 class DockerClient internal constructor(
