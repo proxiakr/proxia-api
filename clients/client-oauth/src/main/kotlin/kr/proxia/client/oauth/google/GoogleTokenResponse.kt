@@ -11,5 +11,5 @@ data class GoogleTokenResponse(
     val refreshToken: String? = null,
     @field:JsonProperty("token_type")
     val tokenType: String,
-    val scope: String
+    val scope: String,
 )

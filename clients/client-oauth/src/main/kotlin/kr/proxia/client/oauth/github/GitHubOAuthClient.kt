@@ -14,14 +14,16 @@ class GitHubOAuthClient(
     private val properties: OAuthProperties,
 ) {
     fun getAccessToken(code: String): GitHubTokenResponse {
-        val params = LinkedMultiValueMap<String, String>().apply {
-            add("code", code)
-            add("client_id", properties.github.clientId)
-            add("client_secret", properties.github.clientSecret)
-            add("redirect_uri", properties.github.redirectUri)
-        }
+        val params =
+            LinkedMultiValueMap<String, String>().apply {
+                add("code", code)
+                add("client_id", properties.github.clientId)
+                add("client_secret", properties.github.clientSecret)
+                add("redirect_uri", properties.github.redirectUri)
+            }
 
-        return githubRestClient.post()
+        return githubRestClient
+            .post()
             .uri("/login/oauth/access_token")
             .contentType(MediaType.APPLICATION_FORM_URLENCODED)
             .accept(MediaType.APPLICATION_JSON)
@@ -30,19 +32,19 @@ class GitHubOAuthClient(
             .body(GitHubTokenResponse::class.java)!!
     }
 
-    fun getUserInfo(accessToken: String): GitHubUserInfo {
-        return githubApiRestClient.get()
+    fun getUserInfo(accessToken: String): GitHubUserInfo =
+        githubApiRestClient
+            .get()
             .uri("/user")
             .header("Authorization", "Bearer $accessToken")
             .retrieve()
             .body(GitHubUserInfo::class.java)!!
-    }
 
-    fun getUserEmails(accessToken: String): List<GitHubEmail> {
-        return githubApiRestClient.get()
+    fun getUserEmails(accessToken: String): List<GitHubEmail> =
+        githubApiRestClient
+            .get()
             .uri("/user/emails")
             .header("Authorization", "Bearer $accessToken")
             .retrieve()
             .body(object : ParameterizedTypeReference<List<GitHubEmail>>() {})!!
-    }
 }
