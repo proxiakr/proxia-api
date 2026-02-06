@@ -2,14 +2,11 @@ package kr.proxia.core.api.controller.v1
 
 import io.mockk.every
 import io.mockk.mockk
-import kr.proxia.core.api.controller.v1.request.CreateWorkspaceRequest
-import kr.proxia.core.domain.CreateWorkspace
-import kr.proxia.core.domain.WorkspaceService
-import kr.proxia.core.enums.AuthProvider
-import kr.proxia.core.enums.WorkspaceMemberRole
-import kr.proxia.storage.db.core.entity.User
+import kr.proxia.core.api.controller.v1.request.CreateProjectRequest
+import kr.proxia.core.domain.CreateProject
+import kr.proxia.core.domain.ProjectService
+import kr.proxia.storage.db.core.entity.Project
 import kr.proxia.storage.db.core.entity.Workspace
-import kr.proxia.storage.db.core.entity.WorkspaceMember
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
@@ -47,41 +44,46 @@ import java.util.UUID
 
 @Tag("restdocs")
 @ExtendWith(RestDocumentationExtension::class)
-class WorkspaceControllerDocsTest {
+class ProjectControllerDocsTest {
     private lateinit var mockMvc: MockMvc
     private val objectMapper: ObjectMapper = jsonMapper { addModule(kotlinModule()) }
 
-    private val workspaceService = mockk<WorkspaceService>()
+    private val projectService = mockk<ProjectService>()
     private val testUserId: UUID = UUID.randomUUID()
+    private val testWorkspaceId: UUID = UUID.randomUUID()
 
     @BeforeEach
     fun setUp(restDocumentation: RestDocumentationContextProvider) {
         mockMvc =
             MockMvcBuilders
-                .standaloneSetup(WorkspaceController(workspaceService))
+                .standaloneSetup(ProjectController(projectService))
                 .setCustomArgumentResolvers(TestAuthenticationPrincipalResolver(testUserId))
                 .apply<StandaloneMockMvcBuilder>(documentationConfiguration(restDocumentation))
                 .build()
     }
 
     @Test
-    fun `워크스페이스 목록 조회`() {
-        val workspace1 = Workspace(name = "My Workspace")
-        val workspace2 = Workspace(name = "Team Project")
+    fun `프로젝트 목록 조회`() {
+        val workspace = Workspace(name = "Test Workspace")
+        val project1 = Project(name = "Project Alpha", subdomain = "alpha", workspace = workspace)
+        val project2 = Project(name = "Project Beta", subdomain = "beta", workspace = workspace)
 
-        every { workspaceService.getWorkspaces(testUserId) } returns listOf(workspace1, workspace2)
+        every { projectService.getProjects(testUserId, testWorkspaceId) } returns listOf(project1, project2)
 
         mockMvc
-            .perform(get("/api/v1/workspaces"))
+            .perform(get("/api/v1/workspaces/{workspaceId}/projects", testWorkspaceId))
             .andExpect(status().isOk)
             .andDo(
                 document(
-                    "workspace-list",
+                    "project-list",
                     preprocessRequest(prettyPrint()),
                     preprocessResponse(prettyPrint()),
+                    pathParameters(
+                        parameterWithName("workspaceId").description("Workspace ID"),
+                    ),
                     responseFields(
-                        fieldWithPath("[].id").description("Workspace ID"),
-                        fieldWithPath("[].name").description("Workspace name"),
+                        fieldWithPath("[].id").description("Project ID"),
+                        fieldWithPath("[].name").description("Project name"),
                         fieldWithPath("[].createdAt").description("Creation timestamp"),
                         fieldWithPath("[].updatedAt").description("Last update timestamp"),
                     ),
@@ -90,43 +92,28 @@ class WorkspaceControllerDocsTest {
     }
 
     @Test
-    fun `워크스페이스 상세 조회`() {
-        val workspace = Workspace(name = "My Workspace")
-        val user =
-            User(
-                email = "user@example.com",
-                name = "Test User",
-                provider = AuthProvider.GOOGLE,
-                providerId = "google-123",
-            )
-        val member =
-            WorkspaceMember(
-                workspace = workspace,
-                user = user,
-                role = WorkspaceMemberRole.OWNER,
-            )
+    fun `프로젝트 상세 조회`() {
+        val workspace = Workspace(name = "Test Workspace")
+        val project = Project(name = "Project Alpha", subdomain = "alpha", workspace = workspace)
 
-        every { workspaceService.getWorkspace(testUserId, workspace.id) } returns workspace
-        every { workspaceService.getWorkspaceMembers(testUserId, workspace.id) } returns listOf(member)
+        every { projectService.getProject(testUserId, testWorkspaceId, project.id) } returns project
 
         mockMvc
-            .perform(get("/api/v1/workspaces/{workspaceId}", workspace.id))
+            .perform(get("/api/v1/workspaces/{workspaceId}/projects/{projectId}", testWorkspaceId, project.id))
             .andExpect(status().isOk)
             .andDo(
                 document(
-                    "workspace-detail",
+                    "project-detail",
                     preprocessRequest(prettyPrint()),
                     preprocessResponse(prettyPrint()),
                     pathParameters(
                         parameterWithName("workspaceId").description("Workspace ID"),
+                        parameterWithName("projectId").description("Project ID"),
                     ),
                     responseFields(
-                        fieldWithPath("id").description("Workspace ID"),
-                        fieldWithPath("name").description("Workspace name"),
-                        fieldWithPath("members").description("List of workspace members"),
-                        fieldWithPath("members[].user.id").description("Member user ID"),
-                        fieldWithPath("members[].user.email").description("Member email"),
-                        fieldWithPath("members[].role").description("Member role (OWNER, ADMIN, MEMBER)"),
+                        fieldWithPath("id").description("Project ID"),
+                        fieldWithPath("name").description("Project name"),
+                        fieldWithPath("subdomain").description("Project subdomain"),
                         fieldWithPath("createdAt").description("Creation timestamp"),
                         fieldWithPath("updatedAt").description("Last update timestamp"),
                     ),
@@ -135,29 +122,36 @@ class WorkspaceControllerDocsTest {
     }
 
     @Test
-    fun `워크스페이스 생성`() {
-        val request = CreateWorkspaceRequest(name = "New Workspace")
-        val workspace = Workspace(name = "New Workspace")
+    fun `프로젝트 생성`() {
+        val request = CreateProjectRequest(name = "New Project", subdomain = "new-project")
+        val workspace = Workspace(name = "Test Workspace")
+        val project = Project(name = "New Project", subdomain = "new-project", workspace = workspace)
 
-        every { workspaceService.createWorkspace(testUserId, CreateWorkspace(name = "New Workspace")) } returns workspace
+        every {
+            projectService.createProject(testUserId, testWorkspaceId, CreateProject(name = "New Project", subdomain = "new-project"))
+        } returns project
 
         mockMvc
             .perform(
-                post("/api/v1/workspaces")
+                post("/api/v1/workspaces/{workspaceId}/projects", testWorkspaceId)
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(objectMapper.writeValueAsString(request)),
             ).andExpect(status().isOk)
             .andDo(
                 document(
-                    "workspace-create",
+                    "project-create",
                     preprocessRequest(prettyPrint()),
                     preprocessResponse(prettyPrint()),
+                    pathParameters(
+                        parameterWithName("workspaceId").description("Workspace ID"),
+                    ),
                     requestFields(
-                        fieldWithPath("name").description("Workspace name"),
+                        fieldWithPath("name").description("Project name"),
+                        fieldWithPath("subdomain").description("Project subdomain (lowercase alphanumeric with hyphens)"),
                     ),
                     responseFields(
-                        fieldWithPath("id").description("Created workspace ID"),
-                        fieldWithPath("name").description("Workspace name"),
+                        fieldWithPath("id").description("Created project ID"),
+                        fieldWithPath("name").description("Project name"),
                         fieldWithPath("createdAt").description("Creation timestamp"),
                         fieldWithPath("updatedAt").description("Last update timestamp"),
                     ),
@@ -166,21 +160,22 @@ class WorkspaceControllerDocsTest {
     }
 
     @Test
-    fun `워크스페이스 삭제`() {
-        val workspaceId = UUID.randomUUID()
+    fun `프로젝트 삭제`() {
+        val projectId = UUID.randomUUID()
 
-        every { workspaceService.deleteWorkspace(testUserId, workspaceId) } returns Unit
+        every { projectService.deleteProject(testUserId, testWorkspaceId, projectId) } returns Unit
 
         mockMvc
-            .perform(delete("/api/v1/workspaces/{workspaceId}", workspaceId))
+            .perform(delete("/api/v1/workspaces/{workspaceId}/projects/{projectId}", testWorkspaceId, projectId))
             .andExpect(status().isOk)
             .andDo(
                 document(
-                    "workspace-delete",
+                    "project-delete",
                     preprocessRequest(prettyPrint()),
                     preprocessResponse(prettyPrint()),
                     pathParameters(
-                        parameterWithName("workspaceId").description("Workspace ID to delete"),
+                        parameterWithName("workspaceId").description("Workspace ID"),
+                        parameterWithName("projectId").description("Project ID to delete"),
                     ),
                 ),
             )
