@@ -1,1 +1,1 @@
-Respond in Korean for all replies and code reviews.
+Always respond in Korean.
