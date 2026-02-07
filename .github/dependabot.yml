@@ -1,0 +1,41 @@
+version: 2
+
+updates:
+  - package-ecosystem: "gradle"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    rebase-strategy: "auto"
+    open-pull-requests-limit: 10
+    commit-message:
+      prefix: "chore"
+    labels:
+      - "dependencies"
+    groups:
+      spring:
+        patterns:
+          - "org.springframework*"
+      kotlin:
+        patterns:
+          - "org.jetbrains.kotlin*"
+      test:
+        patterns:
+          - "io.kotest*"
+          - "io.mockk*"
+          - "org.testcontainers*"
+
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    rebase-strategy: "auto"
+    commit-message:
+      prefix: "chore"
+    labels:
+      - "dependencies"
+    groups:
+      actions:
+        patterns:
+          - "*"
