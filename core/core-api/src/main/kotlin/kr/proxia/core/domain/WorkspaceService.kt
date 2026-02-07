@@ -73,4 +73,19 @@ class WorkspaceService(
 
         return workspaceMemberRepository.findByWorkspaceWithUser(workspace)
     }
+
+    fun deleteWorkspace(
+        userId: UUID,
+        workspaceId: UUID,
+    ) {
+        val workspace = getWorkspace(userId, workspaceId)
+        val members = workspaceMemberRepository.findByWorkspaceWithUser(workspace)
+        val currentMember = members.first { it.user.id == userId }
+
+        if (currentMember.role != WorkspaceMemberRole.OWNER) {
+            throw CoreException(ErrorType.FORBIDDEN)
+        }
+
+        workspaceRepository.delete(workspace)
+    }
 }

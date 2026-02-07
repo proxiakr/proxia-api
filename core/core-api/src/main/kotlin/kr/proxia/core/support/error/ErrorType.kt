@@ -21,4 +21,5 @@ enum class ErrorType(
     NAME_NOT_FOUND(HttpStatus.BAD_REQUEST, "No name found in OAuth profile"),
     USER_NOT_FOUND(HttpStatus.NOT_FOUND, "User not found"),
     WORKSPACE_NOT_FOUND(HttpStatus.NOT_FOUND, "Workspace not found"),
+    PROJECT_NOT_FOUND(HttpStatus.NOT_FOUND, "Project not found"),
 }

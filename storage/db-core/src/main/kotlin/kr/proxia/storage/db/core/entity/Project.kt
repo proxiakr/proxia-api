@@ -13,7 +13,7 @@ class Project(
     @Column(nullable = false)
     val name: String,
     @Column(nullable = false)
-    val slug: String,
+    val subdomain: String,
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "workspace_id", nullable = false)
     val workspace: Workspace,

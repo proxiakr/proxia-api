@@ -1,0 +1,2 @@
+#!/bin/bash
+./gradlew ktlintFormat --daemon -q && git add -u

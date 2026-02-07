@@ -7,6 +7,7 @@ import kr.proxia.core.api.controller.v1.response.WorkspaceResponse
 import kr.proxia.core.domain.WorkspaceService
 import kr.proxia.storage.db.core.entity.User
 import org.springframework.security.core.annotation.AuthenticationPrincipal
+import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
@@ -76,5 +77,13 @@ class WorkspaceController(
             createdAt = workspace.createdAt,
             updatedAt = workspace.updatedAt,
         )
+    }
+
+    @DeleteMapping("/{workspaceId}")
+    fun deleteWorkspace(
+        @AuthenticationPrincipal userId: UUID,
+        @PathVariable workspaceId: UUID,
+    ) {
+        workspaceService.deleteWorkspace(userId, workspaceId)
     }
 }
