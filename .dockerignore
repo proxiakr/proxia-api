@@ -1,0 +1,11 @@
+.git
+.github
+.gradle
+.idea
+.kotlin
+.compose
+build
+*/build
+*/*/build
+*.md
+docs
