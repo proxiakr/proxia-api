@@ -59,3 +59,16 @@ jobs:
           name: app
           path: core/core-api/build/libs/*.jar
           retention-days: 7
+
+  ci:
+    if: always()
+    needs: [build]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check build result
+        env:
+          BUILD_RESULT: ${{ needs.build.result }}
+        run: |
+          if [ "$BUILD_RESULT" != "success" ]; then
+            exit 1
+          fi
