@@ -79,7 +79,6 @@ CREATE TABLE projects
 );
 
 CREATE INDEX idx_projects_workspace_id ON projects (workspace_id);
-CREATE UNIQUE INDEX idx_projects_subdomain ON projects (subdomain);
 
 -- services (discriminator: type)
 CREATE TABLE services
