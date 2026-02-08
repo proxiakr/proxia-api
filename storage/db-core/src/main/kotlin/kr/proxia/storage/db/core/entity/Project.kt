@@ -12,7 +12,7 @@ import jakarta.persistence.Table
 class Project(
     @Column(nullable = false)
     val name: String,
-    @Column(nullable = false)
+    @Column(nullable = false, unique = true)
     val subdomain: String,
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "workspace_id", nullable = false)

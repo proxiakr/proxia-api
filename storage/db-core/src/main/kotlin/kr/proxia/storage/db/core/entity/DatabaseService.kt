@@ -1,5 +1,6 @@
 package kr.proxia.storage.db.core.entity
 
+import jakarta.persistence.Column
 import jakarta.persistence.DiscriminatorValue
 import jakarta.persistence.Entity
 import jakarta.persistence.EnumType
@@ -8,7 +9,7 @@ import jakarta.persistence.FetchType
 import jakarta.persistence.JoinColumn
 import jakarta.persistence.ManyToOne
 import jakarta.persistence.Table
-import kr.proxia.core.enums.DatabaseType
+import kr.proxia.core.enums.DatabaseEngine
 import kr.proxia.core.enums.ServiceStatus
 
 @Entity
@@ -23,8 +24,14 @@ class DatabaseService(
     override val project: Project,
     override val status: ServiceStatus,
     @Enumerated(EnumType.STRING)
-    val databaseType: DatabaseType,
+    @Column(nullable = false)
+    val engine: DatabaseEngine,
+    @Column(nullable = false)
     val version: String,
+    @Column(nullable = false)
+    val database: String,
+    @Column(nullable = false)
     val username: String,
+    @Column(nullable = false)
     val password: String,
 ) : Service(name, x, y, project, status)
