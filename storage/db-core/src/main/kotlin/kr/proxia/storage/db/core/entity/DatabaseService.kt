@@ -1,6 +1,7 @@
 package kr.proxia.storage.db.core.entity
 
 import jakarta.persistence.Column
+import jakarta.persistence.Convert
 import jakarta.persistence.DiscriminatorValue
 import jakarta.persistence.Entity
 import jakarta.persistence.EnumType
@@ -11,6 +12,7 @@ import jakarta.persistence.ManyToOne
 import jakarta.persistence.Table
 import kr.proxia.core.enums.DatabaseEngine
 import kr.proxia.core.enums.ServiceStatus
+import kr.proxia.storage.db.core.converter.EncryptConverter
 
 @Entity
 @Table(name = "database_services")
@@ -33,5 +35,6 @@ class DatabaseService(
     @Column(nullable = false)
     val username: String,
     @Column(nullable = false)
+    @Convert(converter = EncryptConverter::class)
     val password: String,
 ) : Service(name, x, y, project, status)
