@@ -20,7 +20,7 @@ class Deployment(
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     var status: DeploymentStatus = DeploymentStatus.QUEUED,
-    @Column(nullable = false)
+    @Column(nullable = false, length = 40)
     val commitSha: String,
     @Column(nullable = false, columnDefinition = "TEXT")
     val commitMessage: String,

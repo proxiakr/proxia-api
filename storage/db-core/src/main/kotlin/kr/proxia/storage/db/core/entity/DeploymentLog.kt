@@ -26,5 +26,6 @@ class DeploymentLog(
     var status: DeploymentStageStatus = DeploymentStageStatus.RUNNING,
     var startedAt: LocalDateTime? = null,
     var finishedAt: LocalDateTime? = null,
+    @Column(length = 500)
     var logUrl: String? = null,
 ) : BaseEntity()
