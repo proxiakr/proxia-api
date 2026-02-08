@@ -129,12 +129,12 @@ CREATE TABLE environment_variables
 (
     id         UUID PRIMARY KEY,
     service_id UUID         NOT NULL REFERENCES services (id) ON DELETE CASCADE,
-    key        VARCHAR(255) NOT NULL,
+    "key"      VARCHAR(255) NOT NULL,
     value      TEXT         NOT NULL,
     is_secret  BOOLEAN      NOT NULL DEFAULT FALSE,
     created_at TIMESTAMP    NOT NULL,
     updated_at TIMESTAMP    NOT NULL,
-    UNIQUE (service_id, key)
+    UNIQUE (service_id, "key")
 );
 
 CREATE INDEX idx_environment_variables_service_id ON environment_variables (service_id);
