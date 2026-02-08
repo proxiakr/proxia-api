@@ -108,7 +108,7 @@ CREATE TABLE app_services
     root_directory    VARCHAR(500),
     build_command     VARCHAR(500),
     start_command     VARCHAR(500),
-    git_connection_id UUID         NOT NULL REFERENCES git_connections (id)
+    git_connection_id UUID         NOT NULL REFERENCES git_connections (id) ON DELETE CASCADE
 );
 
 CREATE INDEX idx_app_services_git_connection_id ON app_services (git_connection_id);
