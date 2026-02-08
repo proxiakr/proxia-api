@@ -105,7 +105,7 @@ CREATE TABLE app_services
     repo_full_name    VARCHAR(255) NOT NULL,
     branch            VARCHAR(255) NOT NULL,
     port              INTEGER      NOT NULL,
-    type              VARCHAR(50)  NOT NULL,
+    framework         VARCHAR(50)  NOT NULL,
     root_directory    VARCHAR(500),
     build_command     VARCHAR(500),
     start_command     VARCHAR(500),

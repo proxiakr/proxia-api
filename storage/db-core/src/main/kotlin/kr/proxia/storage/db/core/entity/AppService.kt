@@ -31,7 +31,7 @@ class AppService(
     val port: Int,
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    val type: Framework,
+    val framework: Framework,
     val rootDirectory: String? = null,
     val buildCommand: String? = null,
     val startCommand: String? = null,
