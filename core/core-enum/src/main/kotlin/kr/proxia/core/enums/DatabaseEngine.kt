@@ -1,6 +1,6 @@
 package kr.proxia.core.enums
 
-enum class DatabaseType(
+enum class DatabaseEngine(
     val port: Int,
 ) {
     MYSQL(3306),
