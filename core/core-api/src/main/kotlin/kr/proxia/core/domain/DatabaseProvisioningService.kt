@@ -6,21 +6,22 @@ import kr.proxia.core.enums.ServiceStatus
 import kr.proxia.core.support.error.CoreException
 import kr.proxia.core.support.error.ErrorType
 import kr.proxia.storage.db.core.entity.DatabaseService
+import kr.proxia.storage.db.core.repository.DatabaseServiceRepository
 import kr.proxia.support.logging.logger
 import org.springframework.stereotype.Service
-import org.springframework.transaction.annotation.Transactional
 
 @Service
 class DatabaseProvisioningService(
     private val dockerClient: DockerClient,
     private val dockerNetworkService: DockerNetworkService,
+    private val databaseServiceRepository: DatabaseServiceRepository,
 ) {
     private val log = logger()
 
-    @Transactional
     fun provision(databaseService: DatabaseService) {
         val config = DatabaseEngineConfig.of(databaseService.engine)
         if (databaseService.version !in config.supportedVersions) {
+            log.warn { "Unsupported version: ${databaseService.engine} ${databaseService.version}, supported: ${config.supportedVersions}" }
             throw CoreException(ErrorType.UNSUPPORTED_DATABASE_VERSION)
         }
         val image = "${config.image}:${databaseService.version}"
@@ -29,17 +30,15 @@ class DatabaseProvisioningService(
         val projectId = databaseService.project.id
         val networkName = DockerNaming.network(projectId)
 
-        databaseService.updateStatus(ServiceStatus.STARTING)
+        persistStatus(databaseService, ServiceStatus.STARTING)
 
         try {
             dockerNetworkService.ensureNetworkExists(projectId)
-
             pullImage(config.image, databaseService.version)
+            createVolume(volumeName)
 
-            dockerClient.createVolume(volumeName)
-
-            val env =
-                config.env(databaseService.database, databaseService.username, databaseService.password)
+            val env = config.env(databaseService.database, databaseService.username, databaseService.password)
+            val cmd = config.commandArgs(databaseService.password)
 
             val containerId =
                 createContainer(
@@ -48,38 +47,48 @@ class DatabaseProvisioningService(
                     env = env,
                     networkName = networkName,
                     volumeBinding = VolumeBinding(volumeName, config.dataPath),
+                    cmd = cmd,
                 )
             startContainer(containerId)
 
-            databaseService.updateStatus(ServiceStatus.RUNNING)
+            persistStatus(databaseService, ServiceStatus.RUNNING)
             log.info { "Provisioned database service: ${databaseService.id} ($containerName)" }
         } catch (e: CoreException) {
-            databaseService.updateStatus(ServiceStatus.FAILED)
+            persistStatus(databaseService, ServiceStatus.FAILED)
             throw e
         } catch (e: Exception) {
-            databaseService.updateStatus(ServiceStatus.FAILED)
+            persistStatus(databaseService, ServiceStatus.FAILED)
             log.error(e) { "Failed to provision database service: ${databaseService.id}" }
             throw CoreException(ErrorType.DOCKER_CONTAINER_CREATE_FAILED)
         }
     }
 
-    @Transactional
     fun deprovision(databaseService: DatabaseService) {
         val containerName = DockerNaming.container(databaseService.id)
+        val volumeName = DockerNaming.volume(databaseService.id)
 
-        databaseService.updateStatus(ServiceStatus.STOPPING)
+        persistStatus(databaseService, ServiceStatus.STOPPING)
 
         try {
             dockerClient.stopContainer(containerName)
             dockerClient.removeContainer(containerName)
+            dockerClient.removeVolume(volumeName)
 
-            databaseService.updateStatus(ServiceStatus.STOPPED)
+            persistStatus(databaseService, ServiceStatus.STOPPED)
             log.info { "Deprovisioned database service: ${databaseService.id} ($containerName)" }
         } catch (e: Exception) {
-            databaseService.updateStatus(ServiceStatus.FAILED)
+            persistStatus(databaseService, ServiceStatus.FAILED)
             log.error(e) { "Failed to deprovision database service: ${databaseService.id}" }
             throw CoreException(ErrorType.DOCKER_CONTAINER_STOP_FAILED)
         }
+    }
+
+    private fun persistStatus(
+        databaseService: DatabaseService,
+        status: ServiceStatus,
+    ) {
+        databaseService.updateStatus(status)
+        databaseServiceRepository.save(databaseService)
     }
 
     private fun pullImage(
@@ -94,15 +103,25 @@ class DatabaseProvisioningService(
         }
     }
 
+    private fun createVolume(name: String) {
+        try {
+            dockerClient.createVolume(name)
+        } catch (e: Exception) {
+            log.error(e) { "Failed to create volume: $name" }
+            throw CoreException(ErrorType.DOCKER_VOLUME_FAILED)
+        }
+    }
+
     private fun createContainer(
         image: String,
         name: String,
         env: List<String>,
         networkName: String,
         volumeBinding: VolumeBinding,
+        cmd: List<String>,
     ): String {
         try {
-            return dockerClient.createContainer(image, name, env, networkName, volumeBinding)
+            return dockerClient.createContainer(image, name, env, networkName, volumeBinding, cmd)
         } catch (e: Exception) {
             log.error(e) { "Failed to create container: $name" }
             throw CoreException(ErrorType.DOCKER_CONTAINER_CREATE_FAILED)

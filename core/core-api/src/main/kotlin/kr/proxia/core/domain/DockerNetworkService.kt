@@ -13,16 +13,14 @@ class DockerNetworkService(
 ) {
     private val log = logger()
 
-    fun ensureNetworkExists(projectId: UUID): String {
+    fun ensureNetworkExists(projectId: UUID) {
         val name = DockerNaming.network(projectId)
-        val existing = dockerClient.findNetworkByName(name)
-        if (existing != null) {
-            return existing.id
+        if (dockerClient.findNetworkByName(name) != null) {
+            return
         }
         try {
             val networkId = dockerClient.createNetwork(name)
             log.info { "Created Docker network: $name ($networkId)" }
-            return networkId
         } catch (e: Exception) {
             log.error(e) { "Failed to create Docker network: $name" }
             throw CoreException(ErrorType.DOCKER_NETWORK_FAILED)

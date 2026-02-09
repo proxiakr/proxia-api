@@ -37,6 +37,7 @@ class DockerClient internal constructor(
         env: List<String>,
         networkName: String,
         volumeBinding: VolumeBinding? = null,
+        cmd: List<String> = emptyList(),
     ): String {
         val hostConfig =
             HostConfig
@@ -48,13 +49,18 @@ class DockerClient internal constructor(
             hostConfig.withBinds(Bind(it.volumeName, Volume(it.containerPath)))
         }
 
-        val response =
+        val createCmd =
             dockerJavaClient
                 .createContainerCmd(image)
                 .withName(name)
                 .withEnv(env)
                 .withHostConfig(hostConfig)
-                .exec()
+
+        if (cmd.isNotEmpty()) {
+            createCmd.withCmd(cmd)
+        }
+
+        val response = createCmd.exec()
         return response.id
     }
 
