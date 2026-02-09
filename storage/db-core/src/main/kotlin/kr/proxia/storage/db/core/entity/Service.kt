@@ -25,4 +25,8 @@ abstract class Service(
     val project: Project,
     @Enumerated(EnumType.STRING)
     var status: ServiceStatus,
-) : BaseEntity()
+) : BaseEntity() {
+    fun updateStatus(status: ServiceStatus) {
+        this.status = status
+    }
+}

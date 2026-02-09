@@ -6,7 +6,6 @@ import kr.proxia.core.enums.ServiceStatus
 import kr.proxia.core.support.error.CoreException
 import kr.proxia.core.support.error.ErrorType
 import kr.proxia.storage.db.core.entity.DatabaseService
-import kr.proxia.storage.db.core.repository.DatabaseServiceRepository
 import kr.proxia.support.logging.logger
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -15,7 +14,6 @@ import org.springframework.transaction.annotation.Transactional
 class DatabaseProvisioningService(
     private val dockerClient: DockerClient,
     private val dockerNetworkService: DockerNetworkService,
-    private val databaseServiceRepository: DatabaseServiceRepository,
 ) {
     private val log = logger()
 
@@ -31,7 +29,7 @@ class DatabaseProvisioningService(
         val projectId = databaseService.project.id
         val networkName = DockerNaming.network(projectId)
 
-        updateStatus(databaseService, ServiceStatus.STARTING)
+        databaseService.updateStatus(ServiceStatus.STARTING)
 
         try {
             dockerNetworkService.ensureNetworkExists(projectId)
@@ -53,13 +51,13 @@ class DatabaseProvisioningService(
                 )
             startContainer(containerId)
 
-            updateStatus(databaseService, ServiceStatus.RUNNING)
+            databaseService.updateStatus(ServiceStatus.RUNNING)
             log.info { "Provisioned database service: ${databaseService.id} ($containerName)" }
         } catch (e: CoreException) {
-            updateStatus(databaseService, ServiceStatus.FAILED)
+            databaseService.updateStatus(ServiceStatus.FAILED)
             throw e
         } catch (e: Exception) {
-            updateStatus(databaseService, ServiceStatus.FAILED)
+            databaseService.updateStatus(ServiceStatus.FAILED)
             log.error(e) { "Failed to provision database service: ${databaseService.id}" }
             throw CoreException(ErrorType.DOCKER_CONTAINER_CREATE_FAILED)
         }
@@ -69,27 +67,19 @@ class DatabaseProvisioningService(
     fun deprovision(databaseService: DatabaseService) {
         val containerName = DockerNaming.container(databaseService.id)
 
-        updateStatus(databaseService, ServiceStatus.STOPPING)
+        databaseService.updateStatus(ServiceStatus.STOPPING)
 
         try {
             dockerClient.stopContainer(containerName)
             dockerClient.removeContainer(containerName)
 
-            updateStatus(databaseService, ServiceStatus.STOPPED)
+            databaseService.updateStatus(ServiceStatus.STOPPED)
             log.info { "Deprovisioned database service: ${databaseService.id} ($containerName)" }
         } catch (e: Exception) {
-            updateStatus(databaseService, ServiceStatus.FAILED)
+            databaseService.updateStatus(ServiceStatus.FAILED)
             log.error(e) { "Failed to deprovision database service: ${databaseService.id}" }
             throw CoreException(ErrorType.DOCKER_CONTAINER_STOP_FAILED)
         }
-    }
-
-    private fun updateStatus(
-        databaseService: DatabaseService,
-        status: ServiceStatus,
-    ) {
-        databaseService.status = status
-        databaseServiceRepository.save(databaseService)
     }
 
     private fun pullImage(
