@@ -24,5 +24,5 @@ abstract class Service(
     @JoinColumn(name = "project_id", nullable = false)
     val project: Project,
     @Enumerated(EnumType.STRING)
-    val status: ServiceStatus,
+    var status: ServiceStatus,
 ) : BaseEntity()
