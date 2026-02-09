@@ -12,10 +12,6 @@ enum class DatabaseEngineConfig(
     REDIS("redis", "/data", listOf("7.0", "7.2", "7.4", "8.0")),
     ;
 
-    companion object {
-        fun of(engine: DatabaseEngine) = valueOf(engine.name)
-    }
-
     fun env(
         database: String,
         username: String,
@@ -48,4 +44,8 @@ enum class DatabaseEngineConfig(
                 }
             else -> emptyList()
         }
+
+    companion object {
+        fun of(engine: DatabaseEngine) = valueOf(engine.name)
+    }
 }
