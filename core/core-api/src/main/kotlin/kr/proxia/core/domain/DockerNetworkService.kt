@@ -22,6 +22,10 @@ class DockerNetworkService(
             val networkId = dockerClient.createNetwork(name)
             log.info { "Created Docker network: $name ($networkId)" }
         } catch (e: Exception) {
+            if (dockerClient.findNetworkByName(name) != null) {
+                log.debug { "Docker network already created concurrently: $name" }
+                return
+            }
             log.error(e) { "Failed to create Docker network: $name" }
             throw CoreException(ErrorType.DOCKER_NETWORK_FAILED)
         }

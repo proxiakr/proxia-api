@@ -21,14 +21,14 @@ class DatabaseProvisioningService(
     fun provision(databaseService: DatabaseService) {
         val config = DatabaseEngineConfig.of(databaseService.engine)
         if (databaseService.version !in config.supportedVersions) {
-            log.warn { "Unsupported version: ${databaseService.engine} ${databaseService.version}, supported: ${config.supportedVersions}" }
+            log.warn {
+                "Unsupported version: ${databaseService.engine} ${databaseService.version}, supported: ${config.supportedVersions}"
+            }
             throw CoreException(ErrorType.UNSUPPORTED_DATABASE_VERSION)
         }
-        val image = "${config.image}:${databaseService.version}"
         val containerName = DockerNaming.container(databaseService.id)
         val volumeName = DockerNaming.volume(databaseService.id)
         val projectId = databaseService.project.id
-        val networkName = DockerNaming.network(projectId)
 
         persistStatus(databaseService, ServiceStatus.STARTING)
 
@@ -37,30 +37,24 @@ class DatabaseProvisioningService(
             pullImage(config.image, databaseService.version)
             createVolume(volumeName)
 
-            val env = config.env(databaseService.database, databaseService.username, databaseService.password)
-            val cmd = config.commandArgs(databaseService.password)
-
             val containerId =
                 createContainer(
-                    image = image,
+                    image = "${config.image}:${databaseService.version}",
                     name = containerName,
-                    env = env,
-                    networkName = networkName,
+                    env = config.env(databaseService.database, databaseService.username, databaseService.password),
+                    networkName = DockerNaming.network(projectId),
                     volumeBinding = VolumeBinding(volumeName, config.dataPath),
-                    cmd = cmd,
+                    cmd = config.commandArgs(databaseService.password),
                 )
             startContainer(containerId)
-
-            persistStatus(databaseService, ServiceStatus.RUNNING)
-            log.info { "Provisioned database service: ${databaseService.id} ($containerName)" }
-        } catch (e: CoreException) {
-            persistStatus(databaseService, ServiceStatus.FAILED)
-            throw e
         } catch (e: Exception) {
             persistStatus(databaseService, ServiceStatus.FAILED)
-            log.error(e) { "Failed to provision database service: ${databaseService.id}" }
-            throw CoreException(ErrorType.DOCKER_CONTAINER_CREATE_FAILED)
+            cleanupOnFailure(containerName, volumeName)
+            throw if (e is CoreException) e else CoreException(ErrorType.INTERNAL_ERROR)
         }
+
+        persistStatus(databaseService, ServiceStatus.RUNNING)
+        log.info { "Provisioned database service: ${databaseService.id} ($containerName)" }
     }
 
     fun deprovision(databaseService: DatabaseService) {
@@ -69,18 +63,29 @@ class DatabaseProvisioningService(
 
         persistStatus(databaseService, ServiceStatus.STOPPING)
 
-        try {
-            dockerClient.stopContainer(containerName)
-            dockerClient.removeContainer(containerName)
-            dockerClient.removeVolume(volumeName)
+        val errors = mutableListOf<Exception>()
+        runCatching { dockerClient.stopContainer(containerName) }.onFailure { errors.add(it as Exception) }
+        runCatching { dockerClient.removeContainer(containerName, force = true) }.onFailure { errors.add(it as Exception) }
+        runCatching { dockerClient.removeVolume(volumeName) }.onFailure { errors.add(it as Exception) }
 
-            persistStatus(databaseService, ServiceStatus.STOPPED)
-            log.info { "Deprovisioned database service: ${databaseService.id} ($containerName)" }
-        } catch (e: Exception) {
+        if (errors.isNotEmpty()) {
             persistStatus(databaseService, ServiceStatus.FAILED)
-            log.error(e) { "Failed to deprovision database service: ${databaseService.id}" }
+            errors.forEach { log.error(it) { "Failed to deprovision resource for: ${databaseService.id}" } }
             throw CoreException(ErrorType.DOCKER_CONTAINER_STOP_FAILED)
         }
+
+        persistStatus(databaseService, ServiceStatus.STOPPED)
+        log.info { "Deprovisioned database service: ${databaseService.id} ($containerName)" }
+    }
+
+    private fun cleanupOnFailure(
+        containerName: String,
+        volumeName: String,
+    ) {
+        runCatching { dockerClient.removeContainer(containerName, force = true) }
+            .onFailure { log.debug(it) { "Cleanup: failed to remove container $containerName" } }
+        runCatching { dockerClient.removeVolume(volumeName) }
+            .onFailure { log.debug(it) { "Cleanup: failed to remove volume $volumeName" } }
     }
 
     private fun persistStatus(

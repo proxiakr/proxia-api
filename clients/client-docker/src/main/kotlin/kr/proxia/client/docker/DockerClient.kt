@@ -8,6 +8,7 @@ import com.github.dockerjava.api.model.PullResponseItem
 import com.github.dockerjava.api.model.RestartPolicy
 import com.github.dockerjava.api.model.Volume
 import org.springframework.stereotype.Component
+import java.util.concurrent.TimeUnit
 import com.github.dockerjava.api.DockerClient as DockerJavaClient
 
 @Component
@@ -28,7 +29,7 @@ class DockerClient internal constructor(
             .pullImageCmd(image)
             .withTag(tag)
             .exec(ResultCallback.Adapter<PullResponseItem>())
-            .awaitCompletion()
+            .awaitCompletion(PULL_TIMEOUT_MINUTES, TimeUnit.MINUTES)
     }
 
     fun createContainer(
@@ -131,5 +132,9 @@ class DockerClient internal constructor(
 
     fun removeVolume(name: String) {
         dockerJavaClient.removeVolumeCmd(name).exec()
+    }
+
+    companion object {
+        private const val PULL_TIMEOUT_MINUTES = 5L
     }
 }
