@@ -1,0 +1,23 @@
+name: Dependabot PR Title
+
+on:
+  pull_request:
+    types: [opened, reopened]
+
+permissions:
+  pull-requests: write
+
+jobs:
+  update-title:
+    if: github.actor == 'dependabot[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Remove prefix from PR title
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR_TITLE: ${{ github.event.pull_request.title }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+        run: |
+          new_title="${PR_TITLE#chore: }"
+          new_title="$(echo "${new_title:0:1}" | tr '[:lower:]' '[:upper:]')${new_title:1}"
+          gh pr edit "$PR_NUMBER" --repo "${{ github.repository }}" --title "$new_title"
