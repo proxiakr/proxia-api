@@ -21,6 +21,7 @@ dependencies {
     implementation(project(":storage:db-core"))
     implementation(project(":clients:client-oauth"))
     implementation(project(":clients:client-aws"))
+    implementation(project(":clients:client-docker"))
     implementation(project(":support:logging"))
     implementation(project(":support:monitoring"))
     implementation(project(":support:security"))
