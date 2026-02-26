@@ -6,6 +6,7 @@ import org.springframework.http.MediaType
 import org.springframework.stereotype.Component
 import org.springframework.util.LinkedMultiValueMap
 import org.springframework.web.client.RestClient
+import org.springframework.web.client.body
 
 @Component
 class GitHubOAuthClient(
@@ -29,7 +30,7 @@ class GitHubOAuthClient(
             .accept(MediaType.APPLICATION_JSON)
             .body(params)
             .retrieve()
-            .body(GitHubTokenResponse::class.java)!!
+            .body<GitHubTokenResponse>()!!
     }
 
     fun getUserInfo(accessToken: String): GitHubUserInfo =
@@ -38,7 +39,7 @@ class GitHubOAuthClient(
             .uri("/user")
             .header("Authorization", "Bearer $accessToken")
             .retrieve()
-            .body(GitHubUserInfo::class.java)!!
+            .body<GitHubUserInfo>()!!
 
     fun getUserEmails(accessToken: String): List<GitHubEmail> =
         githubApiRestClient
