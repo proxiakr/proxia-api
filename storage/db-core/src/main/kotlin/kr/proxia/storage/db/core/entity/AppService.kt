@@ -22,7 +22,7 @@ class AppService(
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "project_id", nullable = false)
     override val project: Project,
-    override val status: ServiceStatus,
+    override var status: ServiceStatus,
     @Column(nullable = false)
     val repoFullName: String,
     @Column(nullable = false)

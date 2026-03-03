@@ -24,7 +24,7 @@ class DatabaseService(
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "project_id", nullable = false)
     override val project: Project,
-    override val status: ServiceStatus,
+    override var status: ServiceStatus,
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     val engine: DatabaseEngine,

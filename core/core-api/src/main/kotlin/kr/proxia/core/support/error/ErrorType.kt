@@ -31,4 +31,13 @@ enum class ErrorType(
 
     UNSUPPORTED_SERVICE_TYPE(HttpStatus.INTERNAL_SERVER_ERROR, "Service type not supported"),
     UNSUPPORTED_GIT_PROVIDER(HttpStatus.INTERNAL_SERVER_ERROR, "Git provider not supported"),
+
+    UNSUPPORTED_DATABASE_VERSION(HttpStatus.BAD_REQUEST, "Unsupported database version"),
+
+    DOCKER_IMAGE_PULL_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "Failed to pull Docker image", LogLevel.ERROR),
+    DOCKER_CONTAINER_CREATE_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "Failed to create Docker container", LogLevel.ERROR),
+    DOCKER_CONTAINER_START_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "Failed to start Docker container", LogLevel.ERROR),
+    DOCKER_CONTAINER_STOP_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "Failed to stop Docker container", LogLevel.ERROR),
+    DOCKER_NETWORK_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "Docker network operation failed", LogLevel.ERROR),
+    DOCKER_VOLUME_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "Docker volume operation failed", LogLevel.ERROR),
 }
