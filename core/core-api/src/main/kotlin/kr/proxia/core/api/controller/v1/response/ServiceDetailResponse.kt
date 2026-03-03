@@ -4,4 +4,8 @@ import java.util.UUID
 
 data class ServiceDetailResponse(
     val id: UUID,
+    val name: String,
+    val x: Double,
+    val y: Double,
+    val status: String,
 )

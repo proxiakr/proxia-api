@@ -46,7 +46,15 @@ class ServiceController(
         @PathVariable projectId: UUID,
         @PathVariable serviceId: UUID,
     ): ServiceDetailResponse {
-        TODO()
+        val service = serviceService.getService(userId, workspaceId, projectId, serviceId)
+
+        return ServiceDetailResponse(
+            id = service.id,
+            name = service.name,
+            x = service.x,
+            y = service.y,
+            status = service.status.name,
+        )
     }
 
     @PostMapping("/app")
@@ -92,6 +100,6 @@ class ServiceController(
         @PathVariable projectId: UUID,
         @PathVariable serviceId: UUID,
     ) {
-        serviceService.deleteService(userId, projectId, serviceId)
+        serviceService.deleteService(userId, workspaceId, projectId, serviceId)
     }
 }

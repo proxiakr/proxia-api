@@ -143,4 +143,26 @@ class ServiceService(
 
         return serviceRepository.save(service)
     }
+
+    @Transactional
+    fun deleteService(
+        userId: UUID,
+        workspaceId: UUID,
+        projectId: UUID,
+        serviceId: UUID,
+    ) {
+        val workspace =
+            workspaceRepository.findByIdAndMember(workspaceId, userId)
+                ?: throw CoreException(ErrorType.WORKSPACE_NOT_FOUND)
+
+        val project =
+            projectRepository.findByIdAndWorkspace(projectId, workspace)
+                ?: throw CoreException(ErrorType.PROJECT_NOT_FOUND)
+
+        val service =
+            serviceRepository.findByIdAndProject(serviceId, project)
+                ?: throw CoreException(ErrorType.SERVICE_NOT_FOUND)
+
+        serviceRepository.delete(service)
+    }
 }
