@@ -34,7 +34,6 @@ interface WorkspaceRepository : JpaRepository<Workspace, UUID> {
         userId: UUID,
     ): Workspace?
 
-
     @Query(
         """
     SELECT COUNT(w) > 0

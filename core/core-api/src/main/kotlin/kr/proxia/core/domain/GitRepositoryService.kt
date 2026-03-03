@@ -21,11 +21,13 @@ class GitRepositoryService(
         workspaceId: UUID,
         connectionId: UUID,
     ): List<GitRepository> {
-        val workspace = workspaceRepository.findByIdAndMember(workspaceId, userId)
-            ?: throw CoreException(ErrorType.WORKSPACE_NOT_FOUND)
+        val workspace =
+            workspaceRepository.findByIdAndMember(workspaceId, userId)
+                ?: throw CoreException(ErrorType.WORKSPACE_NOT_FOUND)
 
-        val connection = gitConnectionRepository.findByIdAndWorkspace(connectionId, workspace)
-            ?: throw CoreException(ErrorType.GIT_CONNECTION_NOT_FOUND)
+        val connection =
+            gitConnectionRepository.findByIdAndWorkspace(connectionId, workspace)
+                ?: throw CoreException(ErrorType.GIT_CONNECTION_NOT_FOUND)
 
         val tokenResponse = githubConnectionClient.getInstallationToken(connection.installationId)
 

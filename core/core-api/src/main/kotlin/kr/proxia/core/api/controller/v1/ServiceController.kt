@@ -4,7 +4,6 @@ import kr.proxia.core.api.controller.v1.request.CreateAppServiceRequest
 import kr.proxia.core.api.controller.v1.request.CreateDatabaseServiceRequest
 import kr.proxia.core.api.controller.v1.response.ServiceDetailResponse
 import kr.proxia.core.api.controller.v1.response.ServiceResponse
-import kr.proxia.core.api.controller.v1.response.ServiceTypeResponse
 import kr.proxia.core.domain.ServiceService
 import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.web.bind.annotation.DeleteMapping

@@ -20,11 +20,12 @@ class GitRepositoryController(
         @PathVariable workspaceId: UUID,
         @PathVariable connectionId: UUID,
     ): List<GitRepositoryResponse> {
-        val repositories = gitRepositoryService.getRepositories(
-            userId = userId,
-            workspaceId = workspaceId,
-            connectionId = connectionId,
-        )
+        val repositories =
+            gitRepositoryService.getRepositories(
+                userId = userId,
+                workspaceId = workspaceId,
+                connectionId = connectionId,
+            )
 
         return repositories.map {
             GitRepositoryResponse(

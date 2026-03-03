@@ -13,15 +13,17 @@ data class ServiceTypeResponse(
     companion object {
         fun from(service: Service) =
             when (service) {
-                is AppService -> ServiceTypeResponse(
-                    category = "app",
-                    techStack = service.framework.name,
-                )
+                is AppService ->
+                    ServiceTypeResponse(
+                        category = "app",
+                        techStack = service.framework.name,
+                    )
 
-                is DatabaseService -> ServiceTypeResponse(
-                    category = "database",
-                    techStack = service.engine.name,
-                )
+                is DatabaseService ->
+                    ServiceTypeResponse(
+                        category = "database",
+                        techStack = service.engine.name,
+                    )
 
                 else -> throw CoreException(ErrorType.UNSUPPORTED_SERVICE_TYPE)
             }

@@ -22,10 +22,11 @@ class GitConnectionController(
         @AuthenticationPrincipal userId: UUID,
         @PathVariable workspaceId: UUID,
     ): List<GitConnectionResponse> {
-        val connections = gitConnectionService.getConnections(
-            userId = userId,
-            workspaceId = workspaceId,
-        )
+        val connections =
+            gitConnectionService.getConnections(
+                userId = userId,
+                workspaceId = workspaceId,
+            )
 
         return connections.map {
             GitConnectionResponse(

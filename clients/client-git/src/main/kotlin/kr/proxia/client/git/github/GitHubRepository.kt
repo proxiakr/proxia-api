@@ -11,5 +11,5 @@ data class GitHubRepository(
     val defaultBranch: String,
     val private: Boolean,
     @JsonProperty("html_url")
-    val htmlUrl: String
+    val htmlUrl: String,
 )

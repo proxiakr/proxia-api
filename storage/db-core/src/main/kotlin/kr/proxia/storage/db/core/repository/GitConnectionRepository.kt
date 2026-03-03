@@ -8,7 +8,13 @@ import java.util.UUID
 interface GitConnectionRepository : JpaRepository<GitConnection, UUID> {
     fun findAllByWorkspace(workspace: Workspace): List<GitConnection>
 
-    fun findByIdAndWorkspace(id: UUID, workspace: Workspace): GitConnection?
+    fun findByIdAndWorkspace(
+        id: UUID,
+        workspace: Workspace,
+    ): GitConnection?
 
-    fun existsByWorkspaceAndInstallationId(workspace: Workspace, installationId: String): Boolean
+    fun existsByWorkspaceAndInstallationId(
+        workspace: Workspace,
+        installationId: String,
+    ): Boolean
 }

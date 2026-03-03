@@ -21,8 +21,9 @@ class GitConnectionService(
         userId: UUID,
         workspaceId: UUID,
     ): List<GitConnection> {
-        val workspace = workspaceRepository.findByIdAndMember(workspaceId, userId)
-            ?: throw CoreException(ErrorType.WORKSPACE_NOT_FOUND)
+        val workspace =
+            workspaceRepository.findByIdAndMember(workspaceId, userId)
+                ?: throw CoreException(ErrorType.WORKSPACE_NOT_FOUND)
 
         return gitConnectionRepository.findAllByWorkspace(workspace)
     }
@@ -32,8 +33,9 @@ class GitConnectionService(
         workspaceId: UUID,
         createGitConnection: CreateGitConnection,
     ) {
-        val workspace = workspaceRepository.findByIdAndMember(workspaceId, userId)
-            ?: throw CoreException(ErrorType.WORKSPACE_NOT_FOUND)
+        val workspace =
+            workspaceRepository.findByIdAndMember(workspaceId, userId)
+                ?: throw CoreException(ErrorType.WORKSPACE_NOT_FOUND)
 
         if (gitConnectionRepository.existsByWorkspaceAndInstallationId(workspace, createGitConnection.installationId)) {
             throw CoreException(ErrorType.GIT_CONNECTION_ALREADY_EXISTS)
@@ -69,8 +71,9 @@ class GitConnectionService(
             throw CoreException(ErrorType.WORKSPACE_NOT_FOUND)
         }
 
-        val connection = gitConnectionRepository.findByIdOrNull(connectionId)
-            ?: throw CoreException(ErrorType.GIT_CONNECTION_NOT_FOUND)
+        val connection =
+            gitConnectionRepository.findByIdOrNull(connectionId)
+                ?: throw CoreException(ErrorType.GIT_CONNECTION_NOT_FOUND)
 
         if (connection.workspace.id != workspaceId) {
             throw CoreException(ErrorType.ACCESS_DENIED)

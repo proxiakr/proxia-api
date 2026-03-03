@@ -8,9 +8,10 @@ data class CreateGitConnectionRequest(
     val name: String,
     val provider: GitProvider,
 ) {
-    fun toDomain(): CreateGitConnection = CreateGitConnection(
-        installationId = installationId,
-        name = name,
-        provider = provider,
-    )
+    fun toDomain(): CreateGitConnection =
+        CreateGitConnection(
+            installationId = installationId,
+            name = name,
+            provider = provider,
+        )
 }

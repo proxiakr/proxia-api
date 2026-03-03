@@ -9,16 +9,22 @@ class GitHubRepositoryClient(
     private val githubRestClient: RestClient,
 ) {
     fun getGithubRepositories(accessToken: String): List<GitHubRepository> =
-        githubRestClient.get()
+        githubRestClient
+            .get()
             .uri("https://api.github.com/installation/repositories")
             .header("Authorization", "Bearer $accessToken")
             .header("Accept", "application/vnd.github+json")
             .retrieve()
-            .body<GitHubRepositoriesResponse>()!!.repositories
+            .body<GitHubRepositoriesResponse>()!!
+            .repositories
 
-    fun verifyRepositoryAccess(token: String, repoFullName: String): Boolean =
+    fun verifyRepositoryAccess(
+        token: String,
+        repoFullName: String,
+    ): Boolean =
         try {
-            githubRestClient.get()
+            githubRestClient
+                .get()
                 .uri("https://api.github.com/repos/$repoFullName")
                 .header("Authorization", "Bearer $token")
                 .header("Accept", "application/vnd.github+json")
