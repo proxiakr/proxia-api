@@ -1,5 +1,6 @@
 package kr.proxia.core.api.controller.v1
 
+import jakarta.validation.Valid
 import kr.proxia.core.api.controller.v1.request.CreateProjectRequest
 import kr.proxia.core.api.controller.v1.response.ProjectDetailResponse
 import kr.proxia.core.api.controller.v1.response.ProjectResponse
@@ -57,7 +58,7 @@ class ProjectController(
     fun createProject(
         @AuthenticationPrincipal userId: UUID,
         @PathVariable workspaceId: UUID,
-        @RequestBody request: CreateProjectRequest,
+        @Valid @RequestBody request: CreateProjectRequest,
     ): ProjectResponse {
         val project = projectService.createProject(userId, workspaceId, request.toDomain())
 

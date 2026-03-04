@@ -1,5 +1,6 @@
 package kr.proxia.core.api.controller.v1
 
+import jakarta.validation.Valid
 import kr.proxia.core.api.controller.v1.request.CreateAppServiceRequest
 import kr.proxia.core.api.controller.v1.request.CreateDatabaseServiceRequest
 import kr.proxia.core.api.controller.v1.response.ServiceDetailResponse
@@ -62,7 +63,7 @@ class ServiceController(
         @AuthenticationPrincipal userId: UUID,
         @PathVariable workspaceId: UUID,
         @PathVariable projectId: UUID,
-        @RequestBody request: CreateAppServiceRequest,
+        @Valid @RequestBody request: CreateAppServiceRequest,
     ): ServiceResponse {
         val service = serviceService.createAppService(userId, workspaceId, projectId, request.toDomain())
 
@@ -80,7 +81,7 @@ class ServiceController(
         @AuthenticationPrincipal userId: UUID,
         @PathVariable workspaceId: UUID,
         @PathVariable projectId: UUID,
-        @RequestBody request: CreateDatabaseServiceRequest,
+        @Valid @RequestBody request: CreateDatabaseServiceRequest,
     ): ServiceResponse {
         val service = serviceService.createDatabaseService(userId, workspaceId, projectId, request.toDomain())
 
