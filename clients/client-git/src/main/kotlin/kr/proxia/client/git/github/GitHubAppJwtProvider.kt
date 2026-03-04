@@ -10,7 +10,7 @@ import java.util.Date
 
 @Component
 class GitHubAppJwtProvider {
-    fun createAsyncJwt(
+    fun createJwt(
         appId: String,
         privateKeyPem: String,
     ): String {
