@@ -15,7 +15,6 @@ enum class ErrorType(
     INVALID_TOKEN(HttpStatus.UNAUTHORIZED, "Invalid token"),
     TOKEN_EXPIRED(HttpStatus.UNAUTHORIZED, "Token expired"),
     FORBIDDEN(HttpStatus.FORBIDDEN, "Access denied"),
-    ACCESS_DENIED(HttpStatus.FORBIDDEN, "Access denied"),
 
     OAUTH_FAILED(HttpStatus.BAD_REQUEST, "OAuth authentication failed"),
     EMAIL_NOT_FOUND(HttpStatus.BAD_REQUEST, "No verified email found"),
