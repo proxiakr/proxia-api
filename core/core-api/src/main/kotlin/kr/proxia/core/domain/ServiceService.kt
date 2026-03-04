@@ -99,7 +99,7 @@ class ServiceService(
                 status = ServiceStatus.STARTING,
                 repoFullName = createAppService.repoFullName,
                 branch = createAppService.branch ?: "main",
-                port = createAppService.framework.defaultPort,
+                port = createAppService.port ?: createAppService.framework.defaultPort,
                 framework = createAppService.framework,
                 rootDirectory = ".",
                 buildCommand = createAppService.buildCommand,
