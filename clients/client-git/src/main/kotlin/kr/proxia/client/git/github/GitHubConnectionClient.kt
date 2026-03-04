@@ -12,11 +12,11 @@ class GitHubConnectionClient(
     private val properties: GitProperties,
 ) {
     fun getInstallationToken(installationId: String): InstallationTokenResponse {
-        val jwt = jwtProvider.createAsyncJwt(properties.github.appId, properties.github.privateKey)
+        val jwt = jwtProvider.createJwt(properties.github.appId, properties.github.privateKey)
 
         return githubWebRestClient
             .post()
-            .uri("https://api.github.com/app/installations/$installationId/access_tokens")
+            .uri("/app/installations/$installationId/access_tokens")
             .header("Authorization", "Bearer $jwt")
             .header("Accept", "application/vnd.github+json")
             .retrieve()

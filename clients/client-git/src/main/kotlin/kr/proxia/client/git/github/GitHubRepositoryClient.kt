@@ -11,7 +11,7 @@ class GitHubRepositoryClient(
     fun getGithubRepositories(accessToken: String): List<GitHubRepository> =
         githubWebRestClient
             .get()
-            .uri("https://api.github.com/installation/repositories")
+            .uri("/installation/repositories")
             .header("Authorization", "Bearer $accessToken")
             .header("Accept", "application/vnd.github+json")
             .retrieve()
@@ -25,7 +25,7 @@ class GitHubRepositoryClient(
         try {
             githubWebRestClient
                 .get()
-                .uri("https://api.github.com/repos/$repoFullName")
+                .uri("/repos/$repoFullName")
                 .header("Authorization", "Bearer $token")
                 .header("Accept", "application/vnd.github+json")
                 .retrieve()

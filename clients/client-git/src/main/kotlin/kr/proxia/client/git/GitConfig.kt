@@ -12,6 +12,6 @@ class GitConfig {
     fun githubWebRestClient(): RestClient =
         RestClient
             .builder()
-            .baseUrl("https://github.com")
+            .baseUrl("https://api.github.com")
             .build()
 }
