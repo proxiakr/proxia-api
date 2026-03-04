@@ -1,4 +1,4 @@
-package kr.proxia.core.support.response
+package kr.proxia.core.support
 
 data class Page<T>(
     val content: List<T>,
