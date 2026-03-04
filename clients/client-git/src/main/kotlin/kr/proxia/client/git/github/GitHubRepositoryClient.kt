@@ -6,10 +6,10 @@ import org.springframework.web.client.body
 
 @Component
 class GitHubRepositoryClient(
-    private val githubRestClient: RestClient,
+    private val githubWebRestClient: RestClient,
 ) {
     fun getGithubRepositories(accessToken: String): List<GitHubRepository> =
-        githubRestClient
+        githubWebRestClient
             .get()
             .uri("https://api.github.com/installation/repositories")
             .header("Authorization", "Bearer $accessToken")
@@ -23,7 +23,7 @@ class GitHubRepositoryClient(
         repoFullName: String,
     ): Boolean =
         try {
-            githubRestClient
+            githubWebRestClient
                 .get()
                 .uri("https://api.github.com/repos/$repoFullName")
                 .header("Authorization", "Bearer $token")

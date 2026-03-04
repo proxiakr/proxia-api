@@ -1,0 +1,4 @@
+git:
+  github:
+    app-id: ${GITHUB_APP_ID:}
+    private-key: ${GITHUB_PRIVATE_KEY:}

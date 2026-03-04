@@ -9,7 +9,7 @@ import org.springframework.web.client.RestClient
 @EnableConfigurationProperties(GitProperties::class)
 class GitConfig {
     @Bean
-    fun githubRestClient(): RestClient =
+    fun githubWebRestClient(): RestClient =
         RestClient
             .builder()
             .baseUrl("https://github.com")

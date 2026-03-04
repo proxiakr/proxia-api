@@ -7,14 +7,14 @@ import org.springframework.web.client.body
 
 @Component
 class GitHubConnectionClient(
-    private val githubRestClient: RestClient,
+    private val githubWebRestClient: RestClient,
     private val jwtProvider: GitHubAppJwtProvider,
     private val properties: GitProperties,
 ) {
     fun getInstallationToken(installationId: String): InstallationTokenResponse {
         val jwt = jwtProvider.createAsyncJwt(properties.github.appId, properties.github.privateKey)
 
-        return githubRestClient
+        return githubWebRestClient
             .post()
             .uri("https://api.github.com/app/installations/$installationId/access_tokens")
             .header("Authorization", "Bearer $jwt")
