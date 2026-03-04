@@ -7,7 +7,6 @@ import kr.proxia.core.support.error.ErrorType
 import kr.proxia.storage.db.core.entity.GitConnection
 import kr.proxia.storage.db.core.repository.GitConnectionRepository
 import kr.proxia.storage.db.core.repository.WorkspaceRepository
-import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import java.util.UUID
 
@@ -67,17 +66,13 @@ class GitConnectionService(
         workspaceId: UUID,
         connectionId: UUID,
     ) {
-        if (!workspaceRepository.existsByIdAndMember(workspaceId, userId)) {
-            throw CoreException(ErrorType.WORKSPACE_NOT_FOUND)
-        }
+        val workspace =
+            workspaceRepository.findByIdAndMember(workspaceId, userId)
+                ?: throw CoreException(ErrorType.WORKSPACE_NOT_FOUND)
 
         val connection =
-            gitConnectionRepository.findByIdOrNull(connectionId)
+            gitConnectionRepository.findByIdAndWorkspace(connectionId, workspace)
                 ?: throw CoreException(ErrorType.GIT_CONNECTION_NOT_FOUND)
-
-        if (connection.workspace.id != workspaceId) {
-            throw CoreException(ErrorType.ACCESS_DENIED)
-        }
 
         gitConnectionRepository.delete(connection)
     }
