@@ -36,6 +36,8 @@ class ServiceController(
                 x = it.x,
                 y = it.y,
                 status = it.status.name,
+                createdAt = it.createdAt,
+                updatedAt = it.updatedAt,
             )
         }
     }
@@ -55,6 +57,8 @@ class ServiceController(
             x = service.x,
             y = service.y,
             status = service.status.name,
+            createdAt = service.createdAt,
+            updatedAt = service.updatedAt,
         )
     }
 
@@ -73,6 +77,8 @@ class ServiceController(
             x = service.x,
             y = service.y,
             status = service.status.name,
+            createdAt = service.createdAt,
+            updatedAt = service.updatedAt,
         )
     }
 
@@ -91,6 +97,8 @@ class ServiceController(
             x = service.x,
             y = service.y,
             status = service.status.name,
+            createdAt = service.createdAt,
+            updatedAt = service.updatedAt,
         )
     }
 
