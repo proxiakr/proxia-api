@@ -21,7 +21,7 @@ data class CreateAppServiceRequest(
     val framework: Framework,
     val buildCommand: String?,
     val startCommand: String?,
-    @field:NotBlank
+    @field:NotNull
     val gitConnectionId: UUID,
 ) {
     fun toDomain(): CreateAppService =
