@@ -16,13 +16,11 @@ import kr.proxia.core.enums.ServiceStatus
 @Table(name = "app_services")
 @DiscriminatorValue("APP")
 class AppService(
-    override val name: String,
-    override val x: Double,
-    override val y: Double,
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "project_id", nullable = false)
-    override val project: Project,
-    override var status: ServiceStatus,
+    name: String,
+    x: Double,
+    y: Double,
+    project: Project,
+    status: ServiceStatus,
     @Column(nullable = false)
     val repoFullName: String,
     @Column(nullable = false)
