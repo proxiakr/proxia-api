@@ -61,7 +61,6 @@ class ServiceControllerDocsTest {
     private val testUserId: UUID = UUID.randomUUID()
     private val testWorkspaceId = UUID.randomUUID()
     private val testProjectId = UUID.randomUUID()
-    private val testGitConnectionId = UUID.randomUUID()
 
     @BeforeEach
     fun setUp(restDocumentation: RestDocumentationContextProvider) {
