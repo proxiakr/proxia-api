@@ -279,3 +279,50 @@ include::{snippets}/service-delete/path-parameters.adoc[]
 .Example
 include::{snippets}/service-delete/http-request.adoc[]
 include::{snippets}/service-delete/http-response.adoc[]
+
+[[git-connection]]
+== Git Connection
+
+Git 연동 관리 API입니다. Git 연동은 워크스페이스 하위에 속합니다.
+
+[[git-connection-list]]
+=== Git 연결 목록 조회
+
+워크스페이스에 연결된 Git 연동 목록을 조회합니다.
+
+.Path Parameters
+include::{snippets}/git-connection-list/path-parameters.adoc[]
+
+.Response
+include::{snippets}/git-connection-list/response-fields.adoc[]
+
+.Example
+include::{snippets}/git-connection-list/http-request.adoc[]
+include::{snippets}/git-connection-list/http-response.adoc[]
+
+[[git-connection-create]]
+=== Git 연결 생성
+
+워크스페이스에 새로운 Git 연동을 생성합니다.
+
+.Path Parameters
+include::{snippets}/git-connection-create/path-parameters.adoc[]
+
+.Request
+include::{snippets}/git-connection-create/request-fields.adoc[]
+
+.Example
+include::{snippets}/git-connection-create/http-request.adoc[]
+include::{snippets}/git-connection-create/http-response.adoc[]
+
+[[git-connection-delete]]
+=== Git 연결 삭제
+
+워크스페이스에 연결된 Git 연동을 삭제합니다.
+
+.Path Parameters
+include::{snippets}/git-connection-delete/path-parameters.adoc[]
+
+.Example
+include::{snippets}/git-connection-delete/http-request.adoc[]
+include::{snippets}/git-connection-delete/http-response.adoc[]
