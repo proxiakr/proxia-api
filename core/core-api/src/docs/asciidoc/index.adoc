@@ -326,3 +326,23 @@ include::{snippets}/git-connection-delete/path-parameters.adoc[]
 .Example
 include::{snippets}/git-connection-delete/http-request.adoc[]
 include::{snippets}/git-connection-delete/http-response.adoc[]
+
+[[git-repository]]
+== Git Repository
+
+Git 저장소 조회 API입니다. Git 저장소는 Git 연결 하위에서 조회합니다.
+
+[[git-repository-list]]
+=== Git 저장소 목록 조회
+
+Git 연결에 포함된 Git 저장소 목록을 조회합니다.
+
+.Path Parameters
+include::{snippets}/git-repository-list/path-parameters.adoc[]
+
+.Response
+include::{snippets}/git-repository-list/response-fields.adoc[]
+
+.Example
+include::{snippets}/git-repository-list/http-request.adoc[]
+include::{snippets}/git-repository-list/http-response.adoc[]
