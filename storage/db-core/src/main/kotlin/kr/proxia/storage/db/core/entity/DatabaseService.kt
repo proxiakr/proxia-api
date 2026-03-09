@@ -6,9 +6,6 @@ import jakarta.persistence.DiscriminatorValue
 import jakarta.persistence.Entity
 import jakarta.persistence.EnumType
 import jakarta.persistence.Enumerated
-import jakarta.persistence.FetchType
-import jakarta.persistence.JoinColumn
-import jakarta.persistence.ManyToOne
 import jakarta.persistence.Table
 import kr.proxia.core.enums.DatabaseEngine
 import kr.proxia.core.enums.ServiceStatus
@@ -18,13 +15,11 @@ import kr.proxia.storage.db.core.converter.EncryptConverter
 @Table(name = "database_services")
 @DiscriminatorValue("DATABASE")
 class DatabaseService(
-    override val name: String,
-    override val x: Double,
-    override val y: Double,
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "project_id", nullable = false)
-    override val project: Project,
-    override var status: ServiceStatus,
+    name: String,
+    x: Double,
+    y: Double,
+    project: Project,
+    status: ServiceStatus,
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     val engine: DatabaseEngine,

@@ -33,4 +33,18 @@ interface WorkspaceRepository : JpaRepository<Workspace, UUID> {
         workspaceId: UUID,
         userId: UUID,
     ): Workspace?
+
+    @Query(
+        """
+    SELECT COUNT(w) > 0
+    FROM Workspace w
+    JOIN WorkspaceMember wm ON wm.workspace = w
+    WHERE w.id = :workspaceId
+      AND wm.user.id = :userId
+    """,
+    )
+    fun existsByIdAndMember(
+        workspaceId: UUID,
+        userId: UUID,
+    ): Boolean
 }

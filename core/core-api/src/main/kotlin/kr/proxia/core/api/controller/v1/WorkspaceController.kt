@@ -1,5 +1,6 @@
 package kr.proxia.core.api.controller.v1
 
+import jakarta.validation.Valid
 import kr.proxia.core.api.controller.v1.request.CreateWorkspaceRequest
 import kr.proxia.core.api.controller.v1.response.WorkspaceDetailResponse
 import kr.proxia.core.api.controller.v1.response.WorkspaceMemberResponse
@@ -67,7 +68,7 @@ class WorkspaceController(
     @PostMapping
     fun createWorkspace(
         @AuthenticationPrincipal userId: UUID,
-        @RequestBody request: CreateWorkspaceRequest,
+        @Valid @RequestBody request: CreateWorkspaceRequest,
     ): WorkspaceResponse {
         val workspace = workspaceService.createWorkspace(userId, request.toDomain())
 

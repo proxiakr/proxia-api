@@ -25,12 +25,14 @@ enum class DatabaseEngineConfig(
                     "MYSQL_PASSWORD=$password",
                     "MYSQL_ROOT_PASSWORD=$password",
                 )
+
             POSTGRESQL ->
                 listOf(
                     "POSTGRES_DB=$database",
                     "POSTGRES_USER=$username",
                     "POSTGRES_PASSWORD=$password",
                 )
+
             REDIS -> emptyList()
         }
 
@@ -42,6 +44,7 @@ enum class DatabaseEngineConfig(
                 } else {
                     emptyList()
                 }
+
             else -> emptyList()
         }
 

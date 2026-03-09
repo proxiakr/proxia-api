@@ -5,6 +5,7 @@ import org.springframework.http.MediaType
 import org.springframework.stereotype.Component
 import org.springframework.util.LinkedMultiValueMap
 import org.springframework.web.client.RestClient
+import org.springframework.web.client.body
 
 @Component
 class GoogleOAuthClient(
@@ -28,7 +29,7 @@ class GoogleOAuthClient(
             .contentType(MediaType.APPLICATION_FORM_URLENCODED)
             .body(params)
             .retrieve()
-            .body(GoogleTokenResponse::class.java)!!
+            .body<GoogleTokenResponse>()!!
     }
 
     fun getUserInfo(accessToken: String): GoogleUserInfo =
@@ -37,5 +38,5 @@ class GoogleOAuthClient(
             .uri("/oauth2/v2/userinfo")
             .header("Authorization", "Bearer $accessToken")
             .retrieve()
-            .body(GoogleUserInfo::class.java)!!
+            .body<GoogleUserInfo>()!!
 }

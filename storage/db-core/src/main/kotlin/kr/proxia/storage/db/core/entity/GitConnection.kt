@@ -19,6 +19,7 @@ class GitConnection(
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "workspace_id", nullable = false)
     val workspace: Workspace,
+    val name: String,
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     val provider: GitProvider,

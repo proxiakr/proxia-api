@@ -11,6 +11,7 @@ spring:
       - security.yml
       - client-oauth.yml
       - client-aws.yml
+      - client-git.yml
   web:
     resources:
       add-mappings: false
