@@ -54,7 +54,7 @@ jobs:
           java-version: 21
       - uses: gradle/actions/setup-gradle@v5
       - run: ./gradlew build -x test -x contextTest
-      - uses: actions/upload-artifact@v6
+      - uses: actions/upload-artifact@v7
         with:
           name: app
           path: core/core-api/build/libs/*.jar
